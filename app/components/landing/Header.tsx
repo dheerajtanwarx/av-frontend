@@ -69,7 +69,7 @@ export default function Header() {
             <button aria-label="Account">
               <AccountIcon />
             </button>
-            <button className="cart" aria-label="Cart" onClick={add}>
+            <button className="cart" aria-label="Cart" onClick={() => add()}>
               <CartIcon />
               <span className="badge" ref={badgeRef}>
                 {count}

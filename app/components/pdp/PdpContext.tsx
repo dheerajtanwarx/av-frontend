@@ -13,6 +13,7 @@ export type ToastPayload = {
 type PdpContextValue = {
   addToCart: (payload: ToastPayload) => void;
   toast: ToastPayload | null;
+  toastVisible: boolean;
   closeToast: () => void;
 };
 
@@ -20,23 +21,27 @@ const PdpContext = createContext<PdpContextValue | null>(null);
 
 export function PdpProvider({ children }: { children: React.ReactNode }) {
   const { add } = useCart();
+  // toast holds the content (stays mounted during slide-out); toastVisible
+  // drives the .show class so the text doesn't flicker empty on dismiss.
   const [toast, setToast] = useState<ToastPayload | null>(null);
+  const [toastVisible, setToastVisible] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const addToCart = useCallback(
     (payload: ToastPayload) => {
       add(payload.qty);
       setToast(payload);
+      setToastVisible(true);
       if (timer.current) clearTimeout(timer.current);
-      timer.current = setTimeout(() => setToast(null), 4200);
+      timer.current = setTimeout(() => setToastVisible(false), 4200);
     },
     [add]
   );
 
-  const closeToast = useCallback(() => setToast(null), []);
+  const closeToast = useCallback(() => setToastVisible(false), []);
 
   return (
-    <PdpContext.Provider value={{ addToCart, toast, closeToast }}>
+    <PdpContext.Provider value={{ addToCart, toast, toastVisible, closeToast }}>
       {children}
     </PdpContext.Provider>
   );
