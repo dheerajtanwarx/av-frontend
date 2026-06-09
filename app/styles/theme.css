@@ -1,0 +1,45 @@
+/* ============================================================
+   AV CREATION — COLOR THEME
+   ------------------------------------------------------------
+   Single source of truth for every colour in the UI.
+   Tweak values here to retheme the whole landing page.
+   "Pink City" Jaipuri palette: warm parchment grounds,
+   rani-pink as the hero, gold for ornament, deep green for
+   contrast bands.
+   ============================================================ */
+
+:root {
+  /* --- Grounds / surfaces --- */
+  --bg: #faf5ec;          /* page background — warm parchment   */
+  --bg-2: #f4ead8;        /* alt band background                */
+  --bg-3: #efe2cd;        /* image placeholder fill             */
+  --surface: #ffffff;     /* cards, trust strip                 */
+
+  /* --- Ink / text --- */
+  --ink: #2b2018;         /* primary text + dark buttons        */
+  --ink-soft: #5b4d40;    /* body copy                          */
+  --muted: #94816a;       /* meta, captions                     */
+
+  /* --- Hairlines --- */
+  --line: rgba(43, 32, 24, 0.14);
+  --line-2: rgba(43, 32, 24, 0.08);
+
+  /* --- Rani pink (the Pink City) --- */
+  --rani: #bd3c6e;        /* primary accent                     */
+  --rani-deep: #8e2b52;   /* hover / pressed                    */
+  --rani-soft: #e29bb6;   /* soft accent                        */
+  --rani-wash: #f7e7ec;   /* tinted gradient wash               */
+
+  /* --- Gold (ornament) --- */
+  --gold: #bd8f3c;
+  --gold-soft: #d9b667;
+  --gold-bright: #ecd08a;
+
+  /* --- Deep green (contrast bands) --- */
+  --green: #163f34;
+  --green-2: #1d5042;
+
+  /* --- Announcement bar overrides (matches handoff) --- */
+  --announce-bg: #ddd0c3;
+  --announce-ink: #393939;
+}
