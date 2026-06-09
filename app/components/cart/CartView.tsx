@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Header from "../landing/Header";
 import { useCart } from "../landing/CartContext";
+import { ensureAuthenticated } from "../../lib/auth-guard";
 import { SlimFooter } from "./CheckoutChrome";
 import { CartIc } from "./icons";
 import { CROSS_SELL, inr, type CartItem } from "../../lib/cart-data";
@@ -67,6 +69,10 @@ function PromoBox() {
 /* ---------- order summary ---------- */
 function OrderSummary() {
   const { subtotal, savings, discount, total, count } = useCart();
+  const router = useRouter();
+  const checkout = async () => {
+    if (await ensureAuthenticated("/checkout")) router.push("/checkout");
+  };
   return (
     <div className="summary">
       <h3>Order Summary</h3>
@@ -106,9 +112,9 @@ function OrderSummary() {
         </div>
         <div className="amt">{inr(total)}</div>
       </div>
-      <Link href="/checkout" className="checkout-cta">
+      <button type="button" onClick={checkout} className="checkout-cta">
         {CartIc.lock} Proceed to Checkout
-      </Link>
+      </button>
       <div className="sum-trust">
         <span className="ti">{CartIc.shield} Secure payment</span>
         <span className="ti">{CartIc.scissor} Made to measure</span>
@@ -183,6 +189,9 @@ function CartLine({ item }: { item: CartItem }) {
 function CompleteTheLook() {
   const { items, addItem } = useCart();
   const inBag = (id: string) => items.some((i) => i.id === id);
+  const addCrossSell = async (item: CartItem) => {
+    if (await ensureAuthenticated()) addItem(item);
+  };
   return (
     <section className="ctl">
       <div className="head">
@@ -208,7 +217,7 @@ function CompleteTheLook() {
               aria-label={"Add " + p.nm}
               onClick={() =>
                 !inBag(p.id) &&
-                addItem({
+                addCrossSell({
                   id: p.id,
                   name: p.nm,
                   type: p.ty,

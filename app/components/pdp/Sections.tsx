@@ -98,6 +98,9 @@ export function ReviewsSection({ product }: { product: PdpProduct }) {
 export function ShopTheLook({ product }: { product: PdpProduct }) {
   const { addToCart } = usePdp();
   const total = product.look.length;
+  const addLookItem = (item: Parameters<typeof addToCart>[0]) => {
+    void addToCart(item);
+  };
   return (
     <section className="sec tint">
       <div className="sec-title">
@@ -136,7 +139,7 @@ export function ShopTheLook({ product }: { product: PdpProduct }) {
                   className="add"
                   aria-label={`Add ${l.nm}`}
                   onClick={() =>
-                    addToCart({
+                    addLookItem({
                       id: `look-${l.nm}`,
                       name: l.nm,
                       type: l.ty,
@@ -158,7 +161,7 @@ export function ShopTheLook({ product }: { product: PdpProduct }) {
           <button
             className="set-all"
             onClick={() =>
-              addToCart({
+              addLookItem({
                 id: `look-set-${product.slug}`,
                 name: `The ${product.name} Look — ${total} pieces`,
                 type: "Complete ensemble",

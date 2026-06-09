@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useRef, useState } from "react";
+import { ensureAuthenticated } from "../../lib/auth-guard";
 import { useCart, type CartItem } from "../landing/CartContext";
 
 export type ToastPayload = {
@@ -11,7 +12,7 @@ export type ToastPayload = {
 };
 
 type PdpContextValue = {
-  addToCart: (item: CartItem) => void;
+  addToCart: (item: CartItem) => Promise<boolean>;
   toast: ToastPayload | null;
   toastVisible: boolean;
   closeToast: () => void;
@@ -28,7 +29,8 @@ export function PdpProvider({ children }: { children: React.ReactNode }) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const addToCart = useCallback(
-    (item: CartItem) => {
+    async (item: CartItem) => {
+      if (!(await ensureAuthenticated())) return false;
       addItem(item);
       setToast({
         name: item.name,
@@ -39,6 +41,7 @@ export function PdpProvider({ children }: { children: React.ReactNode }) {
       setToastVisible(true);
       if (timer.current) clearTimeout(timer.current);
       timer.current = setTimeout(() => setToastVisible(false), 4200);
+      return true;
     },
     [addItem]
   );

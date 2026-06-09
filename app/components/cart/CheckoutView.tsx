@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "../landing/CartContext";
-import { loginWithGoogle } from "../../lib/api";
 import { CheckoutHeader, SlimFooter } from "./CheckoutChrome";
 import { CartIc } from "./icons";
 import {
@@ -274,24 +273,6 @@ export default function CheckoutView() {
               <>
             {/* 1 · CONTACT + SHIPPING */}
             <Panel n="1" title="Contact &amp; Shipping">
-              <div className="login-row">
-                <span>Already have an account?</span>
-                <button
-                  type="button"
-                  onClick={() => loginWithGoogle()}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    padding: 0,
-                    font: "inherit",
-                    color: "inherit",
-                    textDecoration: "underline",
-                    cursor: "pointer",
-                  }}
-                >
-                  Log in for saved addresses →
-                </button>
-              </div>
               <div className="field-grid">
                 <Field label="First name" req>
                   <input

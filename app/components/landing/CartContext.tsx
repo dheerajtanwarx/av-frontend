@@ -16,7 +16,13 @@ import {
   type OrderAddress,
   type Promo,
 } from "../../lib/cart-data";
-import { validatePromo, placeOrder as apiPlaceOrder } from "../../lib/api";
+import {
+  validatePromo,
+  placeOrder as apiPlaceOrder,
+  getSession,
+  mergeServerCart,
+  fetchServerCart,
+} from "../../lib/api";
 
 const LS_KEY = "av-cart-v1";
 const ORDER_KEY = "av-last-order";
@@ -76,6 +82,54 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       /* ignore corrupt storage */
     }
     hydrated.current = true;
+
+    // If the user is signed in, merge any local guest cart into the server
+    // cart and replace local state with the authoritative server cart.
+    (async () => {
+      try {
+        const user = await getSession();
+        if (!user) return;
+
+        // Read the current local items we just hydrated (if any).
+        const raw = localStorage.getItem(LS_KEY);
+        const saved = raw ? (JSON.parse(raw) as { items?: CartItem[] }) : null;
+        const localItems: CartItem[] = Array.isArray(saved?.items) ? saved!.items! : [];
+
+        // Send merge request for items that have a slug.
+        const payload = localItems
+          .map((i) => ({ slug: i.slug ?? "", color: i.color.name, qty: i.qty }))
+          .filter((it) => it.slug && it.slug.trim() !== "");
+        if (payload.length > 0) {
+          await mergeServerCart(payload as { slug: string; color?: string; qty: number }[]);
+        }
+
+        // Fetch the merged server cart and convert into local CartItem shape.
+        const server = await fetchServerCart();
+        const mapped: CartItem[] = server.map((s) => ({
+          id: `${s.slug}-${s.variantId}`,
+          slug: s.slug,
+          name: s.name,
+          type: s.type ?? "",
+          color: s.color,
+          size: "",
+          madeToMeasure: false,
+          price: s.unitPrice,
+          was: null,
+          qty: s.qty,
+          img: s.img,
+        }));
+        if (mapped.length > 0) {
+          setItems(mapped);
+          try {
+            localStorage.setItem(LS_KEY, JSON.stringify({ items: mapped, promo: null }));
+          } catch {
+            /* ignore */
+          }
+        }
+      } catch {
+        /* ignore merge errors */
+      }
+    })();
   }, []);
 
   /* persist whenever cart changes (after first hydration) */

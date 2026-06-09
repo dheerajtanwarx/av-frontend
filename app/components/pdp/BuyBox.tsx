@@ -6,6 +6,7 @@ import type { AccordionItem, PdpColor, PdpProduct } from "../../lib/pdp-data";
 import { Ic, Stars } from "./icons";
 import { usePdp } from "./PdpContext";
 import { useCart } from "../landing/CartContext";
+import { ensureAuthenticated } from "../../lib/auth-guard";
 import { parseINR, type CartItem } from "../../lib/cart-data";
 
 /** Build a cart line item from the current PDP selections. */
@@ -44,12 +45,16 @@ function AddToBag({
   const { addToCart } = usePdp();
   const [state, setState] = useState<"idle" | "adding" | "added">("idle");
 
-  const onClick = () => {
+  const onClick = async () => {
     if (state !== "idle") return;
     setState("adding");
+    const added = await addToCart(makeItem(product, color, size, qty));
+    if (!added) {
+      setState("idle");
+      return;
+    }
     setTimeout(() => {
       setState("added");
-      addToCart(makeItem(product, color, size, qty));
       setTimeout(() => setState("idle"), 1900);
     }, 700);
   };
@@ -127,7 +132,8 @@ export default function BuyBox({ product }: { product: PdpProduct }) {
   const { addItem } = useCart();
   const router = useRouter();
 
-  const buyNow = () => {
+  const buyNow = async () => {
+    if (!(await ensureAuthenticated("/checkout"))) return;
     addItem(makeItem(product, color, size, qty));
     router.push("/checkout");
   };

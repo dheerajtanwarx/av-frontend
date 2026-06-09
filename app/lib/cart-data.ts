@@ -76,6 +76,7 @@ const IMG = {
 export const CROSS_SELL = [
   {
     id: "jhumka",
+    slug: "jhumka",
     nm: "Polki Jhumka Set",
     ty: "Temple · 22k Gold-plate",
     pr: 3200,
@@ -85,6 +86,7 @@ export const CROSS_SELL = [
   },
   {
     id: "juttis",
+    slug: "juttis",
     nm: "Zari Embroidered Juttis",
     ty: "Handcrafted · Velvet",
     pr: 2400,
@@ -94,6 +96,7 @@ export const CROSS_SELL = [
   },
   {
     id: "potli",
+    slug: "potli",
     nm: "Silk Potli Clutch",
     ty: "Gota Patti · Raw Silk",
     pr: 1900,

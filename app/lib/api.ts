@@ -166,8 +166,10 @@ export async function getSession(): Promise<SessionUser | null> {
 }
 
 /** Full-page redirect into the backend Google OAuth flow. */
-export function loginWithGoogle(): void {
-  window.location.href = `${API_URL}/api/auth/google`;
+export function loginWithGoogle(next?: string): void {
+  const url = new URL(`${API_URL}/api/auth/google`);
+  if (next) url.searchParams.set("next", next);
+  window.location.href = url.toString();
 }
 
 export function logout(): Promise<{ success: boolean }> {

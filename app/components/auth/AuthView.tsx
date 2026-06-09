@@ -33,6 +33,8 @@ export default function AuthView({ mode }: { mode: AuthMode }) {
   const router = useRouter();
   const params = useSearchParams();
   const copy = COPY[mode];
+  const next = params.get("next") || "/";
+  const altHref = `${copy.alt.href}?next=${encodeURIComponent(next)}`;
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -91,7 +93,7 @@ export default function AuthView({ mode }: { mode: AuthMode }) {
     setBusy(true);
     try {
       await verifyOtp(phone, otp, mode, name.trim() || undefined);
-      router.push("/");
+      router.push(next);
       router.refresh();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Couldn’t verify the code. Please try again.");
@@ -113,7 +115,7 @@ export default function AuthView({ mode }: { mode: AuthMode }) {
 
         {error && <div className="auth-error">{error}</div>}
 
-        <button className="auth-google" onClick={loginWithGoogle} disabled={busy}>
+        <button className="auth-google" onClick={() => loginWithGoogle(next)} disabled={busy}>
           <GoogleMark />
           Continue with Google
         </button>
@@ -192,7 +194,7 @@ export default function AuthView({ mode }: { mode: AuthMode }) {
         )}
 
         <p className="auth-alt">
-          {copy.alt.q} <a href={copy.alt.href}>{copy.alt.label}</a>
+          {copy.alt.q} <a href={altHref}>{copy.alt.label}</a>
         </p>
       </div>
     </main>

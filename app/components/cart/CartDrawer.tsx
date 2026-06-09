@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useCart } from "../landing/CartContext";
+import { ensureAuthenticated } from "../../lib/auth-guard";
 import { inr } from "../../lib/cart-data";
 import { CartIc } from "./icons";
 
@@ -33,6 +34,11 @@ export default function CartDrawer() {
   const goto = (href: string) => {
     closeDrawer();
     router.push(href);
+  };
+
+  const checkout = async () => {
+    closeDrawer();
+    if (await ensureAuthenticated("/checkout")) router.push("/checkout");
   };
 
   return (
@@ -122,7 +128,7 @@ export default function CartDrawer() {
               <div className="note">
                 Shipping & taxes calculated at checkout · Made-to-order pieces ship in 3–4 weeks
               </div>
-              <button className="vc" onClick={() => goto("/checkout")}>
+              <button className="vc" onClick={checkout}>
                 {CartIc.lock} Secure Checkout
               </button>
               <button className="vb" onClick={() => goto("/cart")}>
