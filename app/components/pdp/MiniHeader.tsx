@@ -8,7 +8,7 @@ import { Ic } from "./icons";
 const LINKS = ["Lehenga", "Jaipuri Odhni", "Saree", "Suits", "Dupatta"];
 
 export default function MiniHeader({ hot }: { hot: string }) {
-  const { count } = useCart();
+  const { count, openDrawer } = useCart();
   const badgeRef = useRef<HTMLSpanElement>(null);
   const first = useRef(true);
 
@@ -41,7 +41,7 @@ export default function MiniHeader({ hot }: { hot: string }) {
       <div className="ph-acts">
         <button aria-label="Search">{Ic.search}</button>
         <button aria-label="Account">{Ic.user}</button>
-        <button className="ph-cart" aria-label="Cart">
+        <button className="ph-cart" aria-label="Cart" onClick={openDrawer}>
           {Ic.cart}
           <span className="badge" ref={badgeRef}>
             {count}

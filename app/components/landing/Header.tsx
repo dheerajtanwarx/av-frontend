@@ -27,7 +27,7 @@ function Marquee() {
 }
 
 export default function Header() {
-  const { count, add } = useCart();
+  const { count, openDrawer } = useCart();
   const badgeRef = useRef<HTMLSpanElement>(null);
   const first = useRef(true);
 
@@ -69,7 +69,7 @@ export default function Header() {
             <button aria-label="Account">
               <AccountIcon />
             </button>
-            <button className="cart" aria-label="Cart" onClick={() => add()}>
+            <button className="cart" aria-label="Cart" onClick={openDrawer}>
               <CartIcon />
               <span className="badge" ref={badgeRef}>
                 {count}

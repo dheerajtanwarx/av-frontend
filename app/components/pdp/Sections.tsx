@@ -5,6 +5,9 @@ import Link from "next/link";
 import type { PdpProduct } from "../../lib/pdp-data";
 import { Ic, Stars } from "./icons";
 import { usePdp } from "./PdpContext";
+import { parseINR } from "../../lib/cart-data";
+
+const LOOK_COLOR = { name: "Rani Pink", hex: "#bd3c6e" };
 
 /* Render *asterisk* wrapped phrases as the rani-pink italic emphasis. */
 function emphasize(text: string) {
@@ -132,7 +135,20 @@ export function ShopTheLook({ product }: { product: PdpProduct }) {
                 <button
                   className="add"
                   aria-label={`Add ${l.nm}`}
-                  onClick={() => addToCart({ name: l.nm, variant: l.ty, thumb: l.image, qty: 1 })}
+                  onClick={() =>
+                    addToCart({
+                      id: `look-${l.nm}`,
+                      name: l.nm,
+                      type: l.ty,
+                      color: LOOK_COLOR,
+                      size: "One Size",
+                      madeToMeasure: false,
+                      price: parseINR(l.pr),
+                      was: null,
+                      qty: 1,
+                      img: l.image,
+                    })
+                  }
                 >
                   {Ic.plus}
                 </button>
@@ -143,10 +159,16 @@ export function ShopTheLook({ product }: { product: PdpProduct }) {
             className="set-all"
             onClick={() =>
               addToCart({
+                id: `look-set-${product.slug}`,
                 name: `The ${product.name} Look — ${total} pieces`,
-                variant: "Complete ensemble",
-                thumb: product.lookImage,
-                qty: total,
+                type: "Complete ensemble",
+                color: LOOK_COLOR,
+                size: "One Size",
+                madeToMeasure: false,
+                price: product.look.reduce((s, l) => s + parseINR(l.pr), 0),
+                was: null,
+                qty: 1,
+                img: product.lookImage,
               })
             }
           >

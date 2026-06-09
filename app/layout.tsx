@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Marcellus, Jost } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "./components/landing/CartContext";
+import CartDrawer from "./components/cart/CartDrawer";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -39,7 +40,10 @@ export default function RootLayout({
       className={`${cormorant.variable} ${marcellus.variable} ${jost.variable} h-full`}
     >
       <body className="min-h-full">
-        <CartProvider>{children}</CartProvider>
+        <CartProvider>
+          {children}
+          <CartDrawer />
+        </CartProvider>
       </body>
     </html>
   );

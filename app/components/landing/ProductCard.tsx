@@ -5,18 +5,32 @@ import Link from "next/link";
 import { img, type Product } from "../../lib/landing-data";
 import { CompareIcon, HeartIcon } from "./Icons";
 import { useCart } from "./CartContext";
+import { parseINR } from "../../lib/cart-data";
 
 const delay = ["", "d1", "d2", "d3"];
 
 export default function ProductCard({ product, index }: { product: Product; index: number }) {
-  const { add } = useCart();
+  const { addItem, openDrawer } = useCart();
   const [wished, setWished] = useState(false);
   const [compared, setCompared] = useState(false);
   const [added, setAdded] = useState(false);
 
   const onAdd = () => {
-    add();
+    addItem({
+      id: product.slug,
+      slug: product.slug,
+      name: product.name,
+      type: product.type,
+      color: { name: "Rani Pink", hex: "#bd3c6e" },
+      size: "Free Size",
+      madeToMeasure: false,
+      price: parseINR(product.price),
+      was: product.was ? parseINR(product.was) : null,
+      qty: 1,
+      img: img(product.main, 900),
+    });
     setAdded(true);
+    openDrawer();
     setTimeout(() => setAdded(false), 1100);
   };
 

@@ -6,6 +6,8 @@
 @import "./styles/landing.css";
 /* Product detail page */
 @import "./styles/pdp.css";
+/* Cart & checkout flow (cool "soft slate" palette, scoped to .flow) */
+@import "./styles/cart.css";
 
 @theme inline {
   --font-cormorant: var(--font-cormorant);

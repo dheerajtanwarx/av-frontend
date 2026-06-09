@@ -1,9 +1,34 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { AccordionItem, PdpColor, PdpProduct } from "../../lib/pdp-data";
 import { Ic, Stars } from "./icons";
 import { usePdp } from "./PdpContext";
+import { useCart } from "../landing/CartContext";
+import { parseINR, type CartItem } from "../../lib/cart-data";
+
+/** Build a cart line item from the current PDP selections. */
+function makeItem(
+  product: PdpProduct,
+  color: PdpColor,
+  size: string,
+  qty: number
+): CartItem {
+  return {
+    id: `${product.slug}__${color.name}__${size}`,
+    slug: product.slug,
+    name: product.name,
+    type: product.craft,
+    color: { name: color.name, hex: color.hex },
+    size,
+    madeToMeasure: size === "Custom",
+    price: parseINR(product.price),
+    was: product.was ? parseINR(product.was) : null,
+    qty,
+    img: product.images[0],
+  };
+}
 
 function AddToBag({
   product,
@@ -24,12 +49,7 @@ function AddToBag({
     setState("adding");
     setTimeout(() => {
       setState("added");
-      addToCart({
-        name: product.name,
-        variant: `${color.name} · Size ${size}`,
-        thumb: product.images[0],
-        qty,
-      });
+      addToCart(makeItem(product, color, size, qty));
       setTimeout(() => setState("idle"), 1900);
     }, 700);
   };
@@ -104,6 +124,13 @@ export default function BuyBox({ product }: { product: PdpProduct }) {
   const [qty, setQty] = useState(1);
   const [wish, setWish] = useState(false);
   const [guide, setGuide] = useState(false);
+  const { addItem } = useCart();
+  const router = useRouter();
+
+  const buyNow = () => {
+    addItem(makeItem(product, color, size, qty));
+    router.push("/checkout");
+  };
 
   return (
     <div className="bb editorial">
@@ -196,7 +223,7 @@ export default function BuyBox({ product }: { product: PdpProduct }) {
           {Ic.heart}
         </button>
       </div>
-      <button className="buynow">Buy It Now</button>
+      <button className="buynow" onClick={buyNow}>Buy It Now</button>
 
       <div className="bb-trust">
         <div className="t">

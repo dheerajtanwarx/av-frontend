@@ -163,7 +163,7 @@ export const odhniEdit: Product[] = [
     price: "₹3,450",
     stars: "★★★★★",
     flag: { label: "New" },
-    main: "photo-1693336429270-094637e16d38",
+    main: "photo-1574847872646-abff244bbd87",
     alt: "premium_photo-1682096060450-6ac06a3a0478",
   },
   {
