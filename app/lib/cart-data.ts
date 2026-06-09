@@ -6,6 +6,8 @@
    cart-data.jsx + checkout-flow.jsx.
    ============================================================ */
 
+import { IMG_REMAP } from "./landing-data";
+
 export type CartColor = { name: string; hex: string };
 
 export type CartItem = {
@@ -58,10 +60,11 @@ export const parseINR = (s: string | number | null | undefined): number => {
 };
 
 /* ---------- IMAGERY (shared with PDP) ---------- */
-const u = (id: string, w = 900) =>
-  id.startsWith("http")
-    ? id
-    : `https://images.unsplash.com/${id}?w=${w}&q=78&auto=format&fit=crop`;
+const u = (id: string, w = 900) => {
+  if (id.startsWith("http")) return id;
+  const safe = IMG_REMAP[id] ?? id;
+  return `https://images.unsplash.com/${safe}?w=${w}&q=78&auto=format&fit=crop`;
+};
 
 const IMG = {
   d: u("premium_photo-1682096048114-4b36a3212527"),

@@ -8,6 +8,10 @@
 @import "./styles/pdp.css";
 /* Cart & checkout flow (cool "soft slate" palette, scoped to .flow) */
 @import "./styles/cart.css";
+/* Login & signup pages (scoped to .auth) */
+@import "./styles/auth.css";
+/* Account profile page */
+@import "./styles/profile.css";
 
 @theme inline {
   --font-cormorant: var(--font-cormorant);

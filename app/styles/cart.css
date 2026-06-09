@@ -173,16 +173,38 @@
 .flow .ctl-card .add.done { background: var(--green-2); border-color: var(--green-2); color: #fff; transform: none; }
 
 /* ============ EMPTY CART ============ */
-.flow .empty { text-align: center; padding: 90px 0 110px; display: flex; flex-direction: column; align-items: center; }
-.flow .empty .ring { width: 96px; height: 96px; border-radius: 50%; border: 1px solid var(--gold-soft); display: flex; align-items: center; justify-content: center; color: var(--rani); margin-bottom: 26px; position: relative; }
-.flow .empty .ring::after { content: ""; position: absolute; inset: 8px; border-radius: 50%; border: 1px solid var(--line-2); }
-.flow .empty .ring svg { width: 34px; height: 34px; }
-.flow .empty h2 { font-family: var(--serif); font-size: 36px; font-weight: 600; color: var(--ink); }
-.flow .empty p { font-size: 15px; color: var(--ink-soft); margin-top: 12px; max-width: 380px; }
+.flow .empty { text-align: center; padding: 80px 0 110px; display: flex; flex-direction: column; align-items: center; }
+.flow .empty h2 { font-family: var(--serif); font-size: 36px; font-weight: 600; color: var(--ink); animation: sad-fade .6s var(--ease) both; }
+.flow .empty p { font-size: 15px; color: var(--ink-soft); margin-top: 12px; max-width: 400px; animation: sad-fade .6s .08s var(--ease) both; }
+
+/* sad animated bag */
+.flow .empty .sadbag { position: relative; width: 150px; height: 160px; margin-bottom: 30px; color: var(--rani); }
+.flow .empty .sadbag .bag { width: 150px; height: 150px; transform-origin: 50% 24px; animation: sad-sway 3.4s var(--ease) infinite; }
+.flow .empty .sadbag .bag .eye { animation: sad-blink 4s 1.2s ease-in-out infinite; transform-origin: center; }
+.flow .empty .sadbag .shadow { position: absolute; left: 50%; bottom: 2px; width: 86px; height: 14px; border-radius: 50%; background: rgba(27, 35, 48, 0.16); transform: translateX(-50%); filter: blur(3px); animation: sad-shadow 3.4s var(--ease) infinite; }
+.flow .empty .sadbag .tear { position: absolute; top: 78px; left: 56px; width: 7px; height: 7px; background: var(--rani); border-radius: 50% 50% 50% 0; transform: rotate(45deg); opacity: 0; animation: sad-tear 3.4s 1s var(--ease) infinite; }
 .flow .empty .cta { margin-top: 30px; display: inline-flex; align-items: center; gap: 11px; background: var(--ink); color: #fff; border: none; cursor: pointer; padding: 17px 34px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; border-radius: 9px; transition: all .3s var(--ease); }
 .flow .empty .cta:hover { background: var(--rani); transform: translateY(-2px); }
 
 /* ============ CHECKOUT ============ */
+/* two-step progress indicator */
+.flow .co-steps { display: flex; align-items: center; justify-content: center; gap: 14px; max-width: 520px; margin: 24px auto 0; }
+.flow .co-steps .cs { display: flex; align-items: center; gap: 11px; background: none; border: none; padding: 0; cursor: default; }
+.flow .co-steps .cs.done { cursor: pointer; }
+.flow .co-steps .cn { width: 34px; height: 34px; flex: 0 0 auto; border-radius: 50%; border: 1.5px solid var(--line); display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 15px; font-weight: 600; color: var(--muted); background: #fff; transition: all .3s var(--ease); }
+.flow .co-steps .cn svg { width: 16px; height: 16px; }
+.flow .co-steps .cs.on .cn { background: var(--rani); border-color: var(--rani); color: #fff; box-shadow: 0 0 0 4px var(--rani-wash); }
+.flow .co-steps .cs.done .cn { background: var(--green-2); border-color: var(--green-2); color: #fff; }
+.flow .co-steps .cl { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); white-space: nowrap; transition: color .3s; }
+.flow .co-steps .cs.on .cl, .flow .co-steps .cs.done .cl { color: var(--ink); }
+.flow .co-steps .cbar { flex: 1; height: 2px; background: var(--line); border-radius: 2px; position: relative; overflow: hidden; max-width: 90px; }
+.flow .co-steps .cbar::after { content: ""; position: absolute; inset: 0; width: 0; background: var(--rani); transition: width .4s var(--ease); }
+.flow .co-steps .cbar.fill::after { width: 100%; }
+
+.flow .co-back { width: 100%; height: 50px; margin-top: 10px; border: 1px solid var(--line); border-radius: 10px; background: none; color: var(--ink-soft); cursor: pointer; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all .25s var(--ease); }
+.flow .co-back:hover { border-color: var(--ink); background: var(--bg-2); color: var(--ink); }
+.flow .co-back svg { width: 15px; height: 15px; }
+
 .flow .co-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(370px, .92fr); gap: 50px; padding: 38px 0 80px; align-items: start; }
 .flow .co-sections { display: flex; flex-direction: column; gap: 18px; }
 .flow .panel { background: var(--surface); border: 1px solid var(--line-2); border-radius: 14px; overflow: hidden; transition: box-shadow .3s, border-color .3s; }
@@ -355,12 +377,19 @@
 .flow .drawer .dfoot .note { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
 .flow .drawer .dfoot .vc { width: 100%; height: 52px; border: none; border-radius: 9px; background: var(--rani); color: #fff; cursor: pointer; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background .3s, transform .25s; }
 .flow .drawer .dfoot .vc:hover { background: var(--rani-deep); transform: translateY(-2px); }
+.flow .drawer .dfoot .vc svg { width: 16px; height: 16px; flex: 0 0 auto; }
 .flow .drawer .dfoot .vb { width: 100%; height: 46px; margin-top: 9px; border: 1px solid var(--ink); border-radius: 9px; background: none; color: var(--ink); cursor: pointer; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; transition: all .25s; }
 .flow .drawer .dfoot .vb:hover { background: var(--ink); color: var(--bg); }
-.flow .drawer .dempty { text-align: center; padding: 80px 24px; color: var(--muted); }
-.flow .drawer .dempty .ring { width: 70px; height: 70px; border-radius: 50%; border: 1px solid var(--gold-soft); display: flex; align-items: center; justify-content: center; color: var(--rani); margin: 0 auto 20px; }
-.flow .drawer .dempty .ring svg { width: 26px; height: 26px; }
-.flow .drawer .dempty p { font-family: var(--serif); font-size: 18px; color: var(--ink); }
+.flow .drawer .dempty { text-align: center; padding: 70px 24px; color: var(--muted); display: flex; flex-direction: column; align-items: center; }
+.flow .drawer .dempty p { font-family: var(--serif); font-size: 21px; color: var(--ink); animation: sad-fade .5s var(--ease) both; }
+.flow .drawer .dempty .sub { font-size: 13px; color: var(--muted); margin-top: 8px; max-width: 240px; animation: sad-fade .5s .08s var(--ease) both; }
+.flow .drawer .dempty .shop { margin-top: 24px; background: var(--ink); color: #fff; border: none; cursor: pointer; padding: 13px 28px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; border-radius: 8px; transition: all .25s var(--ease); }
+.flow .drawer .dempty .shop:hover { background: var(--rani); transform: translateY(-2px); }
+
+/* shared sad-bag art — drawer uses the compact .mini variant */
+.flow .sadbag.mini { position: relative; width: 96px; height: 96px; color: var(--rani); margin-bottom: 6px; }
+.flow .sadbag.mini .bag { width: 96px; height: 96px; transform-origin: 50% 24px; animation: sad-sway 3.4s var(--ease) infinite; }
+.flow .sadbag.mini .bag .eye { animation: sad-blink 4s 1.2s ease-in-out infinite; transform-origin: center; }
 
 /* ============ SLIM FOOTER ============ */
 .flow .pfoot { background: var(--ink); color: rgba(231, 234, 238, 0.7); padding: 38px 0; margin-top: auto; }
@@ -377,6 +406,27 @@
 }
 @keyframes sealdraw {
   to { stroke-dashoffset: 0; }
+}
+@keyframes sad-sway {
+  0%, 100% { transform: rotate(-5deg) translateY(0); }
+  50% { transform: rotate(5deg) translateY(-6px); }
+}
+@keyframes sad-shadow {
+  0%, 100% { transform: translateX(-50%) scale(1); opacity: .5; }
+  50% { transform: translateX(-50%) scale(.82); opacity: .3; }
+}
+@keyframes sad-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(.15); }
+}
+@keyframes sad-tear {
+  0%, 60% { opacity: 0; transform: translateY(0) rotate(45deg) scale(.6); }
+  68% { opacity: 1; transform: translateY(0) rotate(45deg) scale(1); }
+  100% { opacity: 0; transform: translateY(34px) rotate(45deg) scale(.9); }
+}
+@keyframes sad-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 920px) {

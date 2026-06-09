@@ -1,15 +1,16 @@
 import {
-  bestsellers,
-  categories,
+  bestsellers as staticBestsellers,
+  categories as staticCategories,
   editorial,
   footerCols,
   img,
   lookbook,
-  odhniEdit,
+  odhniEdit as staticOdhni,
   odhniFeatures,
   reels,
   trust,
 } from "./lib/landing-data";
+import { fetchProducts, fetchCategories } from "./lib/api";
 import Header from "./components/landing/Header";
 import HeroCarousel from "./components/landing/HeroCarousel";
 import ScrollReveal from "./components/landing/ScrollReveal";
@@ -37,7 +38,15 @@ function MultilineTitle({ text }: { text: string }) {
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  // Pull the live catalog from the API; fall back to the bundled static
+  // content if the backend is unreachable so the page always renders.
+  const [odhniEdit, bestsellers, categories] = await Promise.all([
+    fetchProducts({ category: "jaipuri-odhni" }).catch(() => staticOdhni),
+    fetchProducts({ bestseller: true }).catch(() => staticBestsellers),
+    fetchCategories().catch(() => staticCategories),
+  ]);
+
   return (
     <div className="av">
       <ScrollReveal />
@@ -75,7 +84,7 @@ export default function Home() {
                 className={`cat reveal ${["", "d1", "d2", "d3", "d4"][i] ?? ""}${
                   c.featured ? " feat" : ""
                 }`}
-                href={c.href}
+                href={c.featured ? "#odhni" : "#shop"}
                 key={c.name}
               >
                 <div className="imgw">

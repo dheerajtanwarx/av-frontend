@@ -7,10 +7,26 @@
    when real photography is ready.
    ============================================================ */
 
-const img = (id: string, w: number) =>
-  id.startsWith("http")
-    ? id
-    : `https://images.unsplash.com/${id}?w=${w}&q=78&auto=format&fit=crop`;
+/* Some IDs in this file point at Unsplash+ "premium_photo-*" assets that 404
+   for the public CDN — they never render. Remap each to a free, public
+   Unsplash photo so every section shows a (mock) image. Swap for real
+   photography when it's ready. */
+export const IMG_REMAP: Record<string, string> = {
+  "premium_photo-1682096032284-0b2ab20b65dd": "photo-1610030469983-98e550d6193c",
+  "premium_photo-1682096034925-468c545d1c12": "photo-1597983073493-88cd35cf93b0",
+  "premium_photo-1682096037844-e43413e887a8": "photo-1611042553365-9b101441c135",
+  "premium_photo-1682096048114-4b36a3212527": "photo-1612722432474-b971cdcea546",
+  "premium_photo-1682096055581-7cb5a5fd3d80": "photo-1594633312681-425c7b97ccd1",
+  "premium_photo-1682096060450-6ac06a3a0478": "photo-1595777457583-95e059d581b8",
+  "premium_photo-1682096065017-ab3d3a162b33": "photo-1583846783214-7229a91b20ed",
+  "premium_photo-1682096067532-3e89ab323ebf": "photo-1617137968427-85924c800a22",
+};
+
+const img = (id: string, w: number) => {
+  if (id.startsWith("http")) return id;
+  const safe = IMG_REMAP[id] ?? id;
+  return `https://images.unsplash.com/${safe}?w=${w}&q=78&auto=format&fit=crop`;
+};
 
 export type NavLink = { label: string; href: string; hot?: boolean };
 

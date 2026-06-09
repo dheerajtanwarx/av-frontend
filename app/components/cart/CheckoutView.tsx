@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useCart } from "../landing/CartContext";
+import { loginWithGoogle } from "../../lib/api";
 import { CheckoutHeader, SlimFooter } from "./CheckoutChrome";
 import { CartIc } from "./icons";
 import {
@@ -150,11 +150,14 @@ export default function CheckoutView() {
   const router = useRouter();
   const { items, subtotal, discount, placeOrder } = useCart();
 
+  const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState<OrderAddress>(EMPTY_FORM);
   const [delivery, setDelivery] = useState<string>("standard");
   const [pay, setPay] = useState<string>("upi");
   const [upiApp, setUpiApp] = useState<string>("GPay");
   const [touched, setTouched] = useState(false);
+  const [placing, setPlacing] = useState(false);
+  const [orderErr, setOrderErr] = useState<string | null>(null);
   // placing the order empties the bag on purpose — don't let the empty-bag
   // guard below hijack the navigation to the confirmation page.
   const placed = useRef(false);
@@ -185,15 +188,50 @@ export default function CheckoutView() {
     return required.every((k) => form[k].trim() !== "");
   }, [form]);
 
-  const onPlaceOrder = () => {
+  const scrollToTop = () =>
+    document.querySelector(".co-steps")?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  // step 1 → step 2: only advance once contact + address are complete
+  const goToPayment = () => {
     if (!valid) {
       setTouched(true);
       document.querySelector(".panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
-    placed.current = true;
-    placeOrder({ address: form, payment: PAY_LABEL[pay], delivery, total: grand });
-    router.push("/checkout/success");
+    setStep(2);
+    scrollToTop();
+  };
+
+  const backToDetails = () => {
+    setStep(1);
+    scrollToTop();
+  };
+
+  const onPlaceOrder = async () => {
+    if (!valid) {
+      // shouldn't happen (step 1 gates this), but bounce back to fix details
+      setTouched(true);
+      backToDetails();
+      return;
+    }
+    if (placing) return;
+    setPlacing(true);
+    setOrderErr(null);
+    try {
+      await placeOrder({
+        address: form,
+        paymentId: pay,
+        paymentLabel: PAY_LABEL[pay],
+        delivery,
+      });
+      placed.current = true;
+      router.push("/checkout/success");
+    } catch (err) {
+      setPlacing(false);
+      setOrderErr(
+        err instanceof Error ? err.message : "We couldn’t place your order. Please try again."
+      );
+    }
   };
 
   const missing = (k: keyof OrderAddress) => touched && form[k].trim() === "";
@@ -208,15 +246,51 @@ export default function CheckoutView() {
           <h1>
             Secure <em>Checkout</em>
           </h1>
-          <div className="meta">Address · Delivery · Payment — all on one page</div>
+          <div className="meta">
+            {step === 1 ? "Step 1 of 2 · Details & Address" : "Step 2 of 2 · Payment"}
+          </div>
         </div>
+
+        {/* two-step progress indicator */}
+        <div className="co-steps">
+          <button
+            className={"cs" + (step === 1 ? " on" : " done")}
+            onClick={() => step === 2 && backToDetails()}
+            type="button"
+          >
+            <span className="cn">{step > 1 ? CartIc.check : "1"}</span>
+            <span className="cl">Details &amp; Address</span>
+          </button>
+          <span className={"cbar" + (step === 2 ? " fill" : "")} />
+          <div className={"cs" + (step === 2 ? " on" : "")}>
+            <span className="cn">2</span>
+            <span className="cl">Payment</span>
+          </div>
+        </div>
+
         <div className="co-grid">
           <div className="co-sections">
+            {step === 1 ? (
+              <>
             {/* 1 · CONTACT + SHIPPING */}
             <Panel n="1" title="Contact &amp; Shipping">
               <div className="login-row">
                 <span>Already have an account?</span>
-                <Link href="/login">Log in for saved addresses →</Link>
+                <button
+                  type="button"
+                  onClick={() => loginWithGoogle()}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    font: "inherit",
+                    color: "inherit",
+                    textDecoration: "underline",
+                    cursor: "pointer",
+                  }}
+                >
+                  Log in for saved addresses →
+                </button>
               </div>
               <div className="field-grid">
                 <Field label="First name" req>
@@ -307,6 +381,18 @@ export default function CheckoutView() {
               </div>
             </Panel>
 
+            {touched && !valid && (
+              <div className="msg err">
+                {CartIc.info} Please complete your contact &amp; shipping details to continue.
+              </div>
+            )}
+
+            <button className="place-order" onClick={goToPayment}>
+              Continue to Payment {CartIc.arrowR}
+            </button>
+              </>
+            ) : (
+              <>
             {/* 3 · PAYMENT */}
             <Panel n="3" title="Payment">
               <div className="pay-methods">
@@ -389,14 +475,21 @@ export default function CheckoutView() {
                 ))}
               </div>
 
-              {touched && !valid && (
+              {orderErr && (
                 <div className="msg err" style={{ marginTop: 16 }}>
-                  {CartIc.info} Please complete your contact &amp; shipping details above.
+                  {CartIc.info} {orderErr}
                 </div>
               )}
-
-              <button className="place-order" onClick={onPlaceOrder} style={{ marginTop: 22 }}>
-                {CartIc.lock} Place Order · {inr(grand)}
+              <button
+                className="place-order"
+                onClick={onPlaceOrder}
+                disabled={placing}
+                style={{ marginTop: 22 }}
+              >
+                {placing ? "Placing your order…" : <>{CartIc.lock} Place Order · {inr(grand)}</>}
+              </button>
+              <button className="co-back" onClick={backToDetails} type="button">
+                {CartIc.arrowL} Back to details &amp; address
               </button>
               <div className="placeterms">
                 By placing your order you agree to AV Creation’s made-to-order terms.
@@ -404,6 +497,8 @@ export default function CheckoutView() {
                 Your payment is encrypted and fully secure.
               </div>
             </Panel>
+              </>
+            )}
           </div>
 
           <CheckoutSummary shipFee={shipFee} />

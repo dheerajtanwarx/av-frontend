@@ -13,9 +13,13 @@ function PromoBox() {
   const { promo, applyPromo, removePromo } = useCart();
   const [code, setCode] = useState("");
   const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  const apply = () => {
-    const res = applyPromo(code);
+  const apply = async () => {
+    if (busy) return;
+    setBusy(true);
+    const res = await applyPromo(code);
+    setBusy(false);
     if (res.ok) {
       setErr(null);
       setCode("");
@@ -47,8 +51,8 @@ function PromoBox() {
           onKeyDown={(e) => e.key === "Enter" && apply()}
           placeholder="Gift card or promo code"
         />
-        <button className="apply" onClick={apply}>
-          Apply
+        <button className="apply" onClick={apply} disabled={busy}>
+          {busy ? "…" : "Apply"}
         </button>
       </div>
       {err && (
@@ -231,11 +235,41 @@ function CompleteTheLook() {
 function EmptyCart() {
   return (
     <div className="empty">
-      <div className="ring">{CartIc.bag}</div>
-      <h2>Your bag awaits its treasures</h2>
+      <div className="sadbag" aria-hidden="true">
+        <span className="shadow" />
+        <svg className="bag" viewBox="0 0 120 120" fill="none">
+          {/* bag body */}
+          <path
+            className="body"
+            d="M26 40h68l-6 64a8 8 0 0 1-8 7H40a8 8 0 0 1-8-7L26 40Z"
+            stroke="currentColor"
+            strokeWidth="3.2"
+            strokeLinejoin="round"
+          />
+          {/* handle */}
+          <path
+            d="M44 40v-6a16 16 0 0 1 32 0v6"
+            stroke="currentColor"
+            strokeWidth="3.2"
+            strokeLinecap="round"
+          />
+          {/* sad eyes */}
+          <circle className="eye" cx="49" cy="64" r="3.4" fill="currentColor" />
+          <circle className="eye" cx="71" cy="64" r="3.4" fill="currentColor" />
+          {/* frown */}
+          <path
+            d="M50 84c3-5 17-5 20 0"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+        </svg>
+        <span className="tear" />
+      </div>
+      <h2>Your bag is empty</h2>
       <p>
-        Nothing here yet. Explore the atelier’s hand-crafted lehengas, sarees and heirloom
-        jewellery.
+        Not a single treasure yet. Explore the atelier’s hand-crafted lehengas, sarees and heirloom
+        jewellery — your bag is waiting to be filled.
       </p>
       <Link href="/" className="cta">
         {CartIc.arrowL} Continue Shopping

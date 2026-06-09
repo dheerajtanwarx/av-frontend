@@ -1,9 +1,82 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { announcements, nav } from "../../lib/landing-data";
 import { AccountIcon, CartIcon, SearchIcon } from "./Icons";
 import { useCart } from "./CartContext";
+import { getSession, logout, type SessionUser } from "../../lib/api";
+
+function firstName(user: SessionUser): string {
+  return (user.name || user.email || "Account").trim().split(/\s+/)[0];
+}
+
+function AccountMenu() {
+  const [user, setUser] = useState<SessionUser | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let alive = true;
+    getSession().then((u) => {
+      if (alive) {
+        setUser(u);
+        setLoaded(true);
+      }
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // close the menu on outside click
+  useEffect(() => {
+    if (!open) return;
+    const onClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [open]);
+
+  async function handleLogout() {
+    try {
+      await logout();
+    } finally {
+      setUser(null);
+      setOpen(false);
+    }
+  }
+
+  // Before the session resolves, render a neutral link to avoid a flash.
+  if (!loaded || !user) {
+    return (
+      <a href="/login" aria-label="Log in" className="acct-link">
+        <AccountIcon />
+      </a>
+    );
+  }
+
+  return (
+    <div className="acct" ref={ref}>
+      <button aria-label="Account" onClick={() => setOpen((o) => !o)}>
+        <AccountIcon />
+        <span className="acct-name">{firstName(user)}</span>
+      </button>
+      {open && (
+        <div className="acct-menu">
+          <span className="acct-hello">Hi, {firstName(user)}</span>
+          <a className="acct-profile" href="/profile">
+            View profile
+          </a>
+          <button className="acct-logout" onClick={handleLogout}>
+            Log out
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function Marquee() {
   const run = (
@@ -66,9 +139,7 @@ export default function Header() {
             <button aria-label="Search">
               <SearchIcon />
             </button>
-            <button aria-label="Account">
-              <AccountIcon />
-            </button>
+            <AccountMenu />
             <button className="cart" aria-label="Cart" onClick={openDrawer}>
               <CartIcon />
               <span className="badge" ref={badgeRef}>

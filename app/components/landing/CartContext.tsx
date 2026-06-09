@@ -10,13 +10,13 @@ import {
   useState,
 } from "react";
 import {
-  PROMOS,
   parseINR,
   type CartItem,
   type Order,
   type OrderAddress,
   type Promo,
 } from "../../lib/cart-data";
+import { validatePromo, placeOrder as apiPlaceOrder } from "../../lib/api";
 
 const LS_KEY = "av-cart-v1";
 const ORDER_KEY = "av-last-order";
@@ -40,13 +40,16 @@ type CartContextValue = {
   setQty: (id: string, qty: number) => void;
   remove: (id: string) => void;
   clear: () => void;
-  applyPromo: (code: string) => ApplyResult;
+  applyPromo: (code: string) => Promise<ApplyResult>;
   removePromo: () => void;
   openDrawer: () => void;
   closeDrawer: () => void;
-  placeOrder: (
-    details: Pick<Order, "address" | "payment" | "delivery"> & { total: number }
-  ) => Order;
+  placeOrder: (details: {
+    address: OrderAddress;
+    paymentId: string;
+    paymentLabel: string;
+    delivery: string;
+  }) => Promise<Order>;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -106,14 +109,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setPromo(null);
   }, []);
 
-  const applyPromo = useCallback((code: string): ApplyResult => {
-    const key = code.trim().toUpperCase();
-    if (!key) return { ok: false, error: "Enter a code first." };
-    const found = PROMOS[key];
-    if (!found) return { ok: false, error: "That code isn’t valid. Try RANI10." };
-    setPromo({ code: key, ...found });
-    return { ok: true };
-  }, []);
+  const applyPromo = useCallback(
+    async (code: string): Promise<ApplyResult> => {
+      const key = code.trim().toUpperCase();
+      if (!key) return { ok: false, error: "Enter a code first." };
+      const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+      try {
+        const res = await validatePromo(key, subtotal);
+        if (res.ok) {
+          setPromo({ code: key, pct: res.pct, label: res.label });
+          return { ok: true };
+        }
+        return { ok: false, error: res.error ?? "That code isn’t valid." };
+      } catch {
+        return { ok: false, error: "Couldn’t reach the server. Please try again." };
+      }
+    },
+    [items]
+  );
 
   const removePromo = useCallback(() => setPromo(null), []);
 
@@ -131,21 +144,29 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [items, promo]);
 
   const placeOrder = useCallback<CartContextValue["placeOrder"]>(
-    (details) => {
-      const no = "AVC-" + Math.floor(100000 + Math.random() * 899999);
-      const eta = new Date(Date.now() + 26 * 864e5).toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      });
-      const order: Order = {
-        no,
-        items,
-        total: details.total,
+    async (details) => {
+      // The server is authoritative for pricing, the order number and ETA.
+      const res = await apiPlaceOrder({
+        items: items.map((i) => ({
+          slug: i.slug ?? i.id,
+          color: i.color.name,
+          size: i.madeToMeasure ? "Custom" : i.size,
+          qty: i.qty,
+        })),
         address: details.address,
-        payment: details.payment,
+        payment: details.paymentId,
         delivery: details.delivery,
-        eta,
+        promoCode: promo?.code ?? null,
+      });
+
+      const order: Order = {
+        no: res.no,
+        items,
+        total: res.total,
+        address: details.address,
+        payment: details.paymentLabel,
+        delivery: details.delivery,
+        eta: res.eta,
       };
       setLastOrder(order);
       try {
@@ -156,7 +177,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       clear();
       return order;
     },
-    [items, clear]
+    [items, promo, clear]
   );
 
   const value: CartContextValue = {

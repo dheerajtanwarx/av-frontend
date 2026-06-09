@@ -242,6 +242,58 @@
 }
 .av .acts button:hover { color: var(--rani); }
 .av .acts svg { width: 19px; height: 19px; }
+
+/* account control (logged-out link / logged-in menu) */
+.av .acts .acct-link {
+  display: flex;
+  color: var(--ink);
+  transition: color 0.2s;
+}
+.av .acts .acct-link:hover { color: var(--rani); }
+.av .acts .acct { position: relative; }
+.av .acts .acct > button { align-items: center; gap: 7px; }
+.av .acts .acct-name {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+.av .acts .acct-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 160px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 20px 44px -26px rgba(43, 32, 24, 0.45);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 50;
+}
+.av .acts .acct-hello {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 4px 8px;
+}
+.av .acts .acct-menu .acct-profile,
+.av .acts .acct-menu .acct-logout {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 13px;
+  color: var(--ink);
+  text-align: left;
+  padding: 8px;
+  border-radius: 8px;
+  width: 100%;
+}
+.av .acts .acct-menu .acct-profile {
+  display: block;
+  text-decoration: none;
+}
+.av .acts .acct-menu .acct-profile:hover,
+.av .acts .acct-menu .acct-logout:hover { background: var(--bg-2); color: var(--rani); }
 .av .cart { position: relative; }
 .av .cart .badge {
   position: absolute;

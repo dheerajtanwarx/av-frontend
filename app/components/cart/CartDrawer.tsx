@@ -50,8 +50,36 @@ export default function CartDrawer() {
 
         {items.length === 0 ? (
           <div className="dempty">
-            <div className="ring">{CartIc.bag}</div>
+            <div className="sadbag mini" aria-hidden="true">
+              <svg className="bag" viewBox="0 0 120 120" fill="none">
+                <path
+                  className="body"
+                  d="M26 40h68l-6 64a8 8 0 0 1-8 7H40a8 8 0 0 1-8-7L26 40Z"
+                  stroke="currentColor"
+                  strokeWidth="3.2"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M44 40v-6a16 16 0 0 1 32 0v6"
+                  stroke="currentColor"
+                  strokeWidth="3.2"
+                  strokeLinecap="round"
+                />
+                <circle className="eye" cx="49" cy="64" r="3.4" fill="currentColor" />
+                <circle className="eye" cx="71" cy="64" r="3.4" fill="currentColor" />
+                <path
+                  d="M50 84c3-5 17-5 20 0"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
             <p>Your bag is empty</p>
+            <span className="sub">Add a piece you love and it’ll appear here.</span>
+            <button className="shop" onClick={() => goto("/")}>
+              Start Shopping
+            </button>
           </div>
         ) : (
           <>
