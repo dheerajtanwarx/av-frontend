@@ -578,32 +578,43 @@
   transform: translateY(-2px);
   box-shadow: 0 16px 30px -16px rgba(142, 43, 82, 0.65);
 }
+/* Labels stack as a vertical carousel: each fills the button and the
+   active one slides into view (the button clips the rest via overflow). */
 .pdp .addbtn .lab {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  height: 100%;
-  transition: transform 0.4s var(--ease), opacity 0.3s;
+  transition: transform 0.4s var(--ease);
 }
 .pdp .addbtn .lab svg {
   width: 16px;
   height: 16px;
 }
-.pdp .addbtn[data-state="adding"] .lab {
-  transform: translateY(-130%);
+.pdp .addbtn .l-add {
+  transform: translateY(0);
 }
-.pdp .addbtn[data-state="added"] .lab {
-  transform: translateY(-260%);
+.pdp .addbtn .l-adding,
+.pdp .addbtn .l-added {
+  transform: translateY(100%);
 }
-.pdp .addbtn .lab.l-adding {
-  position: absolute;
-  inset: 0;
-}
-.pdp .addbtn .lab.l-added {
-  position: absolute;
-  inset: 0;
+.pdp .addbtn .l-added {
   color: #fff;
+}
+.pdp .addbtn[data-state="adding"] .l-add {
+  transform: translateY(-100%);
+}
+.pdp .addbtn[data-state="adding"] .l-adding {
+  transform: translateY(0);
+}
+.pdp .addbtn[data-state="added"] .l-add,
+.pdp .addbtn[data-state="added"] .l-adding {
+  transform: translateY(-100%);
+}
+.pdp .addbtn[data-state="added"] .l-added {
+  transform: translateY(0);
 }
 .pdp .addbtn[data-state="added"] {
   background: var(--green-2);
