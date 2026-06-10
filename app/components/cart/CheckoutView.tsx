@@ -12,6 +12,7 @@ import {
   inr,
   type OrderAddress,
 } from "../../lib/cart-data";
+import { getSession, fetchAddresses, type Address } from "../../lib/api";
 
 const STATES = [
   "Rajasthan",
@@ -71,7 +72,7 @@ function CheckoutSummary({ shipFee }: { shipFee: number }) {
           <div className="mline" key={i.id}>
             <div className="mt">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={i.img} alt={i.name} />
+              <img src={i.img || undefined} alt={i.name} />
               <span className="q">{i.qty}</span>
             </div>
             <div className="mi">
@@ -151,6 +152,10 @@ export default function CheckoutView() {
 
   const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState<OrderAddress>(EMPTY_FORM);
+  const [prefilled, setPrefilled] = useState(false);
+  const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
+  // which saved address is selected, or "new" for manual entry
+  const [selectedAddrId, setSelectedAddrId] = useState<number | "new">("new");
   const [delivery, setDelivery] = useState<string>("standard");
   const [pay, setPay] = useState<string>("upi");
   const [upiApp, setUpiApp] = useState<string>("GPay");
@@ -167,8 +172,70 @@ export default function CheckoutView() {
     if (items.length === 0 && !placed.current) router.replace("/cart");
   }, [items.length, router]);
 
+  /* pre-fill contact + shipping from the logged-in user's profile and their
+     default saved address (falling back to the most recent). All fields stay
+     editable — this is just a head start. */
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const user = await getSession();
+      if (!alive || !user) return;
+
+      // Saved addresses are auth-gated; ignore failures (treat as none).
+      const addresses = await fetchAddresses().catch(() => []);
+      const addr = addresses.find((a) => a.isDefault) ?? addresses[0] ?? null;
+
+      // Prefer the user's profile name; fall back to the address's full name.
+      const nameSource = (user.name || addr?.fullName || "").trim();
+      const parts = nameSource.split(/\s+/);
+
+      if (!alive) return;
+      setSavedAddresses(addresses);
+      setSelectedAddrId(addr?.id ?? "new");
+      setForm((f) => ({
+        ...f,
+        first: f.first || parts[0] || "",
+        last: f.last || parts.slice(1).join(" ") || "",
+        email: f.email || user.email || "",
+        phone: f.phone || addr?.phone || user.phone || "",
+        address: f.address || addr?.street || "",
+        pin: f.pin || addr?.pincode || "",
+        city: f.city || addr?.city || "",
+        state: f.state || addr?.state || "",
+      }));
+      setPrefilled(true);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   const set = (k: keyof OrderAddress) => (e: { target: { value: string } }) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  // Pick a saved address (fills the shipping fields) or "new" (clears them so
+  // the buyer can type a one-off address). Contact name/phone follow the chosen
+  // address; email stays as-is (addresses don't carry one).
+  const selectAddress = (id: number | "new") => {
+    setSelectedAddrId(id);
+    if (id === "new") {
+      setForm((f) => ({ ...f, address: "", pin: "", city: "", state: "" }));
+      return;
+    }
+    const addr = savedAddresses.find((a) => a.id === id);
+    if (!addr) return;
+    const parts = addr.fullName.trim().split(/\s+/);
+    setForm((f) => ({
+      ...f,
+      first: parts[0] || "",
+      last: parts.slice(1).join(" ") || "",
+      phone: addr.phone || f.phone,
+      address: addr.street,
+      pin: addr.pincode,
+      city: addr.city,
+      state: addr.state,
+    }));
+  };
 
   const shipFee = DELIVERY_OPTS.find((d) => d.id === delivery)?.fee ?? 0;
   const grand = Math.max(0, subtotal - discount) + shipFee;
@@ -273,6 +340,46 @@ export default function CheckoutView() {
               <>
             {/* 1 · CONTACT + SHIPPING */}
             <Panel n="1" title="Contact &amp; Shipping">
+              {prefilled && (
+                <div className="prefill-note">
+                  {CartIc.shield} Pre-filled from your account — edit any field freely.
+                </div>
+              )}
+              {savedAddresses.length > 0 && (
+                <div className="addr-picker">
+                  <div className="addr-picker-head">Deliver to</div>
+                  <div className="delivery">
+                    {savedAddresses.map((a) => (
+                      <div
+                        key={a.id}
+                        className={"dopt" + (selectedAddrId === a.id ? " on" : "")}
+                        onClick={() => selectAddress(a.id)}
+                      >
+                        <span className="radio" />
+                        <div className="di">
+                          <div className="dt">
+                            {a.fullName} · {a.phone}
+                          </div>
+                          <div className="ds">
+                            {a.street}, {a.city}, {a.state} — {a.pincode}
+                          </div>
+                        </div>
+                        {a.isDefault && <div className="dp">Default</div>}
+                      </div>
+                    ))}
+                    <div
+                      className={"dopt" + (selectedAddrId === "new" ? " on" : "")}
+                      onClick={() => selectAddress("new")}
+                    >
+                      <span className="radio" />
+                      <div className="di">
+                        <div className="dt">Use a new address</div>
+                        <div className="ds">Enter the shipping details below</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="field-grid">
                 <Field label="First name" req>
                   <input

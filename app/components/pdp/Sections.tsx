@@ -24,7 +24,7 @@ export function CraftBand({ product }: { product: PdpProduct }) {
         <div className="gold-inset" />
         <div className="ph">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={c.image} alt={`${product.name} handwork detail`} />
+          <img src={c.image || undefined} alt={`${product.name} handwork detail`} />
         </div>
       </div>
       <div>
@@ -116,7 +116,7 @@ export function ShopTheLook({ product }: { product: PdpProduct }) {
         <div className="stl-art">
           <div className="ph">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={product.lookImage} alt={`${product.name} styled look`} />
+            <img src={product.lookImage || undefined} alt={`${product.name} styled look`} />
           </div>
           <div className="dot" style={{ top: "20%", left: "42%" }} />
           <div className="dot" style={{ top: "50%", left: "58%" }} />
@@ -128,7 +128,7 @@ export function ShopTheLook({ product }: { product: PdpProduct }) {
               <div className="li" key={l.nm}>
                 <div className="th">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={l.image} alt={l.nm} />
+                  <img src={l.image || undefined} alt={l.nm} />
                 </div>
                 <div className="info">
                   <div className="nm">{l.nm}</div>
@@ -201,7 +201,7 @@ export function Related({ product }: { product: PdpProduct }) {
             <div className="imgwrap">
               <Link href={`/product/${p.slug}`} className="ph" aria-label={p.nm}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.image} alt={p.nm} />
+                <img src={p.image || undefined} alt={p.nm} />
               </Link>
               {p.flag && <span className="flag">{p.flag}</span>}
               <Link href={`/product/${p.slug}`} className="qa">

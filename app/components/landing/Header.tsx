@@ -10,7 +10,7 @@ function firstName(user: SessionUser): string {
   return (user.name || user.email || "Account").trim().split(/\s+/)[0];
 }
 
-function AccountMenu() {
+export function AccountMenu() {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [open, setOpen] = useState(false);
@@ -68,6 +68,9 @@ function AccountMenu() {
           <span className="acct-hello">Hi, {firstName(user)}</span>
           <a className="acct-profile" href="/profile">
             View profile
+          </a>
+          <a className="acct-profile" href="/my-orders">
+            My orders
           </a>
           <button className="acct-logout" onClick={handleLogout}>
             Log out

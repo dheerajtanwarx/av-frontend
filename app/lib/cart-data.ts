@@ -12,6 +12,7 @@ export type CartColor = { name: string; hex: string };
 
 export type CartItem = {
   id: string; // stable key — slug + color + size
+  serverId?: number; // database id, set once the item is persisted server-side
   slug?: string;
   name: string;
   type: string;

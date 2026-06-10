@@ -77,7 +77,135 @@
     @apply mt-0 mb-[22px];
   }
 
+  /* ── editable profile + address book ───────────────────────── */
+
+  .profile-edit-btn {
+    @apply cursor-pointer border border-[var(--line)] bg-transparent px-3.5 py-1.5 font-[var(--font-jost)] text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--rani)] transition-colors hover:border-[var(--rani)] hover:bg-[var(--rani)] hover:text-white;
+  }
+
+  .profile-form {
+    @apply mt-5 flex flex-col gap-[18px];
+  }
+
+  .profile-field {
+    @apply flex min-w-0 flex-col gap-1.5;
+  }
+
+  .profile-field > span {
+    @apply font-[var(--font-jost)] text-xs uppercase tracking-[0.08em] text-[var(--muted)];
+  }
+
+  .profile-field input,
+  .profile-field select {
+    @apply w-full border border-[var(--line)] bg-white px-3.5 py-2.5 font-[var(--font-jost)] text-[15px] text-[var(--ink)] outline-none focus:border-[var(--rani)];
+  }
+
+  .profile-field input:disabled {
+    @apply cursor-not-allowed bg-[var(--bg-2)] text-[var(--muted)];
+  }
+
+  .profile-phone {
+    @apply flex items-stretch border border-[var(--line)] bg-white focus-within:border-[var(--rani)];
+  }
+
+  .profile-phone .profile-cc {
+    @apply grid place-items-center border-r border-[var(--line)] bg-[var(--bg-2)] px-3 font-[var(--font-jost)] text-[14px] text-[var(--ink-soft)];
+  }
+
+  .profile-phone input {
+    @apply border-0 focus:border-0;
+  }
+
+  .profile-form-error {
+    @apply font-[var(--font-jost)] text-[13px] text-[var(--rani)];
+  }
+
+  .profile-form-actions {
+    @apply flex flex-wrap gap-2.5;
+  }
+
+  .profile-save {
+    @apply cursor-pointer border-0 bg-[var(--ink)] px-[18px] py-2.5 font-[var(--font-jost)] text-[13px] font-medium text-white hover:bg-[var(--rani)] disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .profile-cancel {
+    @apply cursor-pointer border border-[var(--line)] bg-transparent px-[18px] py-2.5 font-[var(--font-jost)] text-[13px] font-medium text-[var(--ink-soft)] hover:border-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .address-book {
+    @apply mt-[18px];
+  }
+
+  .address-form {
+    @apply mt-5 flex flex-col gap-4 border border-[var(--line-2)] bg-[var(--bg-2)] p-5;
+  }
+
+  .address-form-grid {
+    @apply grid grid-cols-2 gap-4;
+  }
+
+  .address-form-grid .address-full {
+    @apply col-span-2;
+  }
+
+  .address-default-check {
+    @apply flex cursor-pointer items-center gap-2 font-[var(--font-jost)] text-[13px] text-[var(--ink-soft)];
+  }
+
+  .address-empty {
+    @apply mt-5 border border-dashed border-[var(--line)] bg-white/60 p-6 text-center font-[var(--font-jost)] text-[14px] text-[var(--muted)];
+  }
+
+  .address-grid {
+    @apply mt-5 grid grid-cols-2 gap-3.5;
+  }
+
+  .address-card {
+    @apply relative flex flex-col gap-1.5 border border-[var(--line)] bg-white p-[18px];
+  }
+
+  .address-card.is-default {
+    @apply border-[var(--rani-soft)] ring-1 ring-[var(--rani-soft)];
+  }
+
+  .address-default-badge {
+    @apply absolute right-3 top-3 bg-[var(--rani)] px-2 py-0.5 font-[var(--font-jost)] text-[10px] font-medium uppercase tracking-[0.1em] text-white;
+  }
+
+  .address-card-name {
+    @apply font-[var(--font-marcellus)] text-[17px] text-[var(--ink)];
+  }
+
+  .address-card-lines {
+    @apply font-[var(--font-jost)] text-[13px] leading-relaxed text-[var(--ink-soft)];
+  }
+
+  .address-card-phone {
+    @apply font-[var(--font-jost)] text-[13px] text-[var(--muted)];
+  }
+
+  .address-actions {
+    @apply mt-2.5 flex flex-wrap gap-3 border-t border-[var(--line-2)] pt-3;
+  }
+
+  .address-actions button {
+    @apply cursor-pointer border-0 bg-transparent p-0 font-[var(--font-jost)] text-[12px] font-medium uppercase tracking-[0.08em] text-[var(--rani)] hover:underline;
+  }
+
+  .address-actions .address-delete {
+    @apply text-[var(--muted)] hover:text-[var(--rani)];
+  }
+
   @media (max-width: 760px) {
+    .address-form-grid,
+    .address-grid {
+      @apply grid-cols-1;
+    }
+
+    .address-form-grid .address-full {
+      @apply col-span-1;
+    }
+
     .profile-shell {
       @apply w-[min(100%-24px,1120px)] pt-[30px] pb-14;
     }

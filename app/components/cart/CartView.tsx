@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Header from "../landing/Header";
@@ -141,7 +141,7 @@ function CartLine({ item }: { item: CartItem }) {
     <div className={"citem" + (leaving ? " removing" : "")}>
       <div className="pic">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={item.img} alt={item.name} />
+        <img src={item.img || undefined} alt={item.name} />
         {item.madeToMeasure && <span className="mtm">Made to Order</span>}
       </div>
       <div className="mid">
@@ -205,7 +205,7 @@ function CompleteTheLook() {
           <div className="ctl-card" key={p.id}>
             <div className="th">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p.img} alt={p.nm} />
+              <img src={p.img || undefined} alt={p.nm} />
             </div>
             <div className="info">
               <div className="nm">{p.nm}</div>
@@ -290,8 +290,31 @@ function EmptyCart() {
 /* ---------- page ---------- */
 export default function CartView() {
   const { items, count } = useCart();
+
+  /* If CSS failed to load (Turbopack race or network hiccup), reload once. */
+  useEffect(() => {
+    // Check both the announce bar (landing.css) and cart body (cart.css)
+    // to detect a partial or full CSS load failure.
+    const announce = document.querySelector(".announce") as HTMLElement | null;
+    const cartBody = document.querySelector(".flow.cartbody") as HTMLElement | null;
+    const announceBg = announce ? getComputedStyle(announce).backgroundColor : "";
+    const cartBg = cartBody ? getComputedStyle(cartBody).backgroundColor : "";
+    // .announce gets a dark background; .flow.cartbody gets the soft slate.
+    // Transparent on either means that stylesheet didn't load.
+    const transparent = (v: string) =>
+      !v || v === "rgba(0, 0, 0, 0)" || v === "transparent";
+    if (transparent(announceBg) || transparent(cartBg)) {
+      if (!sessionStorage.getItem("cart-css-reload")) {
+        sessionStorage.setItem("cart-css-reload", "1");
+        window.location.reload();
+      }
+    } else {
+      sessionStorage.removeItem("cart-css-reload");
+    }
+  }, []);
+
   return (
-    <div className="app">
+    <div className="app av">
       <Header />
       <div className="flow cartbody">
       <main className="wrap">

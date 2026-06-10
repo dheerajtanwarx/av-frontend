@@ -1,0 +1,565 @@
+/* ============================================================
+   AV CREATION — Info / Static page layouts
+   ------------------------------------------------------------
+   Scoped under .av (same pattern as landing.css).
+   All info pages use <div className="av"> as the root wrapper.
+   ============================================================ */
+
+/* ── Hero band ─────────────────────────────────────────────── */
+.av .info-hero {
+  position: relative;
+  background: var(--ink);
+  overflow: hidden;
+  padding: 120px 0 100px;
+  text-align: center;
+}
+.av .info-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.22;
+}
+.av .info-hero .eyebrow {
+  color: var(--rani-soft);
+  margin-bottom: 18px;
+}
+.av .info-hero h1 {
+  font-family: var(--display);
+  font-size: clamp(2.4rem, 5.5vw, 4rem);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.12;
+  color: var(--bg);
+}
+.av .info-hero p {
+  margin: 22px auto 0;
+  font-size: 15.5px;
+  font-weight: 300;
+  line-height: 1.85;
+  color: rgba(250, 245, 236, 0.7);
+  max-width: 580px;
+}
+.av .info-hero .orn { margin-top: 44px; }
+
+/* ── Generic content section ───────────────────────────────── */
+.av .info-sec {
+  padding: 80px 0;
+}
+.av .info-sec.alt {
+  background: var(--bg-2);
+}
+.av .info-sec.dark {
+  background: var(--green);
+  color: var(--bg);
+}
+.av .info-narrow {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* ── Section typography ────────────────────────────────────── */
+.av .info-sec h2 {
+  font-family: var(--display);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+.av .info-sec.dark h2 { color: var(--bg); }
+.av .info-sec h3 {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 10px;
+  margin-top: 32px;
+}
+.av .info-sec.dark h3 { color: var(--gold-soft); }
+.av .info-sec p {
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--ink-soft);
+  margin-bottom: 18px;
+}
+.av .info-sec.dark p { color: rgba(250, 245, 236, 0.75); }
+.av .info-sec ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+}
+.av .info-sec ul li {
+  font-size: 14.5px;
+  line-height: 1.8;
+  color: var(--ink-soft);
+  padding: 9px 0 9px 24px;
+  border-bottom: 1px solid var(--line-2);
+  position: relative;
+}
+.av .info-sec ul li::before {
+  content: "·";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  color: var(--rani);
+  font-size: 1.6rem;
+  line-height: 1.1;
+}
+.av .info-sec.dark ul li {
+  color: rgba(250, 245, 236, 0.75);
+  border-bottom-color: rgba(255,255,255,0.1);
+}
+
+/* ── Stat / pledge grid ────────────────────────────────────── */
+.av .info-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  margin: 48px 0;
+}
+.av .info-stat {
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 40px 32px;
+  text-align: center;
+}
+.av .info-stat .num {
+  font-family: var(--display);
+  font-size: 3rem;
+  font-weight: 400;
+  color: var(--rani);
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.av .info-stat h4 {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.av .info-stat p {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ── Cards ──────────────────────────────────────────────────── */
+.av .info-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin: 40px 0;
+}
+.av .info-card-grid.col-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.av .info-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--gold);
+  padding: 32px 28px 28px;
+  transition: border-top-color 0.25s, box-shadow 0.25s;
+}
+.av .info-card:hover {
+  border-top-color: var(--rani);
+  box-shadow: 0 8px 32px -8px rgba(43, 32, 24, 0.1);
+}
+.av .info-card .card-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--rani);
+  margin-bottom: 10px;
+}
+.av .info-card h3 {
+  font-family: var(--display);
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 10px;
+  line-height: 1.25;
+}
+.av .info-card p {
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--ink-soft);
+  margin: 0;
+}
+.av .info-card .card-meta {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-2);
+  font-size: 12.5px;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.av .info-card .card-meta a { color: var(--rani); }
+.av .info-card .card-meta a:hover { color: var(--rani-deep); }
+.av .info-card .card-sub {
+  margin-top: 14px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.av .info-card .card-body {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.75;
+}
+
+/* ── Table ───────────────────────────────────────────────────── */
+.av .info-table-wrap {
+  margin: 36px 0;
+  overflow-x: auto;
+}
+.av .info-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  font-family: var(--sans);
+}
+.av .info-table thead th {
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 14px 20px;
+  text-align: left;
+  font-weight: 500;
+}
+.av .info-table tbody tr {
+  border-bottom: 1px solid var(--line-2);
+  transition: background 0.15s;
+}
+.av .info-table tbody tr:hover { background: var(--bg-2); }
+.av .info-table tbody td {
+  padding: 14px 20px;
+  color: var(--ink-soft);
+  vertical-align: middle;
+  line-height: 1.6;
+}
+.av .info-table tbody td:first-child {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* ── Form ────────────────────────────────────────────────────── */
+.av .info-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.av .info-form-label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.av .info-form input,
+.av .info-form textarea,
+.av .info-form select {
+  font-family: var(--sans);
+  font-size: 14px;
+  padding: 13px 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  outline: none;
+  border-radius: 0;
+  appearance: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.av .info-form input:focus,
+.av .info-form textarea:focus,
+.av .info-form select:focus { border-color: var(--rani); }
+.av .info-form textarea { min-height: 130px; resize: vertical; }
+.av .info-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* ── Split layout (contact page) ─────────────────────────────── */
+.av .info-split {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 72px;
+  align-items: start;
+}
+.av .info-aside h3 {
+  font-family: var(--display);
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.av .info-aside p,
+.av .info-aside a {
+  font-size: 13.5px;
+  line-height: 1.85;
+  color: var(--ink-soft);
+  display: block;
+}
+.av .info-aside a:hover { color: var(--rani); }
+.av .info-divider {
+  border: none;
+  border-top: 1px solid var(--line-2);
+  margin: 24px 0;
+}
+
+/* ── Timeline ────────────────────────────────────────────────── */
+.av .info-timeline {
+  position: relative;
+  padding-left: 48px;
+  margin: 48px 0;
+}
+.av .info-timeline::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--rani), var(--gold));
+}
+.av .info-timeline-item {
+  position: relative;
+  margin-bottom: 48px;
+}
+.av .info-timeline-item:last-child { margin-bottom: 0; }
+.av .info-timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -41px;
+  top: 8px;
+  width: 12px;
+  height: 12px;
+  background: var(--rani);
+  border: 3px solid var(--bg-2);
+  border-radius: 50%;
+}
+.av .info-timeline-item .year {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rani);
+  margin-bottom: 6px;
+}
+.av .info-timeline-item h3 {
+  font-family: var(--display);
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+.av .info-timeline-item p {
+  font-size: 14px;
+  line-height: 1.85;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+/* ── Quote band ──────────────────────────────────────────────── */
+.av .info-quote-band {
+  background: var(--ink);
+  padding: 80px 0;
+  text-align: center;
+}
+.av .info-quote-band blockquote {
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 2.6vw, 1.85rem);
+  font-style: italic;
+  color: var(--bg);
+  max-width: 740px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+.av .info-quote-band cite {
+  display: block;
+  margin-top: 18px;
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--rani-soft);
+}
+
+/* ── Fabric care icons ───────────────────────────────────────── */
+.av .fabric-icons {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 20px 0 4px;
+}
+.av .fabric-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  min-width: 60px;
+  text-align: center;
+}
+.av .fabric-icon-circle {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+/* ── Role card (careers) ─────────────────────────────────────── */
+.av .role-card {
+  border: 1px solid var(--line);
+  padding: 32px;
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  margin-bottom: 20px;
+}
+.av .role-card:hover {
+  border-color: var(--rani);
+  box-shadow: 0 8px 40px -12px rgba(189, 60, 110, 0.15);
+}
+.av .role-card-body { flex: 1; }
+.av .role-card-body h3 {
+  font-family: var(--display);
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.av .role-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.av .role-meta span { display: flex; align-items: center; gap: 5px; }
+.av .role-card-body p {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  line-height: 1.8;
+  margin-bottom: 14px;
+}
+.av .role-card-body ul { margin-bottom: 0; }
+.av .role-cta { flex-shrink: 0; padding-top: 4px; }
+
+/* ── Stores page hours ────────────────────────────────────────── */
+.av .hours-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line-2);
+}
+.av .hours-row span:first-child { color: var(--ink); font-weight: 400; }
+.av .hours-row span:last-child { color: var(--muted); }
+
+/* ── Size guide tabs ─────────────────────────────────────────── */
+.av .size-category {
+  margin-bottom: 60px;
+}
+.av .size-category:last-child { margin-bottom: 0; }
+
+/* ── CTA strip ────────────────────────────────────────────────── */
+.av .info-cta-strip {
+  background: var(--rani-wash);
+  border-top: 1px solid rgba(189, 60, 110, 0.15);
+  border-bottom: 1px solid rgba(189, 60, 110, 0.15);
+  padding: 48px 0;
+  text-align: center;
+}
+.av .info-cta-strip h3 {
+  font-family: var(--display);
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.av .info-cta-strip p {
+  font-size: 14px;
+  color: var(--ink-soft);
+  margin: 0 0 24px;
+}
+
+/* ── Pledge grid (sustainability) ────────────────────────────── */
+.av .pledge-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin: 40px 0;
+}
+.av .pledge-card {
+  padding: 32px 28px;
+  background: var(--surface);
+  border-left: 4px solid var(--rani);
+  border: 1px solid var(--line);
+  border-left-width: 4px;
+  border-left-color: var(--rani);
+}
+.av .pledge-card .pledge-num {
+  font-family: var(--display);
+  font-size: 2.6rem;
+  font-weight: 400;
+  color: var(--rani);
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.av .pledge-card h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+.av .pledge-card p {
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .av .info-stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .av .info-card-grid { grid-template-columns: 1fr; }
+  .av .info-card-grid.col-2 { grid-template-columns: 1fr; }
+  .av .info-split { grid-template-columns: 1fr; gap: 40px; }
+  .av .pledge-grid { grid-template-columns: 1fr; }
+  .av .role-card { flex-direction: column; gap: 20px; }
+}
+@media (max-width: 600px) {
+  .av .info-hero { padding: 80px 0 64px; }
+  .av .info-sec { padding: 56px 0; }
+  .av .info-stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .av .info-form .form-row { grid-template-columns: 1fr; }
+  .av .wrap { padding: 0 20px; }
+}

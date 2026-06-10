@@ -214,6 +214,11 @@
 .flow .panel.active .ph .pn { background: var(--rani); border-color: var(--rani); color: #fff; }
 .flow .panel .ph .pt { font-family: var(--serif); font-size: 22px; font-weight: 600; color: var(--ink); white-space: nowrap; }
 .flow .panel .pbody { padding: 4px 26px 28px; }
+.flow .prefill-note { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--ink-soft); background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 8px; padding: 9px 13px; margin-bottom: 18px; }
+.flow .prefill-note svg { width: 14px; height: 14px; color: var(--gold); flex: 0 0 auto; }
+
+.flow .addr-picker { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid var(--line-2); }
+.flow .addr-picker-head { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
 
 .flow .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .flow .field-grid .full { grid-column: 1 / -1; }

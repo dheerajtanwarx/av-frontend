@@ -114,6 +114,34 @@
   width: 18px;
   height: 18px;
 }
+/* Account menu inside PDP header */
+.pdp .ph-acts .acct-link { display: flex; color: var(--ink); transition: color 0.2s; }
+.pdp .ph-acts .acct-link:hover { color: var(--rani); }
+.pdp .ph-acts .acct { position: relative; }
+.pdp .ph-acts .acct > button { align-items: center; gap: 7px; }
+.pdp .ph-acts .acct-name { font-family: var(--font-jost), sans-serif; font-size: 13px; letter-spacing: 0.02em; }
+.pdp .ph-acts .acct-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 160px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 20px 44px -26px rgba(43, 32, 24, 0.45);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 200;
+}
+.pdp .ph-acts .acct-hello { font-family: var(--font-jost), sans-serif; font-size: 12px; color: var(--muted); padding: 4px 8px; }
+.pdp .ph-acts .acct-menu .acct-profile,
+.pdp .ph-acts .acct-menu .acct-logout { font-family: var(--font-jost), sans-serif; font-size: 13px; color: var(--ink); text-align: left; padding: 8px; border-radius: 8px; width: 100%; background: none; border: none; cursor: pointer; }
+.pdp .ph-acts .acct-menu .acct-profile { display: block; text-decoration: none; }
+.pdp .ph-acts .acct-menu .acct-profile:hover,
+.pdp .ph-acts .acct-menu .acct-logout:hover { background: var(--bg-2); color: var(--rani); }
+
 .pdp .ph-cart {
   position: relative;
 }

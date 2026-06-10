@@ -5,7 +5,8 @@ import { Ic } from "./icons";
 
 /* Editorial Stack gallery — large zoom stage on top, thumb row below.
    Hover the stage to zoom; the zoom origin tracks the cursor. */
-export default function Gallery({ images, flag }: { images: string[]; flag?: string }) {
+export default function Gallery({ images: rawImages, flag }: { images: string[]; flag?: string }) {
+  const images = rawImages.filter(Boolean);
   const [idx, setIdx] = useState(0);
   const [zoom, setZoom] = useState(false);
   const frameRef = useRef<HTMLDivElement>(null);

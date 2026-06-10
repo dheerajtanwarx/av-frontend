@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useCart } from "../landing/CartContext";
+import { AccountMenu } from "../landing/Header";
 import { Ic } from "./icons";
 
 const LINKS = ["Lehenga", "Jaipuri Odhni", "Saree", "Suits", "Dupatta"];
@@ -40,7 +41,7 @@ export default function MiniHeader({ hot }: { hot: string }) {
       </Link>
       <div className="ph-acts">
         <button aria-label="Search">{Ic.search}</button>
-        <button aria-label="Account">{Ic.user}</button>
+        <AccountMenu />
         <button className="ph-cart" aria-label="Cart" onClick={openDrawer}>
           {Ic.cart}
           <span className="badge" ref={badgeRef}>

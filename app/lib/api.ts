@@ -140,8 +140,77 @@ export function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResponse> 
   return apiSend<PlaceOrderResponse>("POST", `/api/orders`, input);
 }
 
-export function fetchMyOrders(): Promise<unknown[]> {
-  return apiGet<unknown[]>(`/api/orders`);
+export type OrderItem = {
+  productId: number;
+  name: string;
+  slug: string;
+  color: string;
+  size: string | null;
+  qty: number;
+  unitPrice: number;
+  price: string;
+  image: string;
+};
+
+export type OrderShippingAddress = {
+  id: number;
+  fullName: string;
+  phone: string;
+  street: string;
+  city: string;
+  state: string;
+  pincode: string;
+};
+
+export type MyOrder = {
+  no: string;
+  id: number;
+  status: string;
+  placedAt: string;
+  returnEligibleUntil: string | null;
+  subtotal: number;
+  discount: number;
+  shippingFee: number;
+  total: number;
+  shippingMethod: string | null;
+  trackingNumber: string | null;
+  address: OrderShippingAddress | null;
+  payment: string | null;
+  items: OrderItem[];
+};
+
+export function fetchMyOrders(): Promise<MyOrder[]> {
+  return apiGet<MyOrder[]>(`/api/orders`);
+}
+
+export function fetchOrder(id: number): Promise<MyOrder> {
+  return apiGet<MyOrder>(`/api/orders/${id}`);
+}
+
+export function cancelOrder(id: number, reason?: string): Promise<MyOrder> {
+  return apiSend<MyOrder>("PATCH", `/api/orders/${id}/cancel`, reason ? { reason } : undefined);
+}
+
+export function returnOrder(id: number, reason?: string): Promise<MyOrder> {
+  return apiSend<MyOrder>("PATCH", `/api/orders/${id}/return`, reason ? { reason } : undefined);
+}
+
+/** DEV ONLY: advance an order one step along the fulfilment path. Backend
+    rejects this in production. Lets the return + review flows be tested. */
+export function advanceOrder(id: number): Promise<MyOrder> {
+  return apiSend<MyOrder>("PATCH", `/api/orders/${id}/advance`);
+}
+
+export function submitReview(
+  productId: number,
+  rating: number,
+  comment?: string
+): Promise<{ ok: boolean; message: string }> {
+  return apiSend<{ ok: boolean; message: string }>("POST", "/api/reviews", {
+    productId,
+    rating,
+    comment: comment || null,
+  });
 }
 
 /* ---------- Auth (Google OAuth lives on the backend) ---------- */
@@ -174,6 +243,64 @@ export function loginWithGoogle(next?: string): void {
 
 export function logout(): Promise<{ success: boolean }> {
   return apiSend("POST", `/api/auth/logout`);
+}
+
+/** Update the signed-in user's own profile (name + phone). Email is read-only. */
+export async function updateProfile(input: {
+  name?: string;
+  phone?: string;
+}): Promise<SessionUser> {
+  const { user } = await apiSend<{ user: SessionUser }>("PATCH", `/api/auth/me`, input);
+  return user;
+}
+
+/* ---------- Saved addresses (auth-gated) ---------- */
+
+export type Address = {
+  id: number;
+  userId: number;
+  fullName: string;
+  phone: string;
+  street: string;
+  city: string;
+  state: string;
+  pincode: string;
+  country: string;
+  isDefault: boolean;
+  createdAt: string;
+};
+
+export type AddressInput = {
+  fullName: string;
+  phone: string;
+  street: string;
+  city: string;
+  state: string;
+  pincode: string;
+  country?: string;
+  isDefault?: boolean;
+};
+
+export function fetchAddresses(): Promise<Address[]> {
+  return apiGet<Address[]>(`/api/addresses`);
+}
+
+export function createAddress(input: AddressInput): Promise<Address> {
+  return apiSend<Address>("POST", `/api/addresses`, input);
+}
+
+export function updateAddress(id: number, input: Partial<AddressInput>): Promise<Address> {
+  return apiSend<Address>("PATCH", `/api/addresses/${id}`, input);
+}
+
+export function deleteAddress(id: number): Promise<{ ok: boolean }> {
+  return apiSend("DELETE", `/api/addresses/${id}`);
+}
+
+/* ---------- Public order tracking (no auth — order no + email) ---------- */
+
+export function trackOrder(orderNo: string, email: string): Promise<MyOrder> {
+  return apiSend<MyOrder>("POST", `/api/orders/track`, { orderNo, email });
 }
 
 /* ---------- Phone OTP (dev mock) ---------- */
@@ -221,4 +348,20 @@ export function mergeServerCart(
   items: { slug: string; color?: string; qty: number }[]
 ): Promise<ServerCartItem[]> {
   return apiSend<ServerCartItem[]>("POST", `/api/cart/merge`, { items });
+}
+
+export function addServerCartItem(
+  slug: string,
+  color?: string,
+  qty?: number
+): Promise<ServerCartItem> {
+  return apiSend<ServerCartItem>("POST", `/api/cart`, { slug, color, qty });
+}
+
+export function updateServerCartQty(id: number, qty: number): Promise<unknown> {
+  return apiSend("PATCH", `/api/cart/${id}`, { qty });
+}
+
+export function removeServerCartItem(id: number): Promise<{ ok: boolean }> {
+  return apiSend("DELETE", `/api/cart/${id}`);
 }

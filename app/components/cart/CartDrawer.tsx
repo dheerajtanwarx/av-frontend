@@ -43,8 +43,16 @@ export default function CartDrawer() {
 
   return (
     <div className="flow">
-      <div className={"scrim" + (drawerOpen ? " show" : "")} onClick={closeDrawer} />
-      <aside className={"drawer" + (drawerOpen ? " show" : "")} aria-hidden={!drawerOpen}>
+      <div
+        className={"scrim" + (drawerOpen ? " show" : "")}
+        onClick={closeDrawer}
+        style={drawerOpen ? undefined : { display: "none" }}
+      />
+      <aside
+        className={"drawer" + (drawerOpen ? " show" : "")}
+        aria-hidden={!drawerOpen}
+        style={drawerOpen ? undefined : { transform: "translateX(100%)", visibility: "hidden" }}
+      >
         <div className="dhead">
           <div className="dt">
             Your Bag <span>{items.length} {items.length === 1 ? "piece" : "pieces"}</span>
@@ -94,7 +102,7 @@ export default function CartDrawer() {
                 <div className="dline" key={i.id}>
                   <div className="dp">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={i.img} alt={i.name} />
+                    <img src={i.img || undefined} alt={i.name} />
                   </div>
                   <div>
                     <div className="dn">{i.name}</div>

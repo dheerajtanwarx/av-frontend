@@ -12,7 +12,7 @@ export default function Toast() {
         ×
       </button>
       <div className="tthumb">
-        {toast && (
+        {toast?.thumb && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={toast.thumb} alt="" />
         )}

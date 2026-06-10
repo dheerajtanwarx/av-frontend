@@ -12,6 +12,10 @@
 @import "./styles/auth.css";
 /* Account profile page */
 @import "./styles/profile.css";
+/* Static info / footer pages */
+@import "./styles/info.css";
+/* My Orders + Order Detail pages */
+@import "./styles/orders.css";
 
 @theme inline {
   --font-cormorant: var(--font-cormorant);

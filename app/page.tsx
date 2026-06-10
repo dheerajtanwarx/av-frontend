@@ -1,11 +1,8 @@
 import {
-  bestsellers as staticBestsellers,
   categories as staticCategories,
   editorial,
-  footerCols,
   img,
   lookbook,
-  odhniEdit as staticOdhni,
   odhniFeatures,
   reels,
   trust,
@@ -16,13 +13,10 @@ import HeroCarousel from "./components/landing/HeroCarousel";
 import ScrollReveal from "./components/landing/ScrollReveal";
 import ProductCard from "./components/landing/ProductCard";
 import NewsletterForm from "./components/landing/NewsletterForm";
+import Footer from "./components/landing/Footer";
 import {
-  Facebook,
-  Instagram,
   PlayIcon,
-  Pinterest,
   trustIcons,
-  WhatsApp,
 } from "./components/landing/Icons";
 
 function MultilineTitle({ text }: { text: string }) {
@@ -42,8 +36,8 @@ export default async function Home() {
   // Pull the live catalog from the API; fall back to the bundled static
   // content if the backend is unreachable so the page always renders.
   const [odhniEdit, bestsellers, categories] = await Promise.all([
-    fetchProducts({ category: "jaipuri-odhni" }).catch(() => staticOdhni),
-    fetchProducts({ bestseller: true }).catch(() => staticBestsellers),
+    fetchProducts({ category: "jaipuri-odhni" }).catch(() => []),
+    fetchProducts({ bestseller: true }).catch(() => []),
     fetchCategories().catch(() => staticCategories),
   ]);
 
@@ -84,18 +78,18 @@ export default async function Home() {
                 className={`cat reveal ${["", "d1", "d2", "d3", "d4"][i] ?? ""}${
                   c.featured ? " feat" : ""
                 }`}
-                href={c.featured ? "#odhni" : "#shop"}
+                href={c.href}
                 key={c.name}
               >
                 <div className="imgw">
                   {c.featured && <span className="badge-feat">Signature</span>}
                   <div className="ph">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img className="main" src={img(c.main, 900)} alt={c.name} />
+                    <img className="main" src={img(c.main, 900) || undefined} alt={c.name} />
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       className="alt"
-                      src={img(c.alt, 900)}
+                      src={img(c.alt, 900) || undefined}
                       alt={`${c.name} styled`}
                       loading="lazy"
                     />
@@ -185,11 +179,11 @@ export default async function Home() {
                 The Odhni <em>Edit</em>
               </h2>
             </div>
-            <a href="#" className="seeall">
-              View all 64 →
+            <a href="/category/jaipuri-odhni" className="seeall">
+              Explore All →
             </a>
           </div>
-          <div className="prods">
+          <div className="prods-row">
             {odhniEdit.map((p, i) => (
               <ProductCard key={p.name} product={p} index={i} />
             ))}
@@ -333,55 +327,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer>
-        <div className="wrap">
-          <div className="foot-top">
-            <div className="foot-brand">
-              <div className="mark">AV CREATION</div>
-              <div className="subm">Jaipuri Atelier · Rajasthan</div>
-              <p>
-                Heritage Rajasthani craft, reimagined for the modern woman. Hand-finished by
-                artisans across Jaipur, Sanganer and Bagru — with the Jaipuri Odhni at the heart of
-                our house.
-              </p>
-              <div className="foot-social">
-                <a href="#" aria-label="Instagram">
-                  <Instagram />
-                </a>
-                <a href="#" aria-label="Facebook">
-                  <Facebook />
-                </a>
-                <a href="#" aria-label="Pinterest">
-                  <Pinterest />
-                </a>
-                <a href="#" aria-label="WhatsApp">
-                  <WhatsApp />
-                </a>
-              </div>
-            </div>
-            {footerCols.map((col) => (
-              <div className="foot-col" key={col.title}>
-                <h4>{col.title}</h4>
-                {col.links.map((l) => (
-                  <a href="#" key={l}>
-                    {l}
-                  </a>
-                ))}
-              </div>
-            ))}
-          </div>
-          <div className="foot-bot">
-            <div>© 2026 AV Creation. Crafted with care in Jaipur, Rajasthan.</div>
-            <div className="pay">
-              <span>UPI</span>
-              <span>Visa</span>
-              <span>Mastercard</span>
-              <span>COD</span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

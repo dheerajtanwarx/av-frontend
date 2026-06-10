@@ -7,6 +7,7 @@ import { useCart } from "../landing/CartContext";
 import { CheckoutHeader, SlimFooter } from "./CheckoutChrome";
 import { CartIc } from "./icons";
 import { inr } from "../../lib/cart-data";
+import { getSession } from "../../lib/api";
 
 export default function ConfirmationView() {
   const router = useRouter();
@@ -15,10 +16,21 @@ export default function ConfirmationView() {
   // before deciding there is genuinely no order to show.
   const { lastOrder: order } = useCart();
   const [graceOver, setGraceOver] = useState(false);
+  const [sessionUser, setSessionUser] = useState<any | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setGraceOver(true), 1200);
     return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    getSession().then((u) => {
+      if (mounted) setSessionUser(u);
+    });
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -70,7 +82,7 @@ export default function ConfirmationView() {
             </svg>
           </div>
           <h1>
-            Thank you, <em>{a.first || "we’ve got it"}</em>
+            Thank you, <em>{sessionUser?.name ?? "we’ve got it"}</em>
           </h1>
           <p className="lead">
             Your heirloom is now reserved with our karigars. Each piece is crafted by hand —
@@ -134,7 +146,7 @@ export default function ConfirmationView() {
                   <div className="ci" key={i.id}>
                     <div className="t">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={i.img} alt={i.name} />
+                      <img src={i.img || undefined} alt={i.name} />
                     </div>
                     <div className="cib">
                       <div className="cirow">

@@ -23,6 +23,7 @@ export const IMG_REMAP: Record<string, string> = {
 };
 
 const img = (id: string, w: number) => {
+  if (!id) return "";
   if (id.startsWith("http")) return id;
   const safe = IMG_REMAP[id] ?? id;
   return `https://images.unsplash.com/${safe}?w=${w}&q=78&auto=format&fit=crop`;
@@ -31,11 +32,11 @@ const img = (id: string, w: number) => {
 export type NavLink = { label: string; href: string; hot?: boolean };
 
 export const nav: NavLink[] = [
-  { label: "Jaipuri Odhni", href: "#odhni", hot: true },
-  { label: "Lehenga", href: "#shop" },
-  { label: "Saree", href: "#shop" },
-  { label: "Suits", href: "#shop" },
-  { label: "Dupatta", href: "#shop" },
+  { label: "Jaipuri Odhni", href: "/category/jaipuri-odhni", hot: true },
+  { label: "Lehenga", href: "/category/lehenga" },
+  { label: "Saree", href: "/category/designer-saree" },
+  { label: "Suits", href: "/category/suit-sets" },
+  { label: "Dupatta", href: "/category/dupatta" },
 ];
 
 export const announcements = [
@@ -301,15 +302,34 @@ export const reels = [
 export const footerCols = [
   {
     title: "Shop",
-    links: ["Jaipuri Odhni", "Lehenga", "Designer Saree", "Suit Sets", "Dupatta", "New Arrivals"],
+    links: [
+      { label: "Jaipuri Odhni",   href: "/category/jaipuri-odhni" },
+      { label: "Lehenga",         href: "/category/lehenga" },
+      { label: "Designer Saree",  href: "/category/designer-saree" },
+      { label: "Suit Sets",       href: "/category/suit-sets" },
+      { label: "Dupatta",         href: "/category/dupatta" },
+      { label: "New Arrivals",    href: "/category/new-arrivals" },
+    ],
   },
   {
     title: "Help",
-    links: ["Track Your Order", "Shipping & Returns", "Size Guide", "Fabric Care", "Contact Us"],
+    links: [
+      { label: "Track Your Order",    href: "/track-order" },
+      { label: "Shipping & Returns",  href: "/shipping-returns" },
+      { label: "Size Guide",          href: "/size-guide" },
+      { label: "Fabric Care",         href: "/fabric-care" },
+      { label: "Contact Us",          href: "/contact" },
+    ],
   },
   {
     title: "The House",
-    links: ["Our Story", "The Artisans", "Sustainability", "Stores", "Careers"],
+    links: [
+      { label: "Our Story",      href: "/our-story" },
+      { label: "The Artisans",   href: "/artisans" },
+      { label: "Sustainability", href: "/sustainability" },
+      { label: "Stores",         href: "/stores" },
+      { label: "Careers",        href: "/careers" },
+    ],
   },
 ];
 
