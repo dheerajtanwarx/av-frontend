@@ -1,0 +1,309 @@
+/* ============================================================
+   Wishlist — heart animation, header link, wishlist page
+   ============================================================ */
+
+/* --- Heart pop animation (product cards + PDP) --- */
+@keyframes wl-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.32); }
+  70%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+.av .prod .wish.pop,
+.av .wishbtn.pop {
+  animation: wl-pop 0.32s ease-out;
+}
+
+/* --- Header wishlist link --- */
+.av .acts .wishlink {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+}
+.av .acts .wishlink svg {
+  width: 20px;
+  height: 20px;
+  color: inherit;
+  transition: color 0.2s, transform 0.2s;
+}
+.av .acts .wishlink:hover svg {
+  color: var(--rani);
+  transform: scale(1.08);
+}
+.av .acts .wishlink .badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--rani);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* --- Wishlist page --- */
+.av.wl-page {
+  min-height: 100vh;
+  background: var(--bg);
+}
+.wl-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 36px 24px 96px;
+}
+.wl-head {
+  margin-bottom: 28px;
+}
+.wl-head h1 {
+  font-family: var(--font-cormorant), serif;
+  font-size: clamp(30px, 5vw, 46px);
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.wl-head h1 em {
+  font-style: italic;
+  color: var(--rani);
+}
+.wl-sub {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+}
+
+.wl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+.wl-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+.wl-card:hover {
+  box-shadow: 0 14px 34px rgba(43, 32, 24, 0.12);
+  transform: translateY(-3px);
+}
+
+.wl-thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  background: var(--bg-3);
+  overflow: hidden;
+}
+.wl-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.wl-card:hover .wl-thumb img {
+  transform: scale(1.05);
+}
+.wl-thumb-ph {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-3);
+}
+.wl-stock {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+.wl-stock.in {
+  background: rgba(22, 63, 52, 0.9);
+  color: #eafaf2;
+}
+.wl-stock.out {
+  background: rgba(43, 32, 24, 0.78);
+  color: #f4ead8;
+}
+
+.wl-body {
+  padding: 14px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+.wl-name {
+  font-family: var(--font-marcellus), serif;
+  font-size: 16px;
+  color: var(--ink);
+  line-height: 1.3;
+  text-decoration: none;
+}
+.wl-name:hover {
+  color: var(--rani);
+}
+.wl-type {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.3px;
+}
+.wl-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 2px;
+}
+.wl-price {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.wl-was {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.wl-actions {
+  margin-top: auto;
+  padding-top: 14px;
+  display: flex;
+  gap: 8px;
+}
+.wl-move {
+  flex: 1;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 9px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.wl-move:hover:not(:disabled) {
+  background: var(--rani);
+}
+.wl-move:disabled {
+  background: var(--bg-3);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.wl-remove {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.wl-remove:hover {
+  border-color: var(--rani);
+  color: var(--rani);
+  background: var(--rani-wash);
+}
+
+/* --- Empty state --- */
+.wl-empty {
+  max-width: 440px;
+  margin: 40px auto;
+  text-align: center;
+  padding: 48px 28px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.wl-empty svg {
+  width: 56px;
+  height: 56px;
+  color: var(--rani-soft);
+  margin: 0 auto 14px;
+}
+.wl-empty h3 {
+  font-family: var(--font-cormorant), serif;
+  font-size: 26px;
+  color: var(--ink);
+  font-weight: 600;
+}
+.wl-empty p {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.wl-browse {
+  display: inline-block;
+  margin-top: 22px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.wl-browse:hover {
+  background: var(--rani);
+}
+
+/* --- Loading skeletons --- */
+@keyframes wl-shimmer {
+  0%   { opacity: 0.55; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.55; }
+}
+.wl-skel .wl-skel-box,
+.wl-skel .wl-skel-line {
+  background: var(--bg-3);
+  animation: wl-shimmer 1.2s ease-in-out infinite;
+  border-radius: 6px;
+}
+.wl-skel .wl-skel-box {
+  aspect-ratio: 3 / 4;
+  border-radius: 0;
+}
+.wl-skel .wl-skel-line {
+  height: 13px;
+  margin-top: 8px;
+}
+.wl-skel:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  .wl-shell {
+    padding: 24px 16px 72px;
+  }
+  .wl-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .wl-actions {
+    flex-direction: column;
+  }
+}

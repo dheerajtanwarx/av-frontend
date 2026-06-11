@@ -170,6 +170,7 @@ export type Product = {
   flag?: { label: string; sale?: boolean };
   main: string;
   alt: string;
+  soldOut?: boolean;
 };
 
 export const odhniEdit: Product[] = [

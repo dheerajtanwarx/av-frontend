@@ -16,6 +16,8 @@
 @import "./styles/info.css";
 /* My Orders + Order Detail pages */
 @import "./styles/orders.css";
+/* Wishlist page + heart animation */
+@import "./styles/wishlist.css";
 
 @theme inline {
   --font-cormorant: var(--font-cormorant);

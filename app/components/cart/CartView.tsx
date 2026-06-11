@@ -178,8 +178,18 @@ function CartLine({ item }: { item: CartItem }) {
             −
           </button>
           <span className="n">{item.qty}</span>
-          <button onClick={() => setQty(item.id, item.qty + 1)}>+</button>
+          <button
+            onClick={() => setQty(item.id, item.qty + 1)}
+            disabled={item.stock !== undefined && item.qty >= item.stock}
+          >
+            +
+          </button>
         </div>
+        {item.stock !== undefined && item.stock <= 5 && (
+          <div className="stock-note low">
+            {item.stock <= 0 ? "Out of stock" : `Only ${item.stock} left`}
+          </div>
+        )}
       </div>
     </div>
   );

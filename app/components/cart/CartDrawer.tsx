@@ -115,7 +115,11 @@ export default function CartDrawer() {
                           −
                         </button>
                         <span className="n">{i.qty}</span>
-                        <button onClick={() => setQty(i.id, i.qty + 1)} aria-label="Increase">
+                        <button
+                          onClick={() => setQty(i.id, i.qty + 1)}
+                          disabled={i.stock !== undefined && i.qty >= i.stock}
+                          aria-label="Increase"
+                        >
                           +
                         </button>
                       </div>

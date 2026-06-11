@@ -335,6 +335,7 @@ export type ServerCartItem = {
   type: string | null;
   color: { name: string; hex: string };
   qty: number;
+  stock: number;
   unitPrice: number;
   price: string;
   img: string;
@@ -364,4 +365,44 @@ export function updateServerCartQty(id: number, qty: number): Promise<unknown> {
 
 export function removeServerCartItem(id: number): Promise<{ ok: boolean }> {
   return apiSend("DELETE", `/api/cart/${id}`);
+}
+
+/* ---------- Wishlist (auth-gated; guests stay on localStorage) ---------- */
+
+export type ServerWishlistItem = {
+  id: number;
+  productId: number;
+  slug: string;
+  name: string;
+  type: string;
+  price: string;
+  was: string | null;
+  stars: string;
+  img: string;
+  inStock: boolean;
+};
+
+export function fetchWishlist(): Promise<ServerWishlistItem[]> {
+  return apiGet<ServerWishlistItem[]>(`/api/wishlist`);
+}
+
+/** Add a product (by slug) to the server wishlist. Idempotent: the backend
+    returns the existing row (with `already: true`) instead of erroring. */
+export function addWishlistItem(
+  slug: string
+): Promise<ServerWishlistItem & { already?: boolean }> {
+  return apiSend<ServerWishlistItem & { already?: boolean }>(
+    "POST",
+    `/api/wishlist`,
+    { slug }
+  );
+}
+
+export function removeWishlistItem(slug: string): Promise<{ ok: boolean }> {
+  return apiSend("DELETE", `/api/wishlist/${encodeURIComponent(slug)}`);
+}
+
+/** Fold a guest's localStorage wishlist into the server wishlist on login. */
+export function mergeWishlist(slugs: string[]): Promise<ServerWishlistItem[]> {
+  return apiSend<ServerWishlistItem[]>("POST", `/api/wishlist/merge`, { slugs });
 }

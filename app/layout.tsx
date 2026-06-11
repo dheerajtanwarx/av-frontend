@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Marcellus, Jost } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "./components/landing/CartContext";
+import { WishlistProvider } from "./components/landing/WishlistContext";
 import CartDrawer from "./components/cart/CartDrawer";
 
 const cormorant = Cormorant_Garamond({
@@ -41,8 +42,10 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <CartProvider>
-          {children}
-          <CartDrawer />
+          <WishlistProvider>
+            {children}
+            <CartDrawer />
+          </WishlistProvider>
         </CartProvider>
       </body>
     </html>

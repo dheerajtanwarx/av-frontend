@@ -10,7 +10,7 @@
 
 import { bestsellers, odhniEdit, img, type Product } from "./landing-data";
 
-export type PdpColor = { name: string; hex: string };
+export type PdpColor = { name: string; hex: string; stock?: number };
 export type PdpReview = { stars: number; txt: string; name: string; loc: string };
 export type AccordionItem = { q: string; a: string };
 export type CraftSpec = { st: string; sv: string };

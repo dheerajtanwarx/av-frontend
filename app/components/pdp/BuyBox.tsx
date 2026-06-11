@@ -6,6 +6,7 @@ import type { AccordionItem, PdpColor, PdpProduct } from "../../lib/pdp-data";
 import { Ic, Stars } from "./icons";
 import { usePdp } from "./PdpContext";
 import { useCart } from "../landing/CartContext";
+import { useWishlist } from "../landing/WishlistContext";
 import { ensureAuthenticated } from "../../lib/auth-guard";
 import { parseINR, type CartItem } from "../../lib/cart-data";
 
@@ -31,19 +32,34 @@ function makeItem(
   };
 }
 
+/** Units available for a colour; colours without stock data stay purchasable. */
+function stockOf(c: PdpColor): number {
+  return c.stock === undefined ? Infinity : c.stock;
+}
+
 function AddToBag({
   product,
   color,
   size,
   qty,
+  soldOut,
 }: {
   product: PdpProduct;
   color: PdpColor;
   size: string;
   qty: number;
+  soldOut: boolean;
 }) {
   const { addToCart } = usePdp();
   const [state, setState] = useState<"idle" | "adding" | "added">("idle");
+
+  if (soldOut) {
+    return (
+      <button className="addbtn oos" data-state="idle" disabled>
+        <span className="lab l-add">Out of Stock</span>
+      </button>
+    );
+  }
 
   const onClick = async () => {
     if (state !== "idle") return;
@@ -122,17 +138,44 @@ function Accordion({ items }: { items: AccordionItem[] }) {
 }
 
 export default function BuyBox({ product }: { product: PdpProduct }) {
-  const [color, setColor] = useState<PdpColor>(product.colors[0]);
+  const [color, setColorState] = useState<PdpColor>(
+    () => product.colors.find((c) => stockOf(c) > 0) ?? product.colors[0]
+  );
   const [size, setSize] = useState<string>(
     product.sizes[Math.min(2, product.sizes.length - 1)] ?? product.sizes[0]
   );
   const [qty, setQty] = useState(1);
-  const [wish, setWish] = useState(false);
+  const [pop, setPop] = useState(false);
   const [guide, setGuide] = useState(false);
   const { addItem } = useCart();
+  const { isWished, toggle } = useWishlist();
   const router = useRouter();
+  const wish = isWished(product.slug);
+
+  const available = stockOf(color);
+  const soldOut = available <= 0;
+
+  const setColor = (c: PdpColor) => {
+    setColorState(c);
+    // Keep the chosen quantity purchasable for the new colour.
+    setQty((q) => Math.max(1, Math.min(q, stockOf(c))));
+  };
+
+  const onWish = () => {
+    toggle({
+      slug: product.slug,
+      name: product.name,
+      type: product.craft,
+      price: product.price,
+      was: product.was ?? null,
+      img: product.images[0],
+    });
+    setPop(true);
+    setTimeout(() => setPop(false), 320);
+  };
 
   const buyNow = async () => {
+    if (soldOut) return;
     if (!(await ensureAuthenticated("/checkout"))) return;
     addItem(makeItem(product, color, size, qty));
     router.push("/checkout");
@@ -171,15 +214,20 @@ export default function BuyBox({ product }: { product: PdpProduct }) {
           {product.colors.map((c) => (
             <button
               key={c.name}
-              className={`sw${c.name === color.name ? " on" : ""}`}
+              className={`sw${c.name === color.name ? " on" : ""}${stockOf(c) <= 0 ? " oos" : ""}`}
               style={{ background: c.hex }}
-              title={c.name}
-              aria-label={c.name}
+              title={stockOf(c) <= 0 ? `${c.name} — out of stock` : c.name}
+              aria-label={stockOf(c) <= 0 ? `${c.name} (out of stock)` : c.name}
               aria-pressed={c.name === color.name}
               onClick={() => setColor(c)}
             />
           ))}
         </div>
+        {soldOut ? (
+          <div className="stock-note out">Out of stock in {color.name}</div>
+        ) : Number.isFinite(available) && available <= 5 ? (
+          <div className="stock-note low">Only {available} left in {color.name}</div>
+        ) : null}
       </div>
 
       <div className="grp">
@@ -215,21 +263,27 @@ export default function BuyBox({ product }: { product: PdpProduct }) {
             −
           </button>
           <span className="n">{qty}</span>
-          <button onClick={() => setQty((q) => q + 1)} aria-label="Increase quantity">
+          <button
+            onClick={() => setQty((q) => Math.min(q + 1, Math.max(1, available)))}
+            disabled={qty >= available}
+            aria-label="Increase quantity"
+          >
             +
           </button>
         </div>
-        <AddToBag product={product} color={color} size={size} qty={qty} />
+        <AddToBag product={product} color={color} size={size} qty={qty} soldOut={soldOut} />
         <button
-          className={`wishbtn${wish ? " on" : ""}`}
-          onClick={() => setWish((w) => !w)}
-          aria-label="Add to wishlist"
+          className={`wishbtn${wish ? " on" : ""}${pop ? " pop" : ""}`}
+          onClick={onWish}
+          aria-label={wish ? "Remove from wishlist" : "Add to wishlist"}
           aria-pressed={wish}
         >
           {Ic.heart}
         </button>
       </div>
-      <button className="buynow" onClick={buyNow}>Buy It Now</button>
+      <button className="buynow" onClick={buyNow} disabled={soldOut}>
+        {soldOut ? "Out of Stock" : "Buy It Now"}
+      </button>
 
       <div className="bb-trust">
         <div className="t">

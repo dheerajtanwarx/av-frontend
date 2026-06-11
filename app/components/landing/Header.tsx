@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { announcements, nav } from "../../lib/landing-data";
-import { AccountIcon, CartIcon, SearchIcon } from "./Icons";
+import { AccountIcon, CartIcon, HeartIcon, SearchIcon } from "./Icons";
 import { useCart } from "./CartContext";
+import { useWishlist } from "./WishlistContext";
 import { getSession, logout, type SessionUser } from "../../lib/api";
 
 function firstName(user: SessionUser): string {
@@ -72,6 +73,9 @@ export function AccountMenu() {
           <a className="acct-profile" href="/my-orders">
             My orders
           </a>
+          <a className="acct-profile" href="/wishlist">
+            My wishlist
+          </a>
           <button className="acct-logout" onClick={handleLogout}>
             Log out
           </button>
@@ -104,6 +108,7 @@ function Marquee() {
 
 export default function Header() {
   const { count, openDrawer } = useCart();
+  const { count: wishCount } = useWishlist();
   const badgeRef = useRef<HTMLSpanElement>(null);
   const first = useRef(true);
 
@@ -143,6 +148,10 @@ export default function Header() {
               <SearchIcon />
             </button>
             <AccountMenu />
+            <a className="wishlink" href="/wishlist" aria-label="Wishlist">
+              <HeartIcon filled={wishCount > 0} />
+              {wishCount > 0 && <span className="badge">{wishCount}</span>}
+            </a>
             <button className="cart" aria-label="Cart" onClick={openDrawer}>
               <CartIcon />
               <span className="badge" ref={badgeRef}>

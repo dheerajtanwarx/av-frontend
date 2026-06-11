@@ -135,15 +135,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           price: s.unitPrice,
           was: null,
           qty: s.qty,
+          stock: s.stock,
           img: s.img,
         }));
-        if (mapped.length > 0) {
-          setItems(mapped);
-          try {
-            localStorage.setItem(LS_KEY, JSON.stringify({ items: mapped, promo: null }));
-          } catch {
-            /* ignore */
-          }
+        // The server cart is authoritative for a signed-in user (guest items
+        // were just merged up above). Adopt it unconditionally — including when
+        // it's empty — so a cart cleared by checkout on this or another device
+        // isn't resurrected from stale localStorage on the next refresh/login.
+        setItems(mapped);
+        try {
+          localStorage.setItem(LS_KEY, JSON.stringify({ items: mapped, promo: null }));
+        } catch {
+          /* ignore */
         }
       } catch {
         /* ignore merge errors */
@@ -161,14 +164,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [items, promo]);
 
+  /** Cap a quantity at the line's known stock (lines without stock data pass through). */
+  const clampToStock = (qty: number, stock?: number) =>
+    stock === undefined ? qty : Math.min(qty, Math.max(1, stock));
+
   const addItem = useCallback((item: CartItem) => {
     const existing = itemsRef.current.find((i) => i.id === item.id);
-    const newQty = existing ? existing.qty + item.qty : item.qty;
+    const stock = existing?.stock ?? item.stock;
+    const newQty = clampToStock(existing ? existing.qty + item.qty : item.qty, stock);
 
     setItems((b) => {
       const ex = b.find((i) => i.id === item.id);
-      if (ex) return b.map((i) => (i.id === item.id ? { ...i, qty: i.qty + item.qty } : i));
-      return [...b, item];
+      if (ex) return b.map((i) => (i.id === item.id ? { ...i, qty: newQty } : i));
+      return [...b, { ...item, qty: newQty }];
     });
 
     if (userIdRef.current && item.slug) {
@@ -176,11 +184,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         // Item already has a DB row — set its absolute qty.
         updateServerCartQty(existing.serverId, newQty).catch(() => {});
       } else {
-        // New item (or not yet persisted) — upsert on server and capture the row id.
+        // New item (or not yet persisted) — upsert on server and capture the
+        // row id plus the server's stock-clamped quantity.
         addServerCartItem(item.slug, item.color.name, item.qty)
           .then((serverItem) => {
             setItems((b) =>
-              b.map((i) => (i.id === item.id ? { ...i, serverId: serverItem.id } : i))
+              b.map((i) =>
+                i.id === item.id
+                  ? { ...i, serverId: serverItem.id, qty: serverItem.qty, stock: serverItem.stock }
+                  : i
+              )
             );
           })
           .catch(() => {});
@@ -190,10 +203,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const setQty = useCallback((id: string, qty: number) => {
     const item = itemsRef.current.find((i) => i.id === id);
+    const next = Math.max(1, clampToStock(qty, item?.stock));
     if (item?.serverId && userIdRef.current) {
-      updateServerCartQty(item.serverId, qty).catch(() => {});
+      updateServerCartQty(item.serverId, next).catch(() => {});
     }
-    setItems((b) => b.map((i) => (i.id === id ? { ...i, qty: Math.max(1, qty) } : i)));
+    setItems((b) => b.map((i) => (i.id === id ? { ...i, qty: next } : i)));
   }, []);
 
   const remove = useCallback((id: string) => {

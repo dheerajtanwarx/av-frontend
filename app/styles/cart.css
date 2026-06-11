@@ -444,3 +444,7 @@
 @media (prefers-reduced-motion: reduce) {
   .flow *, .flow *::after, .flow *::before { animation-duration: .001s !important; }
 }
+
+/* low-stock notes on cart lines */
+.flow .citem .stock-note { margin-top: 6px; font-size: 12px; color: var(--rani-deep); text-align: right; }
+.flow .drawer .dline .dq .mini button:disabled { opacity: 0.3; cursor: not-allowed; }

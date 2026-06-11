@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { img, type Product } from "../../lib/landing-data";
 import { HeartIcon } from "./Icons";
 import { useCart } from "./CartContext";
+import { useWishlist } from "./WishlistContext";
 import { parseINR } from "../../lib/cart-data";
 
 const delay = ["", "d1", "d2", "d3"];
@@ -13,11 +14,28 @@ const delay = ["", "d1", "d2", "d3"];
 export default function ProductCard({ product, index }: { product: Product; index: number }) {
   const router = useRouter();
   const { addItem, openDrawer } = useCart();
-  const [wished, setWished] = useState(false);
+  const { isWished, toggle } = useWishlist();
+  const [pop, setPop] = useState(false);
   const [added, setAdded] = useState(false);
 
   const mainImg = img(product.main, 900);
   const altImg = img(product.alt, 900);
+  const wished = isWished(product.slug);
+  const soldOut = product.soldOut === true;
+
+  const onWish = () => {
+    toggle({
+      slug: product.slug,
+      name: product.name,
+      type: product.type,
+      price: product.price,
+      was: product.was ?? null,
+      stars: product.stars,
+      img: mainImg,
+    });
+    setPop(true);
+    setTimeout(() => setPop(false), 320);
+  };
 
   const buildItem = () => ({
     id: product.slug,
@@ -34,6 +52,7 @@ export default function ProductCard({ product, index }: { product: Product; inde
   });
 
   const onAdd = () => {
+    if (soldOut) return;
     addItem(buildItem());
     setAdded(true);
     openDrawer();
@@ -41,6 +60,7 @@ export default function ProductCard({ product, index }: { product: Product; inde
   };
 
   const onBuyNow = () => {
+    if (soldOut) return;
     addItem(buildItem());
     router.push("/cart");
   };
@@ -65,22 +85,26 @@ export default function ProductCard({ product, index }: { product: Product; inde
             />
           ) : null}
         </Link>
-        {product.flag && (
-          <span className={`flag${product.flag.sale ? " sale" : ""}`}>{product.flag.label}</span>
+        {soldOut ? (
+          <span className="flag soldout">Sold Out</span>
+        ) : (
+          product.flag && (
+            <span className={`flag${product.flag.sale ? " sale" : ""}`}>{product.flag.label}</span>
+          )
         )}
         <button
-          className={`wish${wished ? " on" : ""}`}
-          aria-label="Add to wishlist"
+          className={`wish${wished ? " on" : ""}${pop ? " pop" : ""}`}
+          aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}
           aria-pressed={wished}
-          onClick={() => setWished((v) => !v)}
+          onClick={onWish}
         >
           <HeartIcon filled={wished} />
         </button>
         <div className="card-btns">
-          <button className="addcart" onClick={onAdd}>
-            {added ? "✓ Added" : "Cart"}
+          <button className="addcart" onClick={onAdd} disabled={soldOut}>
+            {soldOut ? "Sold Out" : added ? "✓ Added" : "Cart"}
           </button>
-          <button className="buynow" onClick={onBuyNow}>
+          <button className="buynow" onClick={onBuyNow} disabled={soldOut}>
             Buy Now
           </button>
         </div>

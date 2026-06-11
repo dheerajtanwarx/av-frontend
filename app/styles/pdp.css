@@ -1508,3 +1508,24 @@
     transition-duration: 0.001s !important;
   }
 }
+
+/* ---------- stock availability ---------- */
+.pdp .sw.oos { opacity: 0.4; }
+.pdp .sw.oos::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  bottom: -4px;
+  width: 1.5px;
+  background: var(--ink-soft);
+  transform: rotate(45deg);
+}
+.pdp .stock-note { margin-top: 10px; font-size: 13px; letter-spacing: 0.02em; font-weight: 500; }
+.pdp .stock-note.low { color: var(--gold); }
+.pdp .stock-note.out { color: var(--rani-deep); }
+.pdp .addbtn.oos,
+.pdp .addbtn.oos:hover { background: var(--muted); cursor: not-allowed; transform: none; }
+.pdp .buynow:disabled,
+.pdp .buynow:disabled:hover { opacity: 0.45; cursor: not-allowed; }
+.pdp .qty button:disabled { opacity: 0.3; cursor: not-allowed; }

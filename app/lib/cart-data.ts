@@ -22,6 +22,7 @@ export type CartItem = {
   price: number;
   was: number | null;
   qty: number;
+  stock?: number; // available units for this variant, when known (server carts)
   img: string;
   note?: string;
 };
