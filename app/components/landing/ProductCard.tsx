@@ -13,7 +13,7 @@ const delay = ["", "d1", "d2", "d3"];
 
 export default function ProductCard({ product, index }: { product: Product; index: number }) {
   const router = useRouter();
-  const { addItem, openDrawer } = useCart();
+  const { addItem, notifyAdded } = useCart();
   const { isWished, toggle } = useWishlist();
   const [pop, setPop] = useState(false);
   const [added, setAdded] = useState(false);
@@ -73,7 +73,8 @@ export default function ProductCard({ product, index }: { product: Product; inde
     if (soldOut) return;
     addItem(buildItem());
     setAdded(true);
-    openDrawer();
+    // Confirm with a toast rather than popping the cart drawer open.
+    notifyAdded({ name: product.name, variant: addColor.name, thumb: mainImg });
     setTimeout(() => setAdded(false), 1100);
   };
 

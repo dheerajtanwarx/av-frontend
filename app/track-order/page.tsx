@@ -9,7 +9,16 @@ export const metadata: Metadata = {
   description: "Track your AV Creation order in real time. Enter your order ID and email to get live shipping updates.",
 };
 
-export default function TrackOrderPage() {
+export default async function TrackOrderPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const sp = await searchParams;
+  const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
+  const initialOrderNo = first(sp.order);
+  const initialEmail = first(sp.email);
+
   return (
     <div className="av">
       <ScrollReveal />
@@ -35,7 +44,7 @@ export default function TrackOrderPage() {
           <div className="info-narrow">
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "60px", alignItems: "start" }}>
               {/* Form */}
-              <TrackOrderForm />
+              <TrackOrderForm initialOrderNo={initialOrderNo} initialEmail={initialEmail} />
               {/* Help box */}
               <div style={{ background: "var(--bg-2)", padding: "36px 32px", borderTop: "3px solid var(--gold)" }}>
                 <div className="eyebrow" style={{ marginBottom: "14px" }}>Need Help?</div>

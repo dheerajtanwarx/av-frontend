@@ -33,12 +33,19 @@ const ORDER_KEY = "av-last-order";
 
 type ApplyResult = { ok: boolean; error?: string };
 
+/** Content of the "added to cart" toast shown after a quick-add. */
+export type CartToast = { name: string; variant: string; thumb: string };
+
 type CartContextValue = {
   /* state */
   items: CartItem[];
   promo: Promo | null;
   drawerOpen: boolean;
   lastOrder: Order | null;
+  /** The toast payload (stays mounted while sliding out); null before first add. */
+  toast: CartToast | null;
+  /** Whether the toast is currently visible (drives the slide-in/out). */
+  toastVisible: boolean;
   /* derived */
   count: number;
   subtotal: number;
@@ -59,6 +66,10 @@ type CartContextValue = {
   removePromo: () => void;
   openDrawer: () => void;
   closeDrawer: () => void;
+  /** Show the "added to cart" toast (used by quick-add buttons that should not
+      pop the drawer open). */
+  notifyAdded: (payload: CartToast) => void;
+  closeToast: () => void;
   placeOrder: (details: {
     address: OrderAddress;
     paymentId: string;
@@ -74,6 +85,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [promo, setPromo] = useState<Promo | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [lastOrder, setLastOrder] = useState<Order | null>(null);
+  // toast holds the content (stays mounted during slide-out); toastVisible
+  // drives the animation. A timer auto-dismisses after a few seconds.
+  const [toast, setToast] = useState<CartToast | null>(null);
+  const [toastVisible, setToastVisible] = useState(false);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hydrated = useRef(false);
   // Mirrors `items` so callbacks can read current values without stale closures.
   const itemsRef = useRef<CartItem[]>([]);
@@ -283,6 +299,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [refreshStock]);
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
+  const closeToast = useCallback(() => setToastVisible(false), []);
+
+  /* Show the "added to cart" confirmation toast. Re-arming the timer on each
+     call keeps the toast up for the full duration after rapid successive adds. */
+  const notifyAdded = useCallback((payload: CartToast) => {
+    setToast(payload);
+    setToastVisible(true);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToastVisible(false), 3200);
+  }, []);
+
+  /* Clear the auto-dismiss timer on unmount. */
+  useEffect(() => () => {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+  }, []);
+
   /* derived totals */
   const { count, subtotal, savings, discount, total } = useMemo(() => {
     const count = items.reduce((s, i) => s + i.qty, 0);
@@ -342,6 +374,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     promo,
     drawerOpen,
     lastOrder,
+    toast,
+    toastVisible,
     count,
     subtotal,
     savings,
@@ -357,6 +391,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     removePromo,
     openDrawer,
     closeDrawer,
+    notifyAdded,
+    closeToast,
     placeOrder,
   };
 

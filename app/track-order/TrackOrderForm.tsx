@@ -1,17 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { trackOrder, ApiError, type MyOrder } from "../lib/api";
-
-const STATUS_LABEL: Record<string, string> = {
-  PLACED: "Order Placed",
-  CONFIRMED: "Confirmed",
-  PROCESSING: "Being Crafted",
-  SHIPPED: "Shipped",
-  DELIVERED: "Delivered",
-  CANCELLED: "Cancelled",
-  RETURNED: "Returned",
-};
+import OrderProgress, { statusLabel } from "../components/OrderProgress";
 
 function inr(amount: number): string {
   return new Intl.NumberFormat("en-IN", {
@@ -30,16 +21,21 @@ function fmtDate(iso: string): string {
   }).format(new Date(iso));
 }
 
-export default function TrackOrderForm() {
-  const [orderNo, setOrderNo] = useState("");
-  const [email, setEmail] = useState("");
+export default function TrackOrderForm({
+  initialOrderNo = "",
+  initialEmail = "",
+}: {
+  initialOrderNo?: string;
+  initialEmail?: string;
+}) {
+  const [orderNo, setOrderNo] = useState(initialOrderNo);
+  const [email, setEmail] = useState(initialEmail);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [order, setOrder] = useState<MyOrder | null>(null);
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!orderNo.trim() || !email.trim()) {
+  const runTrack = useCallback(async (no: string, mail: string) => {
+    if (!no.trim() || !mail.trim()) {
       setError("Enter both your order ID and email.");
       return;
     }
@@ -47,7 +43,7 @@ export default function TrackOrderForm() {
     setError(null);
     setOrder(null);
     try {
-      const result = await trackOrder(orderNo.trim(), email.trim());
+      const result = await trackOrder(no.trim(), mail.trim());
       setOrder(result);
     } catch (err) {
       setError(
@@ -56,6 +52,22 @@ export default function TrackOrderForm() {
     } finally {
       setBusy(false);
     }
+  }, []);
+
+  // Auto-track once when arriving with both values prefilled (e.g. from the
+  // order confirmation page's "Track Your Order" button).
+  const autoRan = useRef(false);
+  useEffect(() => {
+    if (autoRan.current) return;
+    if (initialOrderNo.trim() && initialEmail.trim()) {
+      autoRan.current = true;
+      runTrack(initialOrderNo, initialEmail);
+    }
+  }, [initialOrderNo, initialEmail, runTrack]);
+
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    runTrack(orderNo, email);
   }
 
   return (
@@ -127,7 +139,7 @@ export default function TrackOrderForm() {
                 {order.no}
               </div>
               <div style={{ fontFamily: "var(--font-marcellus)", fontSize: 22, color: "var(--ink)" }}>
-                {STATUS_LABEL[order.status] ?? order.status}
+                {statusLabel(order.status)}
               </div>
             </div>
             <a
@@ -137,6 +149,12 @@ export default function TrackOrderForm() {
               Full details →
             </a>
           </div>
+
+          {/* Live, status-driven tracker driven by the real order status. */}
+          <div style={{ margin: "8px 0 18px" }}>
+            <OrderProgress status={order.status} />
+          </div>
+
           <div style={{ fontFamily: "var(--font-jost)", fontSize: 13, color: "var(--ink-soft)", lineHeight: 1.9 }}>
             <div>Placed on {fmtDate(order.placedAt)}</div>
             <div>

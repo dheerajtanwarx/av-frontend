@@ -200,6 +200,9 @@
 }
 
 /* ---- Results column ---- */
+.av .search-results {
+  padding-top: 36px;
+}
 .av .search-results .cat-bar {
   margin-bottom: 36px;
   padding-top: 0;

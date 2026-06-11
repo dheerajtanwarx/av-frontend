@@ -168,7 +168,12 @@ export default function ConfirmationView() {
           <Link href="/" className="pri">
             Continue Shopping
           </Link>
-          <button className="sec">Track Your Order</button>
+          <Link
+            href={`/track-order?order=${encodeURIComponent(order.no)}&email=${encodeURIComponent(a.email)}`}
+            className="sec"
+          >
+            Track Your Order
+          </Link>
         </div>
       </main>
       <SlimFooter />

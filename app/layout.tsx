@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "./components/landing/CartContext";
 import { WishlistProvider } from "./components/landing/WishlistContext";
 import CartDrawer from "./components/cart/CartDrawer";
+import CartToast from "./components/cart/CartToast";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -45,6 +46,7 @@ export default function RootLayout({
           <WishlistProvider>
             {children}
             <CartDrawer />
+            <CartToast />
           </WishlistProvider>
         </CartProvider>
       </body>
