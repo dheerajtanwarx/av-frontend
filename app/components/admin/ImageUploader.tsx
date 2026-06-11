@@ -52,7 +52,7 @@ function applyFit(url: string, mode: FitMode, ratio: string): string {
   const transform =
     mode === "fill"
       ? `c_fill,g_auto,ar_${ratio},w_2000,q_auto,f_auto`
-      : `c_pad,b_blurred,ar_${ratio},w_2000,q_auto,f_auto`;
+      : `c_pad,b_blurred:400:25,ar_${ratio},w_2000,q_auto,f_auto`;
   return base.replace(CLOUDINARY_RE, (_full, up: string, rest: string) => `${up}${transform}/${rest}`);
 }
 

@@ -6,8 +6,6 @@
    cart-data.jsx + checkout-flow.jsx.
    ============================================================ */
 
-import { IMG_REMAP } from "./landing-data";
-
 export type CartColor = { name: string; hex: string };
 
 export type CartItem = {
@@ -60,53 +58,6 @@ export const parseINR = (s: string | number | null | undefined): number => {
   const digits = s.replace(/[^0-9]/g, "");
   return digits ? parseInt(digits, 10) : 0;
 };
-
-/* ---------- IMAGERY (shared with PDP) ---------- */
-const u = (id: string, w = 900) => {
-  if (id.startsWith("http")) return id;
-  const safe = IMG_REMAP[id] ?? id;
-  return `https://images.unsplash.com/${safe}?w=${w}&q=78&auto=format&fit=crop`;
-};
-
-const IMG = {
-  d: u("premium_photo-1682096048114-4b36a3212527"),
-  h: u("premium_photo-1682096037844-e43413e887a8"),
-  j: u("premium_photo-1682096034925-468c545d1c12", 700),
-};
-
-/* ---------- CROSS-SELL ("Complete the look") ---------- */
-export const CROSS_SELL = [
-  {
-    id: "jhumka",
-    slug: "jhumka",
-    nm: "Polki Jhumka Set",
-    ty: "Temple · 22k Gold-plate",
-    pr: 3200,
-    img: IMG.j,
-    color: { name: "Gold", hex: "#bd8f3c" },
-    size: "One Size",
-  },
-  {
-    id: "juttis",
-    slug: "juttis",
-    nm: "Zari Embroidered Juttis",
-    ty: "Handcrafted · Velvet",
-    pr: 2400,
-    img: IMG.h,
-    color: { name: "Maroon", hex: "#6e1f2e" },
-    size: "UK 5",
-  },
-  {
-    id: "potli",
-    slug: "potli",
-    nm: "Silk Potli Clutch",
-    ty: "Gota Patti · Raw Silk",
-    pr: 1900,
-    img: IMG.d,
-    color: { name: "Rani Pink", hex: "#bd3c6e" },
-    size: "One Size",
-  },
-] as const;
 
 /* ---------- PROMO CODES ---------- */
 export const PROMOS: Record<string, { pct: number; label: string }> = {

@@ -8,7 +8,7 @@ import { useCart } from "../landing/CartContext";
 import { ensureAuthenticated } from "../../lib/auth-guard";
 import { SlimFooter } from "./CheckoutChrome";
 import { CartIc } from "./icons";
-import { CROSS_SELL, inr, type CartItem } from "../../lib/cart-data";
+import { inr, type CartItem } from "../../lib/cart-data";
 
 /* ---------- promo code box ---------- */
 function PromoBox() {
@@ -231,61 +231,6 @@ function CartLine({ item }: { item: CartItem }) {
   );
 }
 
-/* ---------- cross-sell ---------- */
-function CompleteTheLook() {
-  const { items, addItem } = useCart();
-  const inBag = (id: string) => items.some((i) => i.id === id);
-  const addCrossSell = async (item: CartItem) => {
-    if (await ensureAuthenticated()) addItem(item);
-  };
-  return (
-    <section className="ctl">
-      <div className="head">
-        <h2>
-          Complete the <em>ensemble</em>
-        </h2>
-        <div className="rule" />
-      </div>
-      <div className="ctl-row">
-        {CROSS_SELL.map((p) => (
-          <div className="ctl-card" key={p.id}>
-            <div className="th">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p.img || undefined} alt={p.nm} />
-            </div>
-            <div className="info">
-              <div className="nm">{p.nm}</div>
-              <div className="ty">{p.ty}</div>
-              <div className="pr">{inr(p.pr)}</div>
-            </div>
-            <button
-              className={"add" + (inBag(p.id) ? " done" : "")}
-              aria-label={"Add " + p.nm}
-              onClick={() =>
-                !inBag(p.id) &&
-                addCrossSell({
-                  id: p.id,
-                  name: p.nm,
-                  type: p.ty,
-                  color: p.color,
-                  size: p.size,
-                  madeToMeasure: false,
-                  price: p.pr,
-                  was: null,
-                  qty: 1,
-                  img: p.img,
-                })
-              }
-            >
-              {inBag(p.id) ? CartIc.check : CartIc.plus}
-            </button>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 /* ---------- empty state ---------- */
 function EmptyCart() {
   return (
@@ -405,7 +350,6 @@ export default function CartView() {
               </div>
               <OrderSummary />
             </div>
-            <CompleteTheLook />
           </>
         )}
       </main>
