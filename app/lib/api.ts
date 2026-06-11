@@ -745,6 +745,73 @@ export function fetchAdminCategories(): Promise<AdminCategory[]> {
   return apiGet<AdminCategory[]>(`/api/admin/categories`);
 }
 
+/* ---------- Admin: inventory (ADMIN role only) ---------- */
+
+export type StockStatus = "out" | "low" | "ok";
+
+export type InventoryFilter = "all" | "ok" | "low" | "out";
+
+export type InventoryRow = {
+  variantId: number;
+  productId: number;
+  productName: string;
+  slug: string;
+  productActive: boolean;
+  color: string;
+  colorHex: string;
+  sku: string;
+  price: number;
+  stockQty: number;
+  image: string | null;
+  status: StockStatus;
+};
+
+export type InventoryResponse = {
+  rows: InventoryRow[];
+  counts: { all: number; ok: number; low: number; out: number };
+  summary: {
+    totalUnits: number;
+    totalVariants: number;
+    lowStock: number;
+    outOfStock: number;
+  };
+  lowStockThreshold: number;
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+};
+
+export function fetchInventory(params: {
+  q?: string;
+  status?: InventoryFilter;
+  page?: number;
+  pageSize?: number;
+} = {}): Promise<InventoryResponse> {
+  const qs = new URLSearchParams();
+  if (params.q) qs.set("q", params.q);
+  if (params.status && params.status !== "all") qs.set("status", params.status);
+  if (params.page) qs.set("page", String(params.page));
+  if (params.pageSize) qs.set("pageSize", String(params.pageSize));
+  const q = qs.toString();
+  return apiGet<InventoryResponse>(`/api/admin/inventory${q ? `?${q}` : ""}`);
+}
+
+export type AdjustStockResponse = { row: InventoryRow; productStock: number };
+
+/** Adjust a variant's stock. Pass `stockQty` to set an absolute level, or
+    `delta` to add/remove relative to the current level. */
+export function adjustStock(
+  variantId: number,
+  body: { stockQty: number } | { delta: number }
+): Promise<AdjustStockResponse> {
+  return apiSend<AdjustStockResponse>(
+    "PATCH",
+    `/api/admin/inventory/${variantId}`,
+    body
+  );
+}
+
 /** Upload an image file to the server (Cloudinary-backed). Returns its URL. */
 export async function uploadImage(file: File): Promise<{ url: string; publicId: string }> {
   const form = new FormData();
