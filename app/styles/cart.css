@@ -457,4 +457,21 @@
 
 /* low-stock notes on cart lines */
 .flow .citem .stock-note { margin-top: 6px; font-size: 12px; color: var(--rani-deep); text-align: right; }
+.flow .citem .stock-note.oos { font-weight: 600; color: #b42318; letter-spacing: .02em; }
 .flow .drawer .dline .dq .mini button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ---- clickable line items + out-of-stock state ---- */
+.flow .citem .pic, .flow .citem .nm { cursor: pointer; }
+.flow .citem a.nm { text-decoration: none; transition: color .2s; display: block; }
+.flow .citem a.nm:hover { color: var(--rani); }
+.flow .citem a.pic img { transition: transform .4s var(--ease); }
+.flow .citem a.pic:hover img { transform: scale(1.04); }
+.flow .citem.oos .pic img { opacity: .55; filter: grayscale(.4); }
+.flow .citem .pic .oos-tag { position: absolute; left: 0; right: 0; top: 0; background: rgba(180, 35, 24, 0.92); color: #fff; font-size: 8px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; text-align: center; padding: 4px 2px; }
+.flow .drawer .dline.oos .dp img { opacity: .55; filter: grayscale(.4); }
+.flow .drawer .dline .dp { position: relative; }
+.flow .drawer .dline .dp .oos-tag { position: absolute; left: 0; right: 0; top: 0; background: rgba(180, 35, 24, 0.92); color: #fff; font-size: 7px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; text-align: center; padding: 3px 2px; }
+.flow .drawer .dline .doos { margin-top: 6px; font-size: 11px; font-weight: 600; color: #b42318; }
+.flow .drawer .dline a.dn { text-decoration: none; transition: color .2s; }
+.flow .drawer .dline a.dn:hover { color: var(--rani); }
+.flow .drawer .dline a.dp { display: block; }

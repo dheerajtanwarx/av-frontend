@@ -98,17 +98,38 @@ export default function CartDrawer() {
         ) : (
           <>
             <div className="dbody">
-              {items.map((i) => (
-                <div className="dline" key={i.id}>
-                  <div className="dp">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={i.img || undefined} alt={i.name} />
-                  </div>
+              {items.map((i) => {
+                const oos = i.stock !== undefined && i.stock <= 0;
+                const href = i.slug ? `/product/${i.slug}` : null;
+                const open = (e: React.MouseEvent) => {
+                  e.preventDefault();
+                  if (href) goto(href);
+                };
+                return (
+                <div className={"dline" + (oos ? " oos" : "")} key={i.id}>
+                  {href ? (
+                    <a href={href} className="dp" onClick={open}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={i.img || undefined} alt={i.name} />
+                      {oos && <span className="oos-tag">Out of stock</span>}
+                    </a>
+                  ) : (
+                    <div className="dp">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={i.img || undefined} alt={i.name} />
+                      {oos && <span className="oos-tag">Out of stock</span>}
+                    </div>
+                  )}
                   <div>
-                    <div className="dn">{i.name}</div>
+                    {href ? (
+                      <a href={href} className="dn" onClick={open}>{i.name}</a>
+                    ) : (
+                      <div className="dn">{i.name}</div>
+                    )}
                     <div className="dv">
                       {i.color.name} · {i.madeToMeasure ? "Made to measure" : i.size}
                     </div>
+                    {oos && <div className="doos">Out of stock</div>}
                     <div className="dq">
                       <div className="mini">
                         <button onClick={() => setQty(i.id, i.qty - 1)} aria-label="Decrease">
@@ -130,7 +151,8 @@ export default function CartDrawer() {
                   </div>
                   <div className="dpr">{inr(i.price * i.qty)}</div>
                 </div>
-              ))}
+                );
+              })}
             </div>
             <div className="dfoot">
               <div className="strow">

@@ -11,6 +11,19 @@ export default function Gallery({ images: rawImages, flag }: { images: string[];
   const [zoom, setZoom] = useState(false);
   const frameRef = useRef<HTMLDivElement>(null);
 
+  // When the image set changes (e.g. the shopper picks another colour) snap
+  // back to the first frame and drop any open zoom, so no stale shot lingers
+  // and the active thumbnail resets. Keyed on the URLs, not array identity, so
+  // an unchanged set doesn't reset the shopper's chosen thumbnail. Adjusting
+  // state during render is React's recommended alternative to an effect here.
+  const imgKey = images.join("|");
+  const [shownKey, setShownKey] = useState(imgKey);
+  if (imgKey !== shownKey) {
+    setShownKey(imgKey);
+    setIdx(0);
+    setZoom(false);
+  }
+
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = frameRef.current;
     if (!el) return;

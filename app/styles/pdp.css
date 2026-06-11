@@ -936,6 +936,18 @@
 }
 
 /* reviews */
+.pdp .rv-loading,
+.pdp .rv-empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}
+.pdp .rv-empty svg { width: 16px; height: 16px; color: var(--gold); }
 .pdp .rv-top {
   display: grid;
   grid-template-columns: 0.7fr 1.3fr;

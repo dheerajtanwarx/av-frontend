@@ -171,7 +171,14 @@ export type Product = {
   main: string;
   alt: string;
   soldOut?: boolean;
+  /** Total units in stock across variants (when known). Drives the
+      "Only N left" low-stock cue on the product card. */
+  stock?: number;
 };
+
+/** At or below this many units (but more than zero) the storefront nudges the
+    shopper with an "Only N left" cue. Matches the PDP / cart thresholds. */
+export const LOW_STOCK_CUE = 5;
 
 export const odhniEdit: Product[] = [
   {

@@ -137,15 +137,33 @@ function CartLine({ item }: { item: CartItem }) {
     setLeaving(true);
     setTimeout(() => remove(item.id), 360);
   };
+  const outOfStock = item.stock !== undefined && item.stock <= 0;
+  const href = item.slug ? `/product/${item.slug}` : null;
   return (
-    <div className={"citem" + (leaving ? " removing" : "")}>
-      <div className="pic">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={item.img || undefined} alt={item.name} />
-        {item.madeToMeasure && <span className="mtm">Made to Order</span>}
-      </div>
+    <div className={"citem" + (leaving ? " removing" : "") + (outOfStock ? " oos" : "")}>
+      {href ? (
+        <Link href={href} className="pic">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={item.img || undefined} alt={item.name} />
+          {item.madeToMeasure && <span className="mtm">Made to Order</span>}
+          {outOfStock && <span className="oos-tag">Out of stock</span>}
+        </Link>
+      ) : (
+        <div className="pic">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={item.img || undefined} alt={item.name} />
+          {item.madeToMeasure && <span className="mtm">Made to Order</span>}
+          {outOfStock && <span className="oos-tag">Out of stock</span>}
+        </div>
+      )}
       <div className="mid">
-        <div className="nm">{item.name}</div>
+        {href ? (
+          <Link href={href} className="nm">
+            {item.name}
+          </Link>
+        ) : (
+          <div className="nm">{item.name}</div>
+        )}
         <div className="ty">{item.type}</div>
         <div className="opts">
           <span className="opt">
@@ -185,10 +203,13 @@ function CartLine({ item }: { item: CartItem }) {
             +
           </button>
         </div>
-        {item.stock !== undefined && item.stock <= 5 && (
-          <div className="stock-note low">
-            {item.stock <= 0 ? "Out of stock" : `Only ${item.stock} left`}
-          </div>
+        {outOfStock ? (
+          <div className="stock-note oos">Out of stock</div>
+        ) : (
+          item.stock !== undefined &&
+          item.stock <= 5 && (
+            <div className="stock-note low">{`Only ${item.stock} left`}</div>
+          )
         )}
       </div>
     </div>

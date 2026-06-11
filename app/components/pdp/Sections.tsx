@@ -1,11 +1,12 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Link from "next/link";
-import type { PdpProduct } from "../../lib/pdp-data";
+import type { PdpProduct, PdpReview } from "../../lib/pdp-data";
 import { Ic, Stars } from "./icons";
 import { usePdp } from "./PdpContext";
 import { parseINR } from "../../lib/cart-data";
+import { fetchReviews } from "../../lib/api";
 
 const LOOK_COLOR = { name: "Rani Pink", hex: "#bd3c6e" };
 
@@ -45,6 +46,44 @@ export function CraftBand({ product }: { product: PdpProduct }) {
 }
 
 export function ReviewsSection({ product }: { product: PdpProduct }) {
+  // Live review data from the backend — the authoritative count, list and
+  // rating distribution for this product. Starts null and is filled on mount;
+  // until then we render nothing review-specific to avoid flashing seed data.
+  const [live, setLive] = useState<{
+    reviews: PdpReview[];
+    reviewDist: [string, number][];
+    count: number;
+  } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchReviews(product.slug)
+      .then((res) => {
+        if (!cancelled) setLive(res);
+      })
+      .catch(() => {
+        // Backend unreachable — fall back to whatever shipped with the product.
+        if (!cancelled)
+          setLive({
+            reviews: product.reviews,
+            reviewDist: product.reviewDist,
+            count: product.reviewCount,
+          });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [product.slug, product.reviews, product.reviewDist, product.reviewCount]);
+
+  const count = live?.count ?? 0;
+  const reviews = live?.reviews ?? [];
+  const reviewDist = live?.reviewDist ?? [];
+  // Average from the real reviews; fall back to the stored aggregate.
+  const avg =
+    reviews.length > 0
+      ? Math.round((reviews.reduce((s, r) => s + r.stars, 0) / reviews.length) * 10) / 10
+      : product.rating;
+
   return (
     <section className="sec" id="reviews">
       <div className="sec-title">
@@ -56,41 +95,53 @@ export function ReviewsSection({ product }: { product: PdpProduct }) {
           <span className="d">✦</span>
         </div>
       </div>
-      <div className="rv-top">
-        <div className="rv-score">
-          <div className="big">{product.rating}</div>
-          <Stars n={product.rating} />
-          <div className="cnt">Based on {product.reviewCount} reviews</div>
+      {live === null ? (
+        <div className="rv-loading">Loading reviews…</div>
+      ) : count === 0 ? (
+        <div className="rv-empty">
+          {Ic.verify} No reviews yet — be the first to review this piece.
         </div>
-        <div className="rv-bars">
-          {product.reviewDist.map(([label, pc]) => (
-            <div className="bar" key={label}>
-              <span className="lab">{label}</span>
-              <span className="track">
-                <span className="fill" style={{ width: `${pc}%` }} />
-              </span>
-              <span className="pc">{pc}%</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="rv-grid">
-        {product.reviews.map((r, i) => (
-          <div className="rv-card" key={i}>
-            <Stars n={r.stars} />
-            <div className="txt">&ldquo;{r.txt}&rdquo;</div>
-            <div className="who">
-              <div className="av">{r.name[0]}</div>
-              <div>
-                <div className="nm">{r.name}</div>
-                <div className="vf">
-                  {Ic.verify} {r.loc}
-                </div>
+      ) : (
+        <>
+          <div className="rv-top">
+            <div className="rv-score">
+              <div className="big">{avg}</div>
+              <Stars n={avg} />
+              <div className="cnt">
+                Based on {count} {count === 1 ? "review" : "reviews"}
               </div>
             </div>
+            <div className="rv-bars">
+              {reviewDist.map(([label, pc]) => (
+                <div className="bar" key={label}>
+                  <span className="lab">{label}</span>
+                  <span className="track">
+                    <span className="fill" style={{ width: `${pc}%` }} />
+                  </span>
+                  <span className="pc">{pc}%</span>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
-      </div>
+          <div className="rv-grid">
+            {reviews.map((r, i) => (
+              <div className="rv-card" key={i}>
+                <Stars n={r.stars} />
+                <div className="txt">&ldquo;{r.txt}&rdquo;</div>
+                <div className="who">
+                  <div className="av">{r.name[0]}</div>
+                  <div>
+                    <div className="nm">{r.name}</div>
+                    <div className="vf">
+                      {Ic.verify} {r.loc}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </section>
   );
 }

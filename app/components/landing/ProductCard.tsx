@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { img, type Product } from "../../lib/landing-data";
+import { img, LOW_STOCK_CUE, type Product } from "../../lib/landing-data";
 import { HeartIcon } from "./Icons";
 import { useCart } from "./CartContext";
 import { useWishlist } from "./WishlistContext";
@@ -22,6 +22,11 @@ export default function ProductCard({ product, index }: { product: Product; inde
   const altImg = img(product.alt, 900);
   const wished = isWished(product.slug);
   const soldOut = product.soldOut === true;
+  const lowStock =
+    !soldOut &&
+    typeof product.stock === "number" &&
+    product.stock > 0 &&
+    product.stock <= LOW_STOCK_CUE;
 
   const onWish = () => {
     toggle({
@@ -88,9 +93,14 @@ export default function ProductCard({ product, index }: { product: Product; inde
         {soldOut ? (
           <span className="flag soldout">Sold Out</span>
         ) : (
-          product.flag && (
-            <span className={`flag${product.flag.sale ? " sale" : ""}`}>{product.flag.label}</span>
-          )
+          <>
+            {product.flag && (
+              <span className={`flag${product.flag.sale ? " sale" : ""}`}>{product.flag.label}</span>
+            )}
+            {lowStock && !product.flag && (
+              <span className="flag low">Only {product.stock} left</span>
+            )}
+          </>
         )}
         <button
           className={`wish${wished ? " on" : ""}${pop ? " pop" : ""}`}
@@ -118,6 +128,11 @@ export default function ProductCard({ product, index }: { product: Product; inde
         {product.was && <span className="was">{product.was}</span>}
         <span className="stars">{product.stars}</span>
       </div>
+      {lowStock && (
+        <div className="pstock" role="status">
+          Only {product.stock} left in stock
+        </div>
+      )}
     </article>
   );
 }

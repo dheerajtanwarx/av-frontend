@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { AccordionItem, PdpColor, PdpProduct } from "../../lib/pdp-data";
+import { colorImages, type AccordionItem, type PdpColor, type PdpProduct } from "../../lib/pdp-data";
 import { Ic, Stars } from "./icons";
 import { usePdp } from "./PdpContext";
 import { useCart } from "../landing/CartContext";
@@ -28,7 +28,8 @@ function makeItem(
     price: parseINR(product.price),
     was: product.was ? parseINR(product.was) : null,
     qty,
-    img: product.images[0],
+    // Cart thumbnail reflects the chosen colour, falling back to the hero shot.
+    img: colorImages(product, color)[0] ?? product.images[0],
   };
 }
 
@@ -137,10 +138,15 @@ function Accordion({ items }: { items: AccordionItem[] }) {
   );
 }
 
-export default function BuyBox({ product }: { product: PdpProduct }) {
-  const [color, setColorState] = useState<PdpColor>(
-    () => product.colors.find((c) => stockOf(c) > 0) ?? product.colors[0]
-  );
+export default function BuyBox({
+  product,
+  color,
+  onSelectColor,
+}: {
+  product: PdpProduct;
+  color: PdpColor;
+  onSelectColor: (c: PdpColor) => void;
+}) {
   const [size, setSize] = useState<string>(
     product.sizes[Math.min(2, product.sizes.length - 1)] ?? product.sizes[0]
   );
@@ -155,11 +161,14 @@ export default function BuyBox({ product }: { product: PdpProduct }) {
   const available = stockOf(color);
   const soldOut = available <= 0;
 
-  const setColor = (c: PdpColor) => {
-    setColorState(c);
-    // Keep the chosen quantity purchasable for the new colour.
-    setQty((q) => Math.max(1, Math.min(q, stockOf(c))));
-  };
+  // Keep the chosen quantity purchasable when the colour (and its stock)
+  // changes; size is intentionally left untouched across colour switches.
+  // Adjusting state during render is React's recommended take on this.
+  const [prevColor, setPrevColor] = useState(color);
+  if (color !== prevColor) {
+    setPrevColor(color);
+    setQty((q) => Math.max(1, Math.min(q, stockOf(color))));
+  }
 
   const onWish = () => {
     toggle({
@@ -219,7 +228,7 @@ export default function BuyBox({ product }: { product: PdpProduct }) {
               title={stockOf(c) <= 0 ? `${c.name} — out of stock` : c.name}
               aria-label={stockOf(c) <= 0 ? `${c.name} (out of stock)` : c.name}
               aria-pressed={c.name === color.name}
-              onClick={() => setColor(c)}
+              onClick={() => onSelectColor(c)}
             />
           ))}
         </div>

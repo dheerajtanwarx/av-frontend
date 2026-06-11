@@ -1606,6 +1606,17 @@
 
 /* sold-out product cards */
 .av .prod .flag.soldout { background: var(--muted); color: #fff; }
+
+/* low-stock cue — urgent badge on the image + a note under the price */
+.av .prod .flag.low { background: var(--rani-deep); color: #fff; }
+.av .prod .pstock {
+  margin-top: 5px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--rani-deep);
+}
 .av .prod .addcart:disabled,
 .av .prod .addcart:disabled:hover,
 .av .prod .buynow:disabled,

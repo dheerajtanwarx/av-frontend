@@ -258,7 +258,7 @@ export default function Header() {
               ))}
             </nav>
           </div>
-          <a href="#" className="logo">
+          <a href="/" className="logo">
             <span className="mark">AV CREATION</span>
             <span className="sub">Jaipuri Atelier · Rajasthan</span>
           </a>

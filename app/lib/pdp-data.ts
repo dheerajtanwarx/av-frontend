@@ -10,7 +10,7 @@
 
 import { bestsellers, odhniEdit, img, type Product } from "./landing-data";
 
-export type PdpColor = { name: string; hex: string; stock?: number };
+export type PdpColor = { name: string; hex: string; stock?: number; images?: string[] };
 export type PdpReview = { stars: number; txt: string; name: string; loc: string };
 export type AccordionItem = { q: string; a: string };
 export type CraftSpec = { st: string; sv: string };
@@ -257,8 +257,17 @@ const LANDING_BY_SLUG: Record<string, Product> = Object.fromEntries(
   [...odhniEdit, ...bestsellers].map((p) => [p.slug, p])
 );
 
+/** Rotate `arr` left by `n` so each colour leads with a different image —
+    gives the static fallback a visible gallery change when switching colours. */
+function rotate<T>(arr: T[], n: number): T[] {
+  if (arr.length === 0) return arr;
+  const k = ((n % arr.length) + arr.length) % arr.length;
+  return [...arr.slice(k), ...arr.slice(0, k)];
+}
+
 function baseFrom(p: Product): PdpProduct {
   const navHot = navHotFor(p.name, p.type);
+  const galleryImgs = [GAL(p.main), GAL(p.alt), GAL(ID.d), GAL(ID.b), GAL(ID.e)];
   return {
     slug: p.slug,
     name: p.name,
@@ -273,8 +282,8 @@ function baseFrom(p: Product): PdpProduct {
     was: p.was,
     off: p.flag?.sale ? p.flag.label : undefined,
     desc: "Hand-finished by our karigars across Jaipur, Sanganer and Bagru — a piece made to be worn, kept and remembered. Each one carries the small, beautiful irregularities of true handwork.",
-    images: [GAL(p.main), GAL(p.alt), GAL(ID.d), GAL(ID.b), GAL(ID.e)],
-    colors: DEFAULT_COLORS,
+    images: galleryImgs,
+    colors: DEFAULT_COLORS.map((c, i) => ({ ...c, images: rotate(galleryImgs, i) })),
     sizes: DEFAULT_SIZES,
     sizeChart: DEFAULT_SIZE_CHART,
     accordion: DEFAULT_ACCORDION,
@@ -306,4 +315,13 @@ export function getProduct(slug: string): PdpProduct | null {
   const landing = LANDING_BY_SLUG[slug];
   if (!landing) return null;
   return { ...baseFrom(landing), ...OVERRIDES[slug] };
+}
+
+/** Gallery images for the selected colour: the colour's own images when it has
+    them, otherwise the product-level images. Falsy/missing URLs are dropped so
+    the gallery never renders a broken image. */
+export function colorImages(product: PdpProduct, color?: PdpColor): string[] {
+  const own = (color?.images ?? []).filter(Boolean);
+  if (own.length) return own;
+  return product.images.filter(Boolean);
 }
