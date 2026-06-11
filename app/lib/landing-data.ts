@@ -310,6 +310,59 @@ export const reels = [
   { image: "premium_photo-1682096037844-e43413e887a8", views: "1.7M" },
 ];
 
+export type Store = {
+  badge: string;
+  name: string;
+  city: string;
+  image: string;
+  address: string[];
+  hours: string;
+  phone: string;
+  /** Free-text query used to build the Google Maps embed + directions links. */
+  mapQuery: string;
+};
+
+export const stores: Store[] = [
+  {
+    badge: "Flagship Atelier",
+    name: "Sanganer",
+    city: "Jaipur, Rajasthan",
+    image: "premium_photo-1682096032284-0b2ab20b65dd",
+    address: ["Plot 14, Sanganer Main Road", "Near Jaipuri Bazaar", "Jaipur — 302 029"],
+    hours: "Mon – Sat · 10 AM – 7 PM",
+    phone: "+91 98765 43210",
+    mapQuery: "Sanganer Main Road, Jaipur, Rajasthan 302029",
+  },
+  {
+    badge: "Studio",
+    name: "Shahpur Jat",
+    city: "New Delhi",
+    image: "premium_photo-1682096034925-468c545d1c12",
+    address: ["Shop 7, Second Floor", "Shabnam Complex, Shahpur Jat", "New Delhi — 110 049"],
+    hours: "Wed – Sun · 11 AM – 8 PM",
+    phone: "+91 98765 12340",
+    mapQuery: "Shahpur Jat, New Delhi, Delhi 110049",
+  },
+  {
+    badge: "Studio",
+    name: "Bandra West",
+    city: "Mumbai, Maharashtra",
+    image: "premium_photo-1682096037844-e43413e887a8",
+    address: ["12 Linking Road, Bandra West", "Opp. Waterfield Road", "Mumbai — 400 050"],
+    hours: "Tue – Sun · 11 AM – 8 PM",
+    phone: "+91 98765 67890",
+    mapQuery: "Linking Road, Bandra West, Mumbai, Maharashtra 400050",
+  },
+];
+
+/** Google Maps embed URL (no API key required). */
+export const mapEmbedUrl = (q: string) =>
+  `https://maps.google.com/maps?q=${encodeURIComponent(q)}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
+
+/** Google Maps "search / directions" URL opened in a new tab. */
+export const mapLinkUrl = (q: string) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+
 export const footerCols = [
   {
     title: "Shop",

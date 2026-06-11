@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { fetchProducts, fetchCategories, ApiError } from "../../lib/api";
 import Header from "../../components/landing/Header";
-import NewsletterForm from "../../components/landing/NewsletterForm";
 import CategoryListing from "../../components/category/CategoryListing";
 import ScrollReveal from "../../components/landing/ScrollReveal";
 import Footer from "../../components/landing/Footer";
@@ -52,22 +51,6 @@ export default async function CategoryPage({
         categoryName={categoryName}
         products={products ?? []}
       />
-
-      {/* Newsletter */}
-      <section className="news">
-        <div className="ring a" />
-        <div className="ring b" />
-        <div className="wrap">
-          <div className="eyebrow">Join the Maharani Circle</div>
-          <h2>
-            A little Jaipur,
-            <br />
-            in your inbox
-          </h2>
-          <p>Early access to new drops, styling notes and ₹500 off your first order above ₹3,000.</p>
-          <NewsletterForm />
-        </div>
-      </section>
 
       <Footer />
     </div>

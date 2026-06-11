@@ -3,8 +3,11 @@ import {
   editorial,
   img,
   lookbook,
+  mapEmbedUrl,
+  mapLinkUrl,
   odhniFeatures,
   reels,
+  stores,
   trust,
 } from "./lib/landing-data";
 import { fetchProducts, fetchCategories } from "./lib/api";
@@ -12,7 +15,6 @@ import Header from "./components/landing/Header";
 import HeroCarousel from "./components/landing/HeroCarousel";
 import ScrollReveal from "./components/landing/ScrollReveal";
 import ProductCard from "./components/landing/ProductCard";
-import NewsletterForm from "./components/landing/NewsletterForm";
 import Footer from "./components/landing/Footer";
 import {
   PlayIcon,
@@ -309,21 +311,58 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* NEWSLETTER */}
-      <section className="news">
-        <div className="ring a" />
-        <div className="ring b" />
+      {/* OFFLINE STORES */}
+      <section className="sec stores" id="stores">
         <div className="wrap">
-          <div className="eyebrow">Join the Maharani Circle</div>
-          <h2>
-            A little Jaipur,
-            <br />
-            in your inbox
-          </h2>
-          <p>
-            Early access to new drops, styling notes and ₹500 off your first order above ₹3,000.
-          </p>
-          <NewsletterForm />
+          <div className="sec-title reveal">
+            <span className="eyebrow">Come Say Namaste</span>
+            <h2>
+              Our Offline <em>Stores</em>
+            </h2>
+            <div className="orn">
+              <span className="d">✦</span>
+            </div>
+          </div>
+          <div className="stores-grid">
+            {stores.map((s, i) => (
+              <div className={`store-card reveal ${["", "d1", "d2"][i] ?? ""}`} key={s.name}>
+                <div className="store-photo">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={img(s.image, 800)} alt={`AV Creation ${s.name} store`} loading="lazy" />
+                  <span className="store-badge">{s.badge}</span>
+                </div>
+                <div className="store-map">
+                  <iframe
+                    title={`Map — AV Creation ${s.name}`}
+                    src={mapEmbedUrl(s.mapQuery)}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+                <div className="store-body">
+                  <h3>{s.name}</h3>
+                  <div className="store-city">{s.city}</div>
+                  <address className="store-addr">
+                    {s.address.map((line) => (
+                      <span key={line}>{line}</span>
+                    ))}
+                  </address>
+                  <div className="store-meta">
+                    <span>{s.hours}</span>
+                    <a href={`tel:${s.phone.replace(/\s/g, "")}`}>{s.phone}</a>
+                  </div>
+                  <a
+                    className="btn btn-line store-dir"
+                    href={mapLinkUrl(s.mapQuery)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Get Directions →
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
