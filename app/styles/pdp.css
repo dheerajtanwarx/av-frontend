@@ -507,7 +507,8 @@
   margin-top: 14px;
   border: 1px solid var(--line-2);
   border-radius: 10px;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   background: #fff;
 }
 .pdp .size-guide table {

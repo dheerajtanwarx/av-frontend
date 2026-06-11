@@ -1,0 +1,307 @@
+/* ============================================================
+   AV CREATION — SEARCH + FILTER PAGE
+   Scoped to .av .search-page (reuses .cat-bar / .cat-grid)
+   ============================================================ */
+
+.av .search-page {
+  min-height: 100vh;
+  padding-bottom: 104px;
+}
+
+/* ---- Hero + search field ---- */
+.av .search-hero {
+  background: linear-gradient(160deg, var(--bg) 0%, var(--rani-wash) 100%);
+  padding: 48px 0 40px;
+  border-bottom: 1px solid var(--line-2);
+  animation: catHeroIn 0.6s var(--ease) both;
+}
+.av .search-hero h1 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(34px, 4.4vw, 54px);
+  color: var(--ink);
+  line-height: 1.05;
+  margin-bottom: 22px;
+}
+.av .search-hero h1 em {
+  font-style: italic;
+  color: var(--rani);
+}
+
+.av .search-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 620px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 40px;
+  padding: 14px 22px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.av .search-field:focus-within {
+  border-color: var(--rani);
+  box-shadow: 0 0 0 3px var(--rani-wash);
+}
+.av .search-field svg {
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.av .search-field input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: none;
+  font-family: var(--sans);
+  font-size: 15px;
+  color: var(--ink);
+}
+.av .search-field input::placeholder {
+  color: var(--muted);
+}
+.av .search-clear {
+  background: none;
+  border: none;
+  color: var(--rani);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* ---- Two-column layout ---- */
+.av .search-layout {
+  display: grid;
+  grid-template-columns: 248px 1fr;
+  gap: 44px;
+  align-items: start;
+  padding-top: 36px;
+}
+
+.av .search-filter-toggle {
+  display: none;
+}
+
+/* ---- Filter sidebar ---- */
+.av .search-filters {
+  position: sticky;
+  top: 24px;
+  animation: fadeUpIn 0.5s 0.1s var(--ease) both;
+}
+.av .search-filters-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line-2);
+}
+.av .search-filters-head h2 {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--ink);
+}
+.av .search-clear-all {
+  background: none;
+  border: none;
+  color: var(--rani);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.av .search-group {
+  margin-bottom: 26px;
+}
+.av .search-group h3 {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.av .search-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.av .search-checks label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.av .search-checks input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--rani);
+  cursor: pointer;
+}
+.av .search-checks .search-count {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.av .search-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.av .search-tag {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  padding: 6px 13px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  border-radius: 22px;
+  font-family: var(--sans);
+  transition: border-color 0.22s, color 0.22s, background 0.22s;
+}
+.av .search-tag:hover {
+  border-color: var(--rani);
+  color: var(--rani);
+}
+.av .search-tag.active {
+  background: var(--rani);
+  border-color: var(--rani);
+  color: #fff;
+}
+
+.av .search-price {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.av .search-price input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 11px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.22s;
+}
+.av .search-price input:focus {
+  border-color: var(--rani);
+}
+.av .search-price span {
+  color: var(--muted);
+}
+
+/* ---- Results column ---- */
+.av .search-results .cat-bar {
+  margin-bottom: 36px;
+  padding-top: 0;
+}
+.av .search-results .cat-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+.av .cat-grid.is-loading {
+  opacity: 0.45;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.av .search-active-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: 8px;
+  border-radius: 9px;
+  background: var(--rani);
+  color: #fff;
+  font-size: 11px;
+}
+
+/* ---- Header inline search ---- */
+.av .hsearch {
+  display: flex;
+  align-items: center;
+}
+.av .hsearch input {
+  width: 0;
+  opacity: 0;
+  padding: 0;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+  transition: width 0.3s var(--ease), opacity 0.25s, padding 0.3s;
+}
+.av .hsearch.open input {
+  width: 168px;
+  opacity: 1;
+  padding: 5px 8px;
+}
+.av .hsearch.open input:focus {
+  border-bottom-color: var(--rani);
+}
+.av .hsearch button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  color: inherit;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1080px) {
+  .av .search-results .cat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 860px) {
+  .av .search-layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .av .search-filter-toggle {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 10px 20px;
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    background: none;
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .av .search-filters {
+    position: static;
+    display: none;
+    margin-bottom: 32px;
+  }
+  .av .search-filters.open {
+    display: block;
+  }
+  .av .hsearch.open input {
+    width: 120px;
+  }
+}
+@media (max-width: 480px) {
+  .av .search-results .cat-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 12px;
+  }
+}

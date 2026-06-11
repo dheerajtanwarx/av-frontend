@@ -18,6 +18,8 @@
 @import "./styles/orders.css";
 /* Wishlist page + heart animation */
 @import "./styles/wishlist.css";
+/* Search + filter page, and the header search field */
+@import "./styles/search.css";
 /* Admin panel shell — sidebar, topbar, profile menu, placeholders */
 @import "./styles/admin-layout.css";
 /* Admin review moderation page (scoped to .admin) */
@@ -36,4 +38,22 @@ html {
 body {
   background: var(--bg);
   color: var(--ink);
+}
+
+/* ── Global responsive safety net ───────────────────────────────
+   `overflow-x: clip` stops any stray element from creating a
+   horizontal scrollbar on small screens, WITHOUT establishing a
+   scroll container (so `position: sticky` headers keep working). */
+html,
+body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+/* Media never forces the layout wider than its column. */
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
 }

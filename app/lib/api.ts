@@ -89,6 +89,63 @@ export function fetchProducts(
   return apiGet<Product[]>(`/api/products${q ? `?${q}` : ""}`, opts);
 }
 
+export type ProductSort =
+  | "featured"
+  | "price-asc"
+  | "price-desc"
+  | "newest"
+  | "rating";
+
+export type ProductSearchParams = {
+  q?: string;
+  /** One slug, or many (sent comma-separated). */
+  category?: string | string[];
+  /** Tag token(s) matched within a product's `type`. */
+  tag?: string | string[];
+  bestseller?: boolean;
+  sale?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+  sort?: ProductSort;
+};
+
+/** Search + filter the whole catalogue. Backs the /search page. */
+export function searchProducts(
+  params: ProductSearchParams = {},
+  opts?: FetchOpts
+): Promise<Product[]> {
+  const qs = new URLSearchParams();
+  if (params.q?.trim()) qs.set("q", params.q.trim());
+
+  const category = Array.isArray(params.category)
+    ? params.category.join(",")
+    : params.category;
+  if (category) qs.set("category", category);
+
+  const tag = Array.isArray(params.tag) ? params.tag.join(",") : params.tag;
+  if (tag) qs.set("tag", tag);
+
+  if (params.bestseller) qs.set("bestseller", "true");
+  if (params.sale) qs.set("sale", "true");
+  if (params.minPrice != null) qs.set("minPrice", String(params.minPrice));
+  if (params.maxPrice != null) qs.set("maxPrice", String(params.maxPrice));
+  if (params.sort && params.sort !== "featured") qs.set("sort", params.sort);
+
+  const q = qs.toString();
+  return apiGet<Product[]>(`/api/products${q ? `?${q}` : ""}`, opts);
+}
+
+export type ProductFacets = {
+  categories: { name: string; slug: string; count: number }[];
+  tags: string[];
+  priceRange: { min: number; max: number };
+};
+
+/** Filter options (categories, tags, price range) for the search UI. */
+export function fetchProductFacets(opts?: FetchOpts): Promise<ProductFacets> {
+  return apiGet<ProductFacets>(`/api/products/facets`, opts);
+}
+
 export function fetchProduct(slug: string, opts?: FetchOpts): Promise<PdpProduct> {
   return apiGet<PdpProduct>(`/api/products/${encodeURIComponent(slug)}`, opts);
 }

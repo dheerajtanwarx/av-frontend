@@ -441,6 +441,16 @@
   .flow .summary, .flow .co-summary { position: static; }
   .flow .wrap { padding: 0 22px; }
 }
+@media (max-width: 560px) {
+  .flow .wrap { padding: 0 16px; }
+  /* stack paired form fields on small phones for legible inputs */
+  .flow .field-grid { grid-template-columns: 1fr; }
+  /* cart line: slimmer thumb so name + price still fit one row */
+  .flow .citem { grid-template-columns: 84px 1fr auto; gap: 14px; }
+  .flow .citem .pic { width: 84px; height: 104px; }
+  .flow .citem .nm { font-size: 18px; }
+  .flow .drawer { width: 100%; max-width: 100%; }
+}
 @media (prefers-reduced-motion: reduce) {
   .flow *, .flow *::after, .flow *::before { animation-duration: .001s !important; }
 }
