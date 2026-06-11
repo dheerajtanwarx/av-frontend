@@ -3,8 +3,7 @@ import {
   editorial,
   img,
   lookbook,
-  mapEmbedUrl,
-  mapLinkUrl,
+  mapDirectionsUrl,
   odhniFeatures,
   reels,
   stores,
@@ -328,32 +327,13 @@ export default async function Home() {
               <div className={`store-card reveal ${["", "d1", "d2"][i] ?? ""}`} key={s.name}>
                 <div className="store-photo">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img(s.image, 800)} alt={`AV Creation ${s.name} store`} loading="lazy" />
-                  <span className="store-badge">{s.badge}</span>
-                </div>
-                <div className="store-map">
-                  <iframe
-                    title={`Map — AV Creation ${s.name}`}
-                    src={mapEmbedUrl(s.mapQuery)}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                  />
+                  <img src={img(s.image, 800)} alt={`${s.name} store`} loading="lazy" />
                 </div>
                 <div className="store-body">
-                  <h3>{s.name}</h3>
-                  <div className="store-city">{s.city}</div>
-                  <address className="store-addr">
-                    {s.address.map((line) => (
-                      <span key={line}>{line}</span>
-                    ))}
-                  </address>
-                  <div className="store-meta">
-                    <span>{s.hours}</span>
-                    <a href={`tel:${s.phone.replace(/\s/g, "")}`}>{s.phone}</a>
-                  </div>
+                  <address className="store-addr">{s.address}</address>
                   <a
-                    className="btn btn-line store-dir"
-                    href={mapLinkUrl(s.mapQuery)}
+                    className="btn btn-rani store-dir"
+                    href={mapDirectionsUrl(s.lat, s.lng)}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

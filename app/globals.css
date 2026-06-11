@@ -57,3 +57,68 @@ canvas,
 svg {
   max-width: 100%;
 }
+
+/* ── Floating WhatsApp "Chat us now" button ─────────────────────
+   Rendered once in the root layout, fixed bottom-right on every page. */
+.wa-fab {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px 12px 13px;
+  background: #25d366;
+  color: #fff;
+  border-radius: 999px;
+  text-decoration: none;
+  font-family: var(--font-jost), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 10px 28px rgba(37, 211, 102, 0.42);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+.wa-fab:hover {
+  background: #20bd5a;
+  transform: translateY(-3px);
+  box-shadow: 0 16px 38px rgba(37, 211, 102, 0.5);
+}
+.wa-fab-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.wa-fab-label {
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* Gentle attention pulse (disabled for reduced-motion users). */
+@media (prefers-reduced-motion: no-preference) {
+  .wa-fab::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5);
+    animation: wa-pulse 2.4s ease-out infinite;
+  }
+  @keyframes wa-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
+    70% { box-shadow: 0 0 0 16px rgba(37, 211, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+  }
+}
+
+/* On phones, collapse to a clean circular icon button. */
+@media (max-width: 600px) {
+  .wa-fab {
+    right: 16px;
+    bottom: 16px;
+    padding: 14px;
+    gap: 0;
+  }
+  .wa-fab-label { display: none; }
+}
