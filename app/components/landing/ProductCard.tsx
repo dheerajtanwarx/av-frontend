@@ -28,6 +28,19 @@ export default function ProductCard({ product, index }: { product: Product; inde
     product.stock > 0 &&
     product.stock <= LOW_STOCK_CUE;
 
+  // Per-colour availability (when the card carries variant colours). Used to
+  // (a) quick-add an in-stock colour rather than a hardcoded one, and (b) flag
+  // a partial sell-out — some colours gone, but the product is still buyable.
+  const colors = product.colors;
+  const firstInStock = colors?.find((c) => c.stock > 0) ?? null;
+  const someSoldOut =
+    !soldOut && !!colors && colors.length > 1 && colors.some((c) => c.stock <= 0);
+  // The colour the quick-add buttons will use. Falls back to the legacy
+  // hardcoded swatch for products that don't carry colour data.
+  const addColor = firstInStock
+    ? { name: firstInStock.name, hex: firstInStock.hex }
+    : { name: "Rani Pink", hex: "#bd3c6e" };
+
   const onWish = () => {
     toggle({
       slug: product.slug,
@@ -47,7 +60,7 @@ export default function ProductCard({ product, index }: { product: Product; inde
     slug: product.slug,
     name: product.name,
     type: product.type,
-    color: { name: "Rani Pink", hex: "#bd3c6e" },
+    color: addColor,
     size: "Free Size",
     madeToMeasure: false,
     price: parseINR(product.price),
@@ -100,6 +113,9 @@ export default function ProductCard({ product, index }: { product: Product; inde
             {lowStock && !product.flag && (
               <span className="flag low">Only {product.stock} left</span>
             )}
+            {someSoldOut && !product.flag && !lowStock && (
+              <span className="flag low">Few colours left</span>
+            )}
           </>
         )}
         <button
@@ -128,11 +144,15 @@ export default function ProductCard({ product, index }: { product: Product; inde
         {product.was && <span className="was">{product.was}</span>}
         <span className="stars">{product.stars}</span>
       </div>
-      {lowStock && (
+      {lowStock ? (
         <div className="pstock" role="status">
           Only {product.stock} left in stock
         </div>
-      )}
+      ) : someSoldOut ? (
+        <div className="pstock" role="status">
+          {colors!.filter((c) => c.stock > 0).length} of {colors!.length} colours available
+        </div>
+      ) : null}
     </article>
   );
 }

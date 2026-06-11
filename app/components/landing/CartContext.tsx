@@ -25,6 +25,7 @@ import {
   addServerCartItem,
   updateServerCartQty,
   removeServerCartItem,
+  checkCartStock,
 } from "../../lib/api";
 
 const LS_KEY = "av-cart-v1";
@@ -44,11 +45,16 @@ type CartContextValue = {
   savings: number;
   discount: number;
   total: number;
+  /** True when any line has sold out or its quantity now exceeds stock —
+      checkout is blocked until the shopper resolves it. */
+  hasUnavailableItems: boolean;
   /* actions */
   addItem: (item: CartItem) => void;
   setQty: (id: string, qty: number) => void;
   remove: (id: string) => void;
   clear: () => void;
+  /** Re-check live stock for every line and update each line's `stock`. */
+  refreshStock: () => Promise<void>;
   applyPromo: (code: string) => Promise<ApplyResult>;
   removePromo: () => void;
   openDrawer: () => void;
@@ -244,7 +250,37 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const removePromo = useCallback(() => setPromo(null), []);
 
-  const openDrawer = useCallback(() => setDrawerOpen(true), []);
+  /* Re-check live stock for every line (works for guest + signed-in carts) and
+     write the current figure back onto each line so the cart can flag sold-out
+     / reduced-stock items. Quantities are left untouched so the server cart
+     stays in sync — the UI guides the shopper to reduce or remove instead. */
+  const refreshStock = useCallback(async () => {
+    const lines = itemsRef.current
+      .filter((i) => i.slug)
+      .map((i) => ({ slug: i.slug as string, color: i.color.name }));
+    if (lines.length === 0) return;
+    try {
+      const res = await checkCartStock(lines);
+      const byKey = new Map(
+        res.items.map((r) => [`${r.slug}__${r.color.toLowerCase()}`, r.stock])
+      );
+      setItems((b) =>
+        b.map((i) => {
+          if (!i.slug) return i;
+          const stock = byKey.get(`${i.slug}__${i.color.name.toLowerCase()}`);
+          return stock === undefined ? i : { ...i, stock };
+        })
+      );
+    } catch {
+      /* best-effort — leave the cart as-is if the check fails */
+    }
+  }, []);
+
+  const openDrawer = useCallback(() => {
+    setDrawerOpen(true);
+    // Revalidate stock each time the cart opens so sold-out items surface.
+    refreshStock();
+  }, [refreshStock]);
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
   /* derived totals */
@@ -256,6 +292,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const total = Math.max(0, subtotal - discount);
     return { count, subtotal, savings, discount, total };
   }, [items, promo]);
+
+  // A line blocks checkout when it's sold out, or its quantity now exceeds the
+  // stock left (only meaningful for lines we have a stock figure for).
+  const hasUnavailableItems = useMemo(
+    () => items.some((i) => i.stock !== undefined && (i.stock <= 0 || i.qty > i.stock)),
+    [items]
+  );
 
   const placeOrder = useCallback<CartContextValue["placeOrder"]>(
     async (details) => {
@@ -304,10 +347,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     savings,
     discount,
     total,
+    hasUnavailableItems,
     addItem,
     setQty,
     remove,
     clear,
+    refreshStock,
     applyPromo,
     removePromo,
     openDrawer,

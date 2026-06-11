@@ -89,6 +89,19 @@ export function fetchProducts(
   return apiGet<Product[]>(`/api/products${q ? `?${q}` : ""}`, opts);
 }
 
+/** Live per-line stock for a set of { slug, color } cart lines. Public — works
+    for guest carts too. Lets the cart flag items that have sold out since they
+    were added. Returns the same lines back, each with its current stock. */
+export function checkCartStock(
+  items: { slug: string; color: string }[]
+): Promise<{ items: { slug: string; color: string; stock: number }[] }> {
+  return apiSend<{ items: { slug: string; color: string; stock: number }[] }>(
+    "POST",
+    `/api/products/stock`,
+    { items }
+  );
+}
+
 export type ProductSort =
   | "featured"
   | "price-asc"
@@ -913,4 +926,105 @@ export function fetchHeroSettings(opts?: FetchOpts): Promise<HeroSettings> {
 
 export function updateHeroSettings(images: (string | null)[]): Promise<HeroSettings> {
   return apiSend<HeroSettings>("PUT", `/api/admin/hero`, { images });
+}
+
+/* ---------- File downloads (cookie-auth) ---------- */
+
+/** Fetch a binary endpoint with the session cookie and trigger a browser
+    download. Used for CSV exports and PDF invoices, which can't be a plain
+    <a href> because the API lives on another origin behind cookie auth. */
+export async function downloadFile(path: string, fallbackName: string): Promise<void> {
+  const res = await fetch(`${API_URL}${path}`, {
+    credentials: "include",
+    cache: "no-store",
+  });
+  if (!res.ok) throw await toApiError(res);
+
+  // Honour a server-provided filename if present, else use the fallback.
+  let filename = fallbackName;
+  const disp = res.headers.get("Content-Disposition");
+  const match = disp?.match(/filename="?([^"]+)"?/);
+  if (match) filename = match[1];
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/* ---------- Admin: reports (ADMIN role only) ---------- */
+
+export type ReportRange = "7" | "30" | "90" | "365" | "all";
+
+export type ReportSalesDay = {
+  date: string;
+  orders: number;
+  grossRevenue: number;
+  discounts: number;
+  netRevenue: number;
+};
+
+export type ReportTopCustomer = {
+  id: number;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  orders: number;
+  spend: number;
+};
+
+export type AdminReport = {
+  range: { key: ReportRange; days: number | null; start: string | null; end: string };
+  sales: {
+    daily: ReportSalesDay[];
+    totals: {
+      orders: number;
+      grossRevenue: number;
+      discounts: number;
+      netRevenue: number;
+      avgOrderValue: number;
+    };
+  };
+  orders: {
+    totals: { total: number; byStatus: { status: OrderStatus; count: number }[] };
+    recent: {
+      id: number;
+      no: string;
+      customer: string;
+      status: OrderStatus;
+      payment: string | null;
+      itemCount: number;
+      placedAt: string;
+      total: number;
+    }[];
+  };
+  customers: {
+    totals: { total: number; newInRange: number };
+    top: ReportTopCustomer[];
+  };
+};
+
+export function fetchAdminReport(range: ReportRange): Promise<AdminReport> {
+  return apiGet<AdminReport>(`/api/admin/reports?range=${range}`);
+}
+
+/** Download one of the report CSV exports for the given range. */
+export function downloadReportCsv(
+  report: "sales" | "orders" | "customers",
+  range: ReportRange
+): Promise<void> {
+  const suffix = report === "customers" ? "" : `?range=${range}`;
+  return downloadFile(`/api/admin/reports/${report}.csv${suffix}`, `av-${report}.csv`);
+}
+
+/* ---------- Order invoice (downloadable PDF) ---------- */
+
+/** Download the PDF invoice for a delivered order. */
+export function downloadInvoice(id: number, orderNo: string): Promise<void> {
+  return downloadFile(`/api/orders/${id}/invoice`, `Invoice-${orderNo}.pdf`);
 }

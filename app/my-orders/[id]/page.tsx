@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { use } from "react";
 import Header from "../../components/landing/Header";
-import { fetchOrder, cancelOrder, returnOrder, advanceOrder, submitReview, ApiError, type MyOrder, type OrderShippingAddress } from "../../lib/api";
+import { fetchOrder, cancelOrder, returnOrder, advanceOrder, submitReview, downloadInvoice, ApiError, type MyOrder, type OrderShippingAddress } from "../../lib/api";
 
 const IS_DEV = process.env.NODE_ENV !== "production";
 const ADVANCEABLE = ["PLACED", "CONFIRMED", "PROCESSING", "SHIPPED"];
@@ -587,6 +587,49 @@ function ReturnSection({ order, onReturned }: { order: MyOrder; onReturned: (upd
   );
 }
 
+/* ── Invoice Section ─────────────────────────────────────── */
+
+/* Download button for the order's PDF invoice. Only rendered for delivered
+   orders, for which the backend issues an invoice. */
+function InvoiceSection({ order }: { order: MyOrder }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  if (order.status !== "DELIVERED") return null;
+
+  async function handleDownload() {
+    setBusy(true);
+    setError(null);
+    try {
+      await downloadInvoice(order.id, order.no);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Could not download the invoice. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="order-side-panel">
+      <div className="order-side-head">Invoice</div>
+      <div className="order-side-body">
+        <button className="order-invoice-btn" onClick={handleDownload} disabled={busy}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4" />
+            <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
+          </svg>
+          {busy ? "Preparing…" : "Download Invoice (PDF)"}
+        </button>
+        {error ? (
+          <p className="order-invoice-error">{error}</p>
+        ) : (
+          <p className="order-invoice-hint">Tax invoice for {order.no}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [order, setOrder] = useState<MyOrder | null>(null);
@@ -790,6 +833,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 </dl>
               </div>
             </div>
+
+            {/* invoice (delivered orders) */}
+            <InvoiceSection order={order} />
 
             {/* cancel or return section */}
             <CancelSection order={order} onCancelled={setOrder} />

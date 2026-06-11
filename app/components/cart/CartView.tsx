@@ -68,9 +68,10 @@ function PromoBox() {
 
 /* ---------- order summary ---------- */
 function OrderSummary() {
-  const { subtotal, savings, discount, total, count } = useCart();
+  const { subtotal, savings, discount, total, count, hasUnavailableItems } = useCart();
   const router = useRouter();
   const checkout = async () => {
+    if (hasUnavailableItems) return;
     if (await ensureAuthenticated("/checkout")) router.push("/checkout");
   };
   return (
@@ -112,7 +113,19 @@ function OrderSummary() {
         </div>
         <div className="amt">{inr(total)}</div>
       </div>
-      <button type="button" onClick={checkout} className="checkout-cta">
+      {hasUnavailableItems && (
+        <div className="msg err" style={{ marginBottom: 10 }}>
+          {CartIc.info} Some items are sold out or low on stock. Please remove or
+          reduce them to continue.
+        </div>
+      )}
+      <button
+        type="button"
+        onClick={checkout}
+        className="checkout-cta"
+        disabled={hasUnavailableItems}
+        aria-disabled={hasUnavailableItems}
+      >
         {CartIc.lock} Proceed to Checkout
       </button>
       <div className="sum-trust">
@@ -205,6 +218,8 @@ function CartLine({ item }: { item: CartItem }) {
         </div>
         {outOfStock ? (
           <div className="stock-note oos">Out of stock</div>
+        ) : item.stock !== undefined && item.qty > item.stock ? (
+          <div className="stock-note oos">{`Only ${item.stock} left — reduce qty`}</div>
         ) : (
           item.stock !== undefined &&
           item.stock <= 5 && (
@@ -320,7 +335,13 @@ function EmptyCart() {
 
 /* ---------- page ---------- */
 export default function CartView() {
-  const { items, count } = useCart();
+  const { items, count, refreshStock } = useCart();
+
+  /* Revalidate live stock when the cart page loads so sold-out / reduced-stock
+     items are flagged before the shopper reaches checkout. */
+  useEffect(() => {
+    refreshStock();
+  }, [refreshStock]);
 
   /* If CSS failed to load (Turbopack race or network hiccup), reload once. */
   useEffect(() => {

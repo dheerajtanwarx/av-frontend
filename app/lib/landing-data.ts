@@ -174,6 +174,9 @@ export type Product = {
   /** Total units in stock across variants (when known). Drives the
       "Only N left" low-stock cue on the product card. */
   stock?: number;
+  /** Per-colour stock (when known). Lets the card flag a partial sell-out and
+      quick-add an in-stock colour instead of a hardcoded one. */
+  colors?: { name: string; hex: string; stock: number }[];
 };
 
 /** At or below this many units (but more than zero) the storefront nudges the

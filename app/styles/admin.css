@@ -1494,3 +1494,105 @@ textarea.admin-input {
   letter-spacing: 0.04em;
   color: var(--rani-deep);
 }
+
+/* ---- Reports ---- */
+.admin-report-section {
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 16px;
+  padding: 22px 24px;
+  margin-bottom: 22px;
+}
+
+.admin-report-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.admin-report-head h3 {
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.4rem;
+  color: var(--ink);
+  margin: 0;
+}
+
+.admin-report-head p {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 4px 0 0;
+  max-width: 60ch;
+}
+
+/* Accent the icon-less report stat cards with a coloured left edge. */
+.admin-reports .admin-stat-card { border-left-width: 3px; }
+.admin-reports .admin-stat-card.accent-rani   { border-left-color: var(--rani); }
+.admin-reports .admin-stat-card.accent-blue   { border-left-color: #1d4ed8; }
+.admin-reports .admin-stat-card.accent-teal   { border-left-color: #0f766e; }
+.admin-reports .admin-stat-card.accent-violet { border-left-color: #6d28d9; }
+.admin-reports .admin-stat-card.accent-amber  { border-left-color: #b45309; }
+.admin-reports .admin-stat-card.accent-green  { border-left-color: #15803d; }
+
+.admin-report-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-report-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 12px 5px 6px;
+}
+
+.admin-report-pill strong {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+/* Invoice download (my-orders) */
+.order-invoice-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  cursor: pointer;
+  border: 1px solid var(--ink-soft);
+  background: var(--ink);
+  color: #fff;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+.order-invoice-btn:hover:not(:disabled) { background: var(--ink-soft); }
+.order-invoice-btn:disabled { opacity: 0.6; cursor: default; }
+
+.order-invoice-btn svg { width: 16px; height: 16px; }
+
+.order-invoice-hint {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 8px 0 0;
+  text-align: center;
+}
+
+.order-invoice-error {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.78rem;
+  color: var(--rani);
+  margin: 8px 0 0;
+  text-align: center;
+}

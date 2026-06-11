@@ -10,7 +10,8 @@ import { CartIc } from "./icons";
 /** Global slide-out mini-cart. Mounted once in the root layout and
     opened from the storefront header's cart icon. */
 export default function CartDrawer() {
-  const { drawerOpen, closeDrawer, items, setQty, remove, subtotal } = useCart();
+  const { drawerOpen, closeDrawer, items, setQty, remove, subtotal, hasUnavailableItems } =
+    useCart();
   const router = useRouter();
 
   /* lock body scroll while the drawer is open */
@@ -37,6 +38,11 @@ export default function CartDrawer() {
   };
 
   const checkout = async () => {
+    if (hasUnavailableItems) {
+      router.push("/cart");
+      closeDrawer();
+      return;
+    }
     closeDrawer();
     if (await ensureAuthenticated("/checkout")) router.push("/checkout");
   };
@@ -160,10 +166,12 @@ export default function CartDrawer() {
                 <span className="v">{inr(subtotal)}</span>
               </div>
               <div className="note">
-                Shipping & taxes calculated at checkout · Made-to-order pieces ship in 3–4 weeks
+                {hasUnavailableItems
+                  ? "Some items are sold out — review your bag to continue."
+                  : "Shipping & taxes calculated at checkout · Made-to-order pieces ship in 3–4 weeks"}
               </div>
               <button className="vc" onClick={checkout}>
-                {CartIc.lock} Secure Checkout
+                {CartIc.lock} {hasUnavailableItems ? "Review Bag" : "Secure Checkout"}
               </button>
               <button className="vb" onClick={() => goto("/cart")}>
                 View Full Bag
