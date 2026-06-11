@@ -746,6 +746,8 @@ export type AdminProductImage = {
   imageUrl: string;
   isPrimary?: boolean;
   sortOrder?: number;
+  /** The variant (colour) this shot belongs to, or null for a shared shot. */
+  variantId?: number | null;
 };
 
 export type AdminProductDetail = {
@@ -782,7 +784,8 @@ export type ProductInput = {
   isActive?: boolean;
   sizes?: string[];
   variants: AdminProductVariant[];
-  images: { imageUrl: string }[];
+  /** `variantColor` ties a shot to a colour swatch; omit/null for a shared shot. */
+  images: { imageUrl: string; variantColor?: string | null }[];
 };
 
 export function fetchAdminProducts(params: {

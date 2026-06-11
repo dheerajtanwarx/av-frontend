@@ -17,6 +17,11 @@ const HEX_RE = /^#[0-9a-fA-F]{6}$/;
 
 type VariantRow = AdminProductVariant;
 
+/** A gallery image plus the colour it's tied to (empty string = all colours).
+    The colour name links the shot to a variant so the PDP swaps the gallery
+    when a shopper picks that swatch. */
+type GalleryImage = { imageUrl: string; variantColor: string };
+
 type FormState = {
   name: string;
   slug: string;
@@ -29,7 +34,7 @@ type FormState = {
   sizes: string;
   isActive: boolean;
   isBestseller: boolean;
-  images: string[];
+  images: GalleryImage[];
   variants: VariantRow[];
 };
 
@@ -63,7 +68,15 @@ function initialState(p?: AdminProductDetail | null): FormState {
     sizes: (p.sizes ?? []).join(", "),
     isActive: p.isActive,
     isBestseller: p.isBestseller,
-    images: p.images.map((i) => i.imageUrl),
+    images: p.images.map((im) => ({
+      imageUrl: im.imageUrl,
+      // Resolve the stored variantId back to its colour name so the per-image
+      // selector pre-fills; null/unknown → "" (all colours).
+      variantColor:
+        im.variantId != null
+          ? p.variants.find((v) => v.id === im.variantId)?.color ?? ""
+          : "",
+    })),
     variants: p.variants.map((v) => ({
       id: v.id,
       color: v.color,
@@ -121,12 +134,12 @@ export default function ProductForm({
     setGalleryBusy(true);
     setFormError("");
     try {
-      const urls: string[] = [];
+      const added: GalleryImage[] = [];
       for (const file of files) {
         const { url } = await uploadImage(file);
-        urls.push(url);
+        added.push({ imageUrl: url, variantColor: "" });
       }
-      set("images", [...form.images, ...urls]);
+      set("images", [...form.images, ...added]);
     } catch (err) {
       setFormError(err instanceof ApiError ? err.message : "Image upload failed.");
     } finally {
@@ -142,6 +155,9 @@ export default function ProductForm({
     const [moved] = next.splice(i, 1);
     next.unshift(moved);
     set("images", next);
+  }
+  function setImageColor(i: number, variantColor: string) {
+    set("images", form.images.map((im, idx) => (idx === i ? { ...im, variantColor } : im)));
   }
 
   /* ---- validation (mirrors the backend) ---- */
@@ -204,7 +220,10 @@ export default function ProductForm({
         stockQty: Number(v.stockQty),
         sku: v.sku.trim(),
       })),
-      images: form.images.map((imageUrl) => ({ imageUrl })),
+      images: form.images.map((im) => ({
+        imageUrl: im.imageUrl,
+        variantColor: im.variantColor.trim() || null,
+      })),
     };
 
     setSaving(true);
@@ -425,25 +444,55 @@ export default function ProductForm({
               {form.images.length === 0 ? (
                 <p className="admin-cell-sub">No images yet. The first image becomes the primary.</p>
               ) : (
-                <div className="admin-gallery">
-                  {form.images.map((url, i) => (
-                    <div key={url + i} className={`admin-gallery-item${i === 0 ? " primary" : ""}`}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={url} alt="" />
-                      {i === 0 && <span className="admin-gallery-badge">Primary</span>}
-                      <div className="admin-gallery-actions">
-                        {i !== 0 && (
-                          <button type="button" onClick={() => makePrimary(i)} title="Make primary">
-                            ★
-                          </button>
-                        )}
-                        <button type="button" onClick={() => removeImage(i)} title="Remove">
-                          ✕
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <>
+                  <div className="admin-gallery">
+                    {form.images.map((im, i) => {
+                      const colourOptions = form.variants
+                        .map((v) => v.color.trim())
+                        .filter(Boolean);
+                      return (
+                        <div
+                          key={im.imageUrl + i}
+                          className={`admin-gallery-item${i === 0 ? " primary" : ""}`}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={im.imageUrl} alt="" />
+                          {i === 0 && <span className="admin-gallery-badge">Primary</span>}
+                          <div className="admin-gallery-actions">
+                            {i !== 0 && (
+                              <button type="button" onClick={() => makePrimary(i)} title="Make primary">
+                                ★
+                              </button>
+                            )}
+                            <button type="button" onClick={() => removeImage(i)} title="Remove">
+                              ✕
+                            </button>
+                          </div>
+                          {colourOptions.length > 0 && (
+                            <select
+                              className="admin-gallery-colour"
+                              value={im.variantColor}
+                              onChange={(e) => setImageColor(i, e.target.value)}
+                              title="Show this image for which colour?"
+                            >
+                              <option value="">All colours</option>
+                              {colourOptions.map((c) => (
+                                <option key={c} value={c}>
+                                  {c}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <p className="admin-cell-sub admin-gallery-hint">
+                    Assign a colour to an image so it shows when that swatch is
+                    picked on the product page. Leave as <b>All colours</b> for
+                    shared shots.
+                  </p>
+                </>
               )}
               <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={onPickImages} />
             </div>

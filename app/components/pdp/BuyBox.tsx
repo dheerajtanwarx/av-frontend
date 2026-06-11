@@ -197,11 +197,21 @@ export default function BuyBox({
       <div className="sub-craft">{product.craft}</div>
 
       <div className="rate">
-        <Stars n={product.rating} />
-        <span className="rn">
-          <b>{product.rating}</b> / 5
-        </span>
-        <a href="#reviews">{product.reviewCount} reviews</a>
+        {product.reviewCount > 0 ? (
+          <>
+            <Stars n={product.rating} />
+            <span className="rn">
+              <b>{product.rating}</b> / 5
+            </span>
+            <a href="#reviews">
+              {product.reviewCount} {product.reviewCount === 1 ? "review" : "reviews"}
+            </a>
+          </>
+        ) : (
+          <a href="#reviews" className="rn-empty">
+            No reviews yet — be the first
+          </a>
+        )}
       </div>
 
       <div className="priceline">
