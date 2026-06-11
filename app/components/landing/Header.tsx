@@ -76,6 +76,11 @@ export function AccountMenu() {
           <a className="acct-profile" href="/wishlist">
             My wishlist
           </a>
+          {user.role === "ADMIN" && (
+            <a className="acct-profile acct-admin" href="/admin/reviews">
+              Moderate reviews
+            </a>
+          )}
           <button className="acct-logout" onClick={handleLogout}>
             Log out
           </button>

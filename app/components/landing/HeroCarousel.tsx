@@ -2,6 +2,7 @@
 
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { img, slideEmphasis, slides } from "../../lib/landing-data";
+import { fetchHeroSettings } from "../../lib/api";
 import { ArrowLeft, ArrowRight } from "./Icons";
 
 const DURATION = 6000;
@@ -29,8 +30,22 @@ function Title({ text, emphasis }: { text: string; emphasis?: string }) {
 
 export default function HeroCarousel() {
   const [active, setActive] = useState(0);
+  // Admin-managed background overrides (per slide index); null = use default.
+  const [overrides, setOverrides] = useState<(string | null)[]>([]);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const paused = useRef(false);
+
+  useEffect(() => {
+    let alive = true;
+    fetchHeroSettings()
+      .then((d) => alive && setOverrides(d.images))
+      .catch(() => {
+        /* keep built-in defaults if the settings call fails */
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const schedule = useCallback(() => {
     if (timer.current) clearTimeout(timer.current);
@@ -84,7 +99,7 @@ export default function HeroCarousel() {
         <div key={i} className={`slide${i === active ? " active" : ""}`}>
           <div className="bg">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={img(s.image, 2000)} alt="" aria-hidden="true" />
+            <img src={overrides[i] ?? img(s.image, 2000)} alt="" aria-hidden="true" />
           </div>
           <div className={`scrim${s.align === "right" ? " right" : ""}`} />
           <div className={`content${s.align === "right" ? " r" : ""}`}>

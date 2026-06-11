@@ -18,6 +18,10 @@
 @import "./styles/orders.css";
 /* Wishlist page + heart animation */
 @import "./styles/wishlist.css";
+/* Admin panel shell — sidebar, topbar, profile menu, placeholders */
+@import "./styles/admin-layout.css";
+/* Admin review moderation page (scoped to .admin) */
+@import "./styles/admin.css";
 
 @theme inline {
   --font-cormorant: var(--font-cormorant);

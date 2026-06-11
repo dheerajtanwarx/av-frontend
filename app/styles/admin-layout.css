@@ -1,0 +1,379 @@
+/* ============================================================
+   AV CREATION — Admin panel shell (sidebar + topbar + content)
+   Uses the storefront theme tokens so the panel shares the
+   "Pink City" design language.
+   ============================================================ */
+
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+/* ---------------- Sidebar ---------------- */
+.admin-sidebar {
+  width: 252px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-right: 1px solid var(--line-2);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 50;
+}
+
+.admin-sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 22px 18px;
+  border-bottom: 1px solid var(--line-2);
+}
+
+.admin-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-decoration: none;
+}
+
+.admin-brand-mark {
+  font-family: var(--font-marcellus), serif;
+  letter-spacing: 0.18em;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.admin-brand-sub {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rani);
+}
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 12px;
+  overflow-y: auto;
+}
+
+.admin-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.admin-nav-link:hover {
+  background: var(--bg-2);
+  color: var(--ink);
+}
+
+.admin-nav-link.active {
+  background: var(--rani-wash);
+  color: var(--rani-deep);
+  font-weight: 500;
+}
+
+.admin-nav-icon {
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+.admin-nav-link.active .admin-nav-icon {
+  color: var(--rani);
+}
+
+/* ---------------- Body (topbar + content) ---------------- */
+.admin-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 64px;
+  padding: 0 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line-2);
+}
+
+.admin-topbar-title {
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.4rem;
+  color: var(--ink);
+  margin: 0;
+}
+
+.admin-topbar-spacer {
+  flex: 1;
+}
+
+.admin-main {
+  flex: 1;
+  padding: 28px 24px 48px;
+}
+
+/* Icon buttons that only appear on mobile (hamburger + drawer close). */
+.admin-menu-btn,
+.admin-sidebar-close {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-soft);
+  padding: 6px;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-menu-btn:hover,
+.admin-sidebar-close:hover {
+  background: var(--bg-2);
+}
+
+/* ---------------- Profile dropdown ---------------- */
+.admin-profile {
+  position: relative;
+}
+
+.admin-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 12px 5px 5px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.admin-profile-btn:hover {
+  border-color: var(--rani-soft);
+  background: var(--bg-2);
+}
+
+.admin-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--rani);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.admin-profile-name {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.9rem;
+  color: var(--ink);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-profile-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}
+
+.admin-profile-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 232px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(43, 32, 24, 0.14);
+  padding: 8px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-profile-id {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--line-2);
+}
+
+.admin-profile-id-name {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.admin-profile-id-email {
+  font-size: 0.78rem;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-role-badge {
+  align-self: flex-start;
+  margin-top: 4px;
+  background: var(--rani-wash);
+  color: var(--rani-deep);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.admin-profile-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  transition: background 0.15s, color 0.15s;
+}
+
+.admin-profile-item:hover {
+  background: var(--bg-2);
+  color: var(--ink);
+}
+
+.admin-logout {
+  color: var(--rani-deep);
+}
+
+.admin-logout:hover {
+  background: var(--rani-wash);
+  color: var(--rani-deep);
+}
+
+/* ---------------- Page placeholder ---------------- */
+.admin-page {
+  max-width: 1100px;
+}
+
+.admin-page-head h2 {
+  font-family: var(--font-cormorant), serif;
+  font-size: 2rem;
+  color: var(--ink);
+  margin: 0 0 6px;
+}
+
+.admin-page-head p {
+  color: var(--ink-soft);
+  max-width: 60ch;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.admin-placeholder {
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  padding: 48px 32px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.admin-placeholder-badge {
+  display: inline-block;
+  margin-bottom: 14px;
+  background: var(--rani-wash);
+  color: var(--rani-deep);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.admin-placeholder p {
+  margin: 0 auto;
+  max-width: 46ch;
+  line-height: 1.55;
+}
+
+/* Drawer backdrop (mobile only) */
+.admin-overlay {
+  display: none;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 900px) {
+  .admin-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: 0 0 40px rgba(43, 32, 24, 0.18);
+  }
+
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .admin-menu-btn,
+  .admin-sidebar-close {
+    display: inline-flex;
+  }
+
+  .admin-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(43, 32, 24, 0.4);
+    z-index: 40;
+  }
+
+  .admin-topbar {
+    padding: 0 16px;
+  }
+
+  .admin-main {
+    padding: 22px 16px 40px;
+  }
+
+  .admin-profile-name {
+    display: none;
+  }
+}

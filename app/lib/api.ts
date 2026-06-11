@@ -28,7 +28,7 @@ async function apiGet<T>(path: string, opts: FetchOpts = {}): Promise<T> {
 }
 
 async function apiSend<T>(
-  method: "POST" | "PATCH" | "DELETE",
+  method: "POST" | "PUT" | "PATCH" | "DELETE",
   path: string,
   body?: unknown
 ): Promise<T> {
@@ -39,27 +39,39 @@ async function apiSend<T>(
     body: body ? JSON.stringify(body) : undefined,
   });
   if (!res.ok) {
-    throw new ApiError(res.status, await safeError(res));
+    throw await toApiError(res);
   }
   return res.json() as Promise<T>;
 }
 
 export class ApiError extends Error {
   status: number;
-  constructor(status: number, message: string) {
+  /** Per-field validation messages from the backend (keyed by field path). */
+  fields?: Record<string, string>;
+  constructor(status: number, message: string, fields?: Record<string, string>) {
     super(message);
     this.status = status;
     this.name = "ApiError";
+    this.fields = fields;
+  }
+}
+
+/** Build an ApiError from a failed response, capturing field errors if present. */
+async function toApiError(res: Response): Promise<ApiError> {
+  try {
+    const data = await res.json();
+    return new ApiError(
+      res.status,
+      data?.error ?? `Request failed (${res.status})`,
+      data?.fields && typeof data.fields === "object" ? data.fields : undefined
+    );
+  } catch {
+    return new ApiError(res.status, `Request failed (${res.status})`);
   }
 }
 
 async function safeError(res: Response): Promise<string> {
-  try {
-    const data = await res.json();
-    return data?.error ?? `Request failed (${res.status})`;
-  } catch {
-    return `Request failed (${res.status})`;
-  }
+  return (await toApiError(res)).message;
 }
 
 /* ---------- Catalog (public) ---------- */
@@ -405,4 +417,298 @@ export function removeWishlistItem(slug: string): Promise<{ ok: boolean }> {
 /** Fold a guest's localStorage wishlist into the server wishlist on login. */
 export function mergeWishlist(slugs: string[]): Promise<ServerWishlistItem[]> {
   return apiSend<ServerWishlistItem[]>("POST", `/api/wishlist/merge`, { slugs });
+}
+
+/* ---------- Admin: review moderation (ADMIN role only) ---------- */
+
+export type AdminReview = {
+  id: number;
+  rating: number;
+  comment: string | null;
+  isApproved: boolean;
+  createdAt: string;
+  author: string;
+  product: { id: number; name: string; slug: string };
+};
+
+export type AdminReviewFilter = "all" | "visible" | "hidden";
+
+export type AdminReviewsResponse = {
+  reviews: AdminReview[];
+  counts: { all: number; visible: number; hidden: number };
+};
+
+export function fetchAdminReviews(
+  status: AdminReviewFilter = "all"
+): Promise<AdminReviewsResponse> {
+  return apiGet<AdminReviewsResponse>(`/api/reviews/admin?status=${status}`);
+}
+
+export function moderateReview(
+  id: number,
+  action: "approve" | "reject"
+): Promise<{ ok: boolean; id: number; isApproved: boolean }> {
+  return apiSend<{ ok: boolean; id: number; isApproved: boolean }>(
+    "PATCH",
+    `/api/reviews/admin/${id}`,
+    { action }
+  );
+}
+
+/* ---------- Admin: order management (ADMIN role only) ---------- */
+
+export type OrderStatus =
+  | "PLACED"
+  | "CONFIRMED"
+  | "PROCESSING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED"
+  | "RETURNED";
+
+/** Statuses an admin can advance an order to (the forward fulfilment path). */
+export const ADMIN_STATUS_FLOW: OrderStatus[] = [
+  "PLACED",
+  "PROCESSING",
+  "SHIPPED",
+  "DELIVERED",
+];
+
+export type AdminOrderListItem = {
+  id: number;
+  no: string;
+  customer: { name: string; email: string | null };
+  placedAt: string;
+  total: number;
+  payment: string | null;
+  status: OrderStatus;
+  itemCount: number;
+};
+
+export type AdminOrderStatusFilter = "all" | OrderStatus;
+
+export type AdminOrdersResponse = {
+  orders: AdminOrderListItem[];
+  counts: Record<string, number>;
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+};
+
+export type AdminOrderDetail = MyOrder & {
+  customer: {
+    id: number | null;
+    name: string | null;
+    email: string | null;
+    phone: string | null;
+  };
+};
+
+export function fetchAdminOrders(params: {
+  q?: string;
+  status?: AdminOrderStatusFilter;
+  page?: number;
+  pageSize?: number;
+} = {}): Promise<AdminOrdersResponse> {
+  const qs = new URLSearchParams();
+  if (params.q) qs.set("q", params.q);
+  if (params.status && params.status !== "all") qs.set("status", params.status);
+  if (params.page) qs.set("page", String(params.page));
+  if (params.pageSize) qs.set("pageSize", String(params.pageSize));
+  const q = qs.toString();
+  return apiGet<AdminOrdersResponse>(`/api/orders/admin${q ? `?${q}` : ""}`);
+}
+
+export function fetchAdminOrder(id: number): Promise<AdminOrderDetail> {
+  return apiGet<AdminOrderDetail>(`/api/orders/admin/${id}`);
+}
+
+export function updateAdminOrderStatus(
+  id: number,
+  status: OrderStatus
+): Promise<AdminOrderDetail> {
+  return apiSend<AdminOrderDetail>("PATCH", `/api/orders/admin/${id}/status`, {
+    status,
+  });
+}
+
+/* ---------- Admin: dashboard (ADMIN role only) ---------- */
+
+export type DashboardStats = {
+  totalRevenue: number;
+  totalOrders: number;
+  totalCustomers: number;
+  totalProducts: number;
+  pendingOrders: number;
+  deliveredOrders: number;
+};
+
+export type DashboardDailyPoint = {
+  date: string; // YYYY-MM-DD
+  orders: number;
+  revenue: number;
+};
+
+export type DashboardStatusCount = {
+  status: OrderStatus;
+  count: number;
+};
+
+export type AdminDashboard = {
+  stats: DashboardStats;
+  daily: DashboardDailyPoint[];
+  byStatus: DashboardStatusCount[];
+  rangeDays: number;
+};
+
+export function fetchAdminDashboard(): Promise<AdminDashboard> {
+  return apiGet<AdminDashboard>(`/api/admin/dashboard`);
+}
+
+/* ---------- Admin: product management (ADMIN role only) ---------- */
+
+export type AdminCategory = {
+  id: number;
+  name: string;
+  slug: string;
+  parentId: number | null;
+};
+
+export type AdminProductListItem = {
+  id: number;
+  name: string;
+  slug: string;
+  type: string | null;
+  price: number;
+  comparePrice: number | null;
+  category: { id: number; name: string } | null;
+  image: string | null;
+  stock: number;
+  variantCount: number;
+  isActive: boolean;
+};
+
+export type AdminProductsFilter = "all" | "active" | "inactive";
+
+export type AdminProductsResponse = {
+  products: AdminProductListItem[];
+  counts: { all: number; active: number; inactive: number };
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+};
+
+export type AdminProductVariant = {
+  id?: number;
+  color: string;
+  colorHex: string;
+  price: number;
+  stockQty: number;
+  sku: string;
+};
+
+export type AdminProductImage = {
+  id?: number;
+  imageUrl: string;
+  isPrimary?: boolean;
+  sortOrder?: number;
+};
+
+export type AdminProductDetail = {
+  id: number;
+  name: string;
+  slug: string;
+  type: string | null;
+  description: string | null;
+  basePrice: number;
+  comparePrice: number | null;
+  badge: string | null;
+  rating: number | null;
+  reviewCount: number | null;
+  isBestseller: boolean;
+  isActive: boolean;
+  sizes: string[];
+  categoryId: number;
+  category: { id: number; name: string; slug: string } | null;
+  variants: Required<AdminProductVariant>[];
+  images: Required<AdminProductImage>[];
+};
+
+/** Payload accepted by create/update. */
+export type ProductInput = {
+  name: string;
+  slug?: string;
+  categoryId: number;
+  type?: string | null;
+  description?: string | null;
+  basePrice: number;
+  comparePrice?: number | null;
+  badge?: string | null;
+  isBestseller?: boolean;
+  isActive?: boolean;
+  sizes?: string[];
+  variants: AdminProductVariant[];
+  images: { imageUrl: string }[];
+};
+
+export function fetchAdminProducts(params: {
+  q?: string;
+  status?: AdminProductsFilter;
+  page?: number;
+  pageSize?: number;
+} = {}): Promise<AdminProductsResponse> {
+  const qs = new URLSearchParams();
+  if (params.q) qs.set("q", params.q);
+  if (params.status && params.status !== "all") qs.set("status", params.status);
+  if (params.page) qs.set("page", String(params.page));
+  if (params.pageSize) qs.set("pageSize", String(params.pageSize));
+  const q = qs.toString();
+  return apiGet<AdminProductsResponse>(`/api/admin/products${q ? `?${q}` : ""}`);
+}
+
+export function fetchAdminProduct(id: number): Promise<AdminProductDetail> {
+  return apiGet<AdminProductDetail>(`/api/admin/products/${id}`);
+}
+
+export function createProduct(input: ProductInput): Promise<AdminProductDetail> {
+  return apiSend<AdminProductDetail>("POST", `/api/admin/products`, input);
+}
+
+export function updateProduct(id: number, input: ProductInput): Promise<AdminProductDetail> {
+  return apiSend<AdminProductDetail>("PUT", `/api/admin/products/${id}`, input);
+}
+
+export function deleteProduct(id: number): Promise<{ ok: boolean; id: number }> {
+  return apiSend<{ ok: boolean; id: number }>("DELETE", `/api/admin/products/${id}`);
+}
+
+export function fetchAdminCategories(): Promise<AdminCategory[]> {
+  return apiGet<AdminCategory[]>(`/api/admin/categories`);
+}
+
+/** Upload an image file to the server (Cloudinary-backed). Returns its URL. */
+export async function uploadImage(file: File): Promise<{ url: string; publicId: string }> {
+  const form = new FormData();
+  form.append("image", file);
+  const res = await fetch(`${API_URL}/api/admin/upload`, {
+    method: "POST",
+    credentials: "include",
+    body: form,
+  });
+  if (!res.ok) throw await toApiError(res);
+  return res.json() as Promise<{ url: string; publicId: string }>;
+}
+
+/* ---------- Hero images (public read, admin write) ---------- */
+
+export type HeroSettings = { images: (string | null)[] };
+
+export function fetchHeroSettings(opts?: FetchOpts): Promise<HeroSettings> {
+  return apiGet<HeroSettings>(`/api/settings/hero`, opts);
+}
+
+export function updateHeroSettings(images: (string | null)[]): Promise<HeroSettings> {
+  return apiSend<HeroSettings>("PUT", `/api/admin/hero`, { images });
 }
