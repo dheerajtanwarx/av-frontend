@@ -1230,6 +1230,52 @@ textarea.admin-input {
   margin: 0;
 }
 
+/* ---- Fit-to-frame editor ---- */
+.admin-uploader-fit {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.admin-uploader-fit-label {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.admin-uploader-fit-opts {
+  display: inline-flex;
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  overflow: hidden;
+  align-self: flex-start;
+}
+.admin-uploader-fit-btn {
+  appearance: none;
+  border: none;
+  background: var(--bg-3);
+  color: var(--ink);
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.78rem;
+  padding: 6px 14px;
+  cursor: pointer;
+  border-right: 1px solid var(--line-2);
+  transition: background 0.18s, color 0.18s;
+}
+.admin-uploader-fit-btn:last-child { border-right: none; }
+.admin-uploader-fit-btn:hover:not(.active) { background: var(--line-2); }
+.admin-uploader-fit-btn.active {
+  background: var(--rani);
+  color: #fff;
+}
+.admin-uploader-fit-btn:disabled { opacity: 0.5; cursor: default; }
+.admin-uploader-fit-hint {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
 /* ---- Hero manager ---- */
 .admin-hero-panel {
   background: var(--surface);
