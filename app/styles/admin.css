@@ -1409,11 +1409,12 @@ textarea.admin-input {
   margin: 0 0 14px;
 }
 
-/* Mobile: stack the inventory table into labelled cards. The shared rule at
+/* Mobile: stack data-labelled tables into labelled cards. The shared rule at
    640px already turns rows into blocks; here we surface the column name via
-   the per-cell data-label so the stacked values stay readable. */
+   the per-cell data-label so the stacked values stay readable. Applies to any
+   admin table whose cells carry data-label (inventory, customers, …). */
 @media (max-width: 640px) {
-  .admin-inventory-table td[data-label]::before {
+  .admin-table td[data-label]::before {
     content: attr(data-label);
     display: block;
     font-family: var(--font-jost), sans-serif;
@@ -1423,7 +1424,7 @@ textarea.admin-input {
     color: var(--muted);
     margin-bottom: 2px;
   }
-  .admin-inventory-table td[data-label=""]::before {
+  .admin-table td[data-label=""]::before {
     display: none;
   }
   .admin-inventory-table .admin-row-actions {
@@ -1432,4 +1433,33 @@ textarea.admin-input {
   .admin-adjust-controls {
     flex-wrap: wrap;
   }
+}
+
+/* ============================================================
+   Customers
+   ============================================================ */
+
+/* Saved-address cards on the customer detail page. */
+.admin-customer-addresses {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-customer-address {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line-2);
+}
+
+.admin-customer-address:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.admin-address-default {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--rani-deep);
 }

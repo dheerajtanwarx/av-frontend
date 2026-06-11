@@ -590,6 +590,81 @@ export function updateAdminOrderStatus(
   });
 }
 
+/* ---------- Admin: customer management (ADMIN role only) ---------- */
+
+export type AdminCustomerListItem = {
+  id: number;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  registeredAt: string;
+  totalOrders: number;
+  totalSpending: number;
+};
+
+export type AdminCustomersResponse = {
+  customers: AdminCustomerListItem[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+};
+
+export type AdminCustomerOrder = {
+  id: number;
+  no: string;
+  status: OrderStatus;
+  placedAt: string;
+  total: number;
+  payment: string | null;
+  itemCount: number;
+};
+
+export type AdminCustomerAddress = {
+  id: number;
+  fullName: string;
+  phone: string;
+  street: string;
+  city: string;
+  state: string;
+  pincode: string;
+  country: string;
+  isDefault: boolean;
+};
+
+export type AdminCustomerDetail = {
+  id: number;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  role: string;
+  registeredAt: string;
+  stats: {
+    totalOrders: number;
+    totalSpending: number;
+    wishlistCount: number;
+  };
+  orders: AdminCustomerOrder[];
+  addresses: AdminCustomerAddress[];
+};
+
+export function fetchAdminCustomers(params: {
+  q?: string;
+  page?: number;
+  pageSize?: number;
+} = {}): Promise<AdminCustomersResponse> {
+  const qs = new URLSearchParams();
+  if (params.q) qs.set("q", params.q);
+  if (params.page) qs.set("page", String(params.page));
+  if (params.pageSize) qs.set("pageSize", String(params.pageSize));
+  const q = qs.toString();
+  return apiGet<AdminCustomersResponse>(`/api/admin/customers${q ? `?${q}` : ""}`);
+}
+
+export function fetchAdminCustomer(id: number): Promise<AdminCustomerDetail> {
+  return apiGet<AdminCustomerDetail>(`/api/admin/customers/${id}`);
+}
+
 /* ---------- Admin: dashboard (ADMIN role only) ---------- */
 
 export type DashboardStats = {
