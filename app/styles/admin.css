@@ -631,6 +631,7 @@
 }
 
 .admin-stat-card {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -638,7 +639,63 @@
   border: 1px solid var(--line-2);
   border-radius: 14px;
   padding: 18px 20px;
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  will-change: transform;
 }
+
+.admin-stat-card:hover {
+  box-shadow: 0 10px 30px -12px rgba(17, 24, 39, 0.22);
+  border-color: var(--line-1, var(--line-2));
+}
+
+/* count-up value + trend footer */
+.admin-stat-foot {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 4px;
+}
+
+.admin-stat-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.admin-stat-trend.up { color: #15803d; background: #ddf1e1; }
+.admin-stat-trend.down { color: #b91c1c; background: #fbe2e2; }
+.admin-stat-trend-arrow { width: 9px; height: 9px; }
+
+.admin-stat-foot-note {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+/* per-card sparkline pinned bottom-right */
+.admin-spark {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  width: 84px;
+  height: 26px;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* sparkline + glow accent tokens */
+.admin-stat-card.accent-rani   { --spark-rani: var(--rani); }
+.admin-stat-card.accent-blue   { --spark-blue: #1d4ed8; }
+.admin-stat-card.accent-teal   { --spark-teal: #0f766e; }
+.admin-stat-card.accent-violet { --spark-violet: #6d28d9; }
+.admin-stat-card.accent-amber  { --spark-amber: #b45309; }
+.admin-stat-card.accent-green  { --spark-green: #15803d; }
 
 .admin-stat-icon {
   width: 46px;
@@ -765,12 +822,81 @@
 }
 
 .admin-chart-bar {
-  fill: var(--rani);
   transition: fill 0.15s;
+  cursor: pointer;
 }
 
-.admin-chart-bar:hover {
-  fill: var(--rani-deep);
+/* interactive plot wrapper (holds the svg + an absolute HTML tooltip) */
+.admin-chart-plot {
+  position: relative;
+}
+
+.admin-chart-crosshair {
+  stroke: var(--rani);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  opacity: 0.5;
+}
+
+.admin-chart-hover-dot {
+  fill: var(--rani);
+  stroke: #fff;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 4px var(--rani));
+}
+
+.admin-chart-tooltip {
+  position: absolute;
+  z-index: 5;
+  transform: translate(-50%, calc(-100% - 12px));
+  pointer-events: none;
+  background: var(--ink, #111827);
+  color: #fff;
+  border-radius: 9px;
+  padding: 8px 11px;
+  min-width: 96px;
+  box-shadow: 0 12px 28px -10px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.admin-chart-tooltip::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 10px;
+  height: 10px;
+  background: inherit;
+  transform: translateX(-50%) rotate(45deg);
+  border-radius: 2px;
+}
+
+.admin-chart-tooltip-title {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+  margin-bottom: 1px;
+}
+
+.admin-chart-tooltip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.8rem;
+}
+
+.admin-chart-tooltip-key { opacity: 0.75; }
+.admin-chart-tooltip-val { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-stat-card,
+  .admin-stat-card:hover { transition: none; }
 }
 
 /* ---- Orders by status bars ---- */
@@ -807,7 +933,6 @@
   height: 100%;
   border-radius: 999px;
   min-width: 2px;
-  transition: width 0.4s ease;
 }
 
 .admin-status-bar-count {

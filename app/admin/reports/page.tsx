@@ -9,6 +9,7 @@ import {
   type ReportRange,
 } from "../../lib/api";
 import { TrendBarChart } from "../../components/admin/DashboardCharts";
+import { StatCard } from "../../components/admin/StatCard";
 
 function inr(amount: number): string {
   return new Intl.NumberFormat("en-IN", {
@@ -150,30 +151,36 @@ export default function AdminReportsPage() {
             onExport={() => handleExport("sales")}
           >
             <div className="admin-stat-grid">
-              <div className="admin-stat-card accent-rani">
-                <div className="admin-stat-meta">
-                  <span className="admin-stat-label">Net Revenue</span>
-                  <span className="admin-stat-value">{inr(data.sales.totals.netRevenue)}</span>
-                </div>
-              </div>
-              <div className="admin-stat-card accent-blue">
-                <div className="admin-stat-meta">
-                  <span className="admin-stat-label">Orders</span>
-                  <span className="admin-stat-value">{num(data.sales.totals.orders)}</span>
-                </div>
-              </div>
-              <div className="admin-stat-card accent-teal">
-                <div className="admin-stat-meta">
-                  <span className="admin-stat-label">Avg Order Value</span>
-                  <span className="admin-stat-value">{inr(data.sales.totals.avgOrderValue)}</span>
-                </div>
-              </div>
-              <div className="admin-stat-card accent-amber">
-                <div className="admin-stat-meta">
-                  <span className="admin-stat-label">Discounts Given</span>
-                  <span className="admin-stat-value">{inr(data.sales.totals.discounts)}</span>
-                </div>
-              </div>
+              <StatCard
+                index={0}
+                label="Net Revenue"
+                value={data.sales.totals.netRevenue}
+                format={inr}
+                accent="rani"
+                series={data.sales.daily.map((d) => d.netRevenue)}
+              />
+              <StatCard
+                index={1}
+                label="Orders"
+                value={data.sales.totals.orders}
+                format={num}
+                accent="blue"
+                series={data.sales.daily.map((d) => d.orders)}
+              />
+              <StatCard
+                index={2}
+                label="Avg Order Value"
+                value={data.sales.totals.avgOrderValue}
+                format={inr}
+                accent="teal"
+              />
+              <StatCard
+                index={3}
+                label="Discounts Given"
+                value={data.sales.totals.discounts}
+                format={inr}
+                accent="amber"
+              />
             </div>
 
             {data.sales.daily.length > 0 && (
@@ -253,18 +260,20 @@ export default function AdminReportsPage() {
             onExport={() => handleExport("customers")}
           >
             <div className="admin-stat-grid">
-              <div className="admin-stat-card accent-violet">
-                <div className="admin-stat-meta">
-                  <span className="admin-stat-label">Total Customers</span>
-                  <span className="admin-stat-value">{num(data.customers.totals.total)}</span>
-                </div>
-              </div>
-              <div className="admin-stat-card accent-green">
-                <div className="admin-stat-meta">
-                  <span className="admin-stat-label">New This Period</span>
-                  <span className="admin-stat-value">{num(data.customers.totals.newInRange)}</span>
-                </div>
-              </div>
+              <StatCard
+                index={0}
+                label="Total Customers"
+                value={data.customers.totals.total}
+                format={num}
+                accent="violet"
+              />
+              <StatCard
+                index={1}
+                label="New This Period"
+                value={data.customers.totals.newInRange}
+                format={num}
+                accent="green"
+              />
             </div>
 
             <div className="admin-table-wrap" style={{ marginTop: 16 }}>
