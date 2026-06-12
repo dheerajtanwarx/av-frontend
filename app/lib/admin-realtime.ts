@@ -34,7 +34,7 @@ export interface LiveNotification {
 
 export type StateSyncEvent =
   | { event: "notification:read" | "notification:unread" | "notification:archived" | "notification:unarchived"; data: { id: number } }
-  | { event: "notification:read_all"; data: { count: number; ids: number[] } }
+  | { event: "notification:read_all"; data: { count: number } }
   | { event: "notification:read_bulk" | "notification:archived_bulk" | "notification:unarchived_bulk"; data: { ids: number[] } };
 
 const SYNC_EVENT_NAMES = [
@@ -59,6 +59,12 @@ export interface RealtimeHandlers {
 const INITIAL_RETRY_MS = 2_000;
 const MAX_RETRY_MS = 30_000;
 
+/** Delivered-notification ids remembered for deduping. Live events and
+    reconnect replays can overlap, and two transactions can commit out of id
+    order, so "id ≤ newest seen" is not a safe duplicate test — membership in
+    this window is. Bounded FIFO so a long-lived tab can't grow it forever. */
+const SEEN_MAX = 1_000;
+
 /** Subscribe to the admin event stream for the lifetime of the component.
     Returns the current connection state. Handlers are kept in a ref, so
     callers may pass fresh closures every render without resubscribing. */
@@ -72,9 +78,18 @@ export function useAdminRealtime(handlers: RealtimeHandlers): boolean {
     let disposed = false;
     let retryMs = INITIAL_RETRY_MS;
     let retryTimer: ReturnType<typeof setTimeout> | undefined;
-    // Newest notification id seen — duplicate filter and the replay cursor
-    // for manually recreated connections.
+    // Newest notification id seen — the replay cursor for manually recreated
+    // connections. Deduping uses the seen-set, not this high-water mark.
     let lastId = 0;
+    const seen = new Set<number>();
+    const seenOrder: number[] = [];
+    const markSeen = (id: number): boolean => {
+      if (seen.has(id)) return false;
+      seen.add(id);
+      seenOrder.push(id);
+      if (seenOrder.length > SEEN_MAX) seen.delete(seenOrder.shift()!);
+      return true;
+    };
 
     const setConn = (v: boolean) => {
       setConnected(v);
@@ -95,8 +110,8 @@ export function useAdminRealtime(handlers: RealtimeHandlers): boolean {
 
       es.addEventListener("notification:new", (ev) => {
         const n = JSON.parse((ev as MessageEvent).data) as LiveNotification;
-        if (n.id <= lastId) return; // already delivered on a previous connection
-        lastId = n.id;
+        if (!markSeen(n.id)) return; // replay overlap from a previous connection
+        lastId = Math.max(lastId, n.id);
         h.current.onNotification?.(n);
       });
 

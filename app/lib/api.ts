@@ -673,6 +673,17 @@ export function fetchAdminNotifications(params: {
   return apiGet(`/api/admin/notifications?${q.toString()}`);
 }
 
+/** Keyset page for infinite scroll: rows older than `cursor` (a notification
+    id), newest first. nextCursor is null when the history is exhausted. */
+export function fetchAdminNotificationsAfter(params: {
+  cursor: number;
+  pageSize?: number;
+}): Promise<{ notifications: AdminNotification[]; nextCursor: number | null }> {
+  const q = new URLSearchParams({ cursor: String(params.cursor) });
+  if (params.pageSize) q.set("pageSize", String(params.pageSize));
+  return apiGet(`/api/admin/notifications?${q.toString()}`);
+}
+
 export function archiveNotification(id: number): Promise<unknown> {
   return apiSend("PATCH", `/api/admin/notifications/${id}/archive`);
 }

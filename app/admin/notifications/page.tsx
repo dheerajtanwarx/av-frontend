@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   fetchAdminNotifications,
   bulkReadNotifications,
@@ -115,10 +115,22 @@ export default function AdminNotificationsPage() {
   }, [load]);
 
   // Live: new notifications and state changes from any session re-sync the
-  // visible page without a loading flash.
+  // visible page without a loading flash. Debounced — a reconnect can replay
+  // up to a hundred missed events in one burst, which must cost one refetch,
+  // not one per event.
+  const liveReload = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const scheduleLiveReload = useCallback(() => {
+    if (liveReload.current) clearTimeout(liveReload.current);
+    liveReload.current = setTimeout(() => load(true), 400);
+  }, [load]);
+  useEffect(() => {
+    return () => {
+      if (liveReload.current) clearTimeout(liveReload.current);
+    };
+  }, []);
   useAdminRealtime({
-    onNotification: () => load(true),
-    onStateSync: () => load(true),
+    onNotification: scheduleLiveReload,
+    onStateSync: scheduleLiveReload,
   });
 
   const rows = useMemo(() => data?.notifications ?? [], [data]);

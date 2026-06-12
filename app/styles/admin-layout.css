@@ -648,6 +648,11 @@
   border-bottom: 1px solid var(--line-2);
   cursor: pointer;
   transition: background 0.15s ease;
+  /* Native list virtualization: rows outside the panel's scrollport skip
+     layout and paint entirely; the intrinsic size keeps the scrollbar
+     stable while they're skipped. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 78px;
 }
 
 .admin-notif-row:last-child {

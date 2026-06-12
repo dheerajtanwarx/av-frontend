@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   fetchAdminNotifications,
+  fetchAdminNotificationsAfter,
   markNotificationRead,
   archiveNotification,
   readAllNotifications,
@@ -18,6 +19,11 @@ import {
 import type { LiveNotification, StateSyncEvent } from "../../lib/admin-realtime";
 
 const PAGE_SIZE = 15;
+
+/** Cap on rows a stream of live prepends can accumulate — a tab left open
+    through a busy day must not grow the panel's DOM without bound. Trimmed
+    rows are still one scroll-fetch away (and in the full-page center). */
+const MAX_ITEMS = 200;
 
 const PRIORITY_LABEL: Record<NotificationPriority, string> = {
   CRITICAL: "Critical",
@@ -55,13 +61,20 @@ export default function NotificationDropdown({
   /** Latest state-sync event from the stream (other sessions acting). */
   liveSync: StateSyncEvent | null;
 }) {
-  const [items, setItems] = useState<AdminNotification[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  // Items + hasMore change together (a prepend that trims the tail must also
+  // re-enable loading more), so they live in one state object.
+  const [list, setList] = useState<{ items: AdminNotification[]; hasMore: boolean }>({
+    items: [],
+    hasMore: false,
+  });
+  const items = list.items;
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const loadedOnce = useRef(false);
   const listRef = useRef<HTMLDivElement>(null);
+
+  const setItems = (fn: (prev: AdminNotification[]) => AdminNotification[]) =>
+    setList((prev) => ({ ...prev, items: fn(prev.items) }));
 
   // First open (and every reopen) refreshes page 1.
   useEffect(() => {
@@ -72,9 +85,7 @@ export default function NotificationDropdown({
       try {
         const r = await fetchAdminNotifications({ page: 1, pageSize: PAGE_SIZE });
         if (stale) return;
-        setItems(r.notifications);
-        setPage(1);
-        setTotalPages(r.totalPages);
+        setList({ items: r.notifications, hasMore: r.totalPages > 1 });
         loadedOnce.current = true;
       } catch {
         /* leave whatever is shown */
@@ -91,28 +102,30 @@ export default function NotificationDropdown({
   useEffect(() => {
     if (!liveNotification) return;
     const n = liveNotification;
-    setItems((prev) =>
-      prev.some((x) => x.id === n.id)
-        ? prev
-        : [
-            {
-              id: n.id,
-              type: n.type,
-              priority: n.priority,
-              title: n.title,
-              body: n.body,
-              orderId: n.orderId,
-              orderNo: n.orderNo,
-              meta: n.meta,
-              createdAt: n.createdAt,
-              read: n.read,
-              readAt: null,
-              archived: false,
-              archivedAt: null,
-            },
-            ...prev,
-          ]
-    );
+    setList((prev) => {
+      if (prev.items.some((x) => x.id === n.id)) return prev;
+      const next = [
+        {
+          id: n.id,
+          type: n.type,
+          priority: n.priority,
+          title: n.title,
+          body: n.body,
+          orderId: n.orderId,
+          orderNo: n.orderNo,
+          meta: n.meta,
+          createdAt: n.createdAt,
+          read: n.read,
+          readAt: null,
+          archived: false,
+          archivedAt: null,
+        },
+        ...prev.items,
+      ];
+      return next.length > MAX_ITEMS
+        ? { items: next.slice(0, MAX_ITEMS), hasMore: true }
+        : { ...prev, items: next };
+    });
   }, [liveNotification]);
 
   // Another session of this admin acted — mirror it on screen.
@@ -145,24 +158,27 @@ export default function NotificationDropdown({
     });
   }, [liveSync]);
 
+  // Keyset pagination: fetch rows older than the oldest on screen. Stable
+  // under live prepends (no page offsets to shift) and cheap at any depth.
   const loadMore = useCallback(async () => {
-    if (loadingMore || page >= totalPages) return;
+    if (loadingMore || !list.hasMore || list.items.length === 0) return;
     setLoadingMore(true);
     try {
-      const next = page + 1;
-      const r = await fetchAdminNotifications({ page: next, pageSize: PAGE_SIZE });
-      setItems((prev) => {
-        const seen = new Set(prev.map((x) => x.id));
-        return [...prev, ...r.notifications.filter((x) => !seen.has(x.id))];
+      const cursor = Math.min(...list.items.map((x) => x.id));
+      const r = await fetchAdminNotificationsAfter({ cursor, pageSize: PAGE_SIZE });
+      setList((prev) => {
+        const seen = new Set(prev.items.map((x) => x.id));
+        return {
+          items: [...prev.items, ...r.notifications.filter((x) => !seen.has(x.id))],
+          hasMore: r.nextCursor != null,
+        };
       });
-      setPage(next);
-      setTotalPages(r.totalPages);
     } catch {
       /* scroll again to retry */
     } finally {
       setLoadingMore(false);
     }
-  }, [loadingMore, page, totalPages]);
+  }, [loadingMore, list]);
 
   const onScroll = () => {
     const el = listRef.current;
@@ -289,7 +305,7 @@ export default function NotificationDropdown({
                   ))}
                 </AnimatePresence>
                 {loadingMore && <div className="admin-notif-more">Loading…</div>}
-                {page >= totalPages && items.length > PAGE_SIZE && (
+                {!list.hasMore && items.length > PAGE_SIZE && (
                   <div className="admin-notif-more">That’s everything</div>
                 )}
               </>
