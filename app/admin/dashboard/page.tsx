@@ -7,6 +7,7 @@ import {
   ApiError,
   type AdminDashboard,
 } from "../../lib/api";
+import { useAdminRealtime } from "../../lib/admin-realtime";
 import {
   TrendLineChart,
   TrendBarChart,
@@ -63,6 +64,33 @@ function CheckIcon({ className }: { className?: string }) {
   );
 }
 
+function CalendarIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M8 3v4M16 3v4M3 10h18" />
+    </svg>
+  );
+}
+
+function CancelIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M15 9l-6 6M9 9l6 6" />
+    </svg>
+  );
+}
+
+function RefundIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 10h13a5 5 0 0 1 0 10h-6" />
+      <path d="M7 6l-4 4 4 4" />
+    </svg>
+  );
+}
+
 type Card = {
   key: string;
   label: string;
@@ -78,12 +106,15 @@ function StatCards({ d }: { d: AdminDashboard }) {
   const revSeries = d.daily.map((p) => p.revenue);
   const orderSeries = d.daily.map((p) => p.orders);
   const cards: Card[] = [
-    { key: "revenue", label: "Total Revenue", value: s.totalRevenue, format: inr, icon: RupeeIcon, accent: "rani", series: revSeries },
+    { key: "revenue", label: "Revenue", value: s.totalRevenue, format: inr, icon: RupeeIcon, accent: "rani", series: revSeries },
     { key: "orders", label: "Total Orders", value: s.totalOrders, format: num, icon: OrdersIcon, accent: "blue", series: orderSeries },
+    { key: "today", label: "Today’s Orders", value: s.todayOrders, format: num, icon: CalendarIcon, accent: "teal" },
+    { key: "pending", label: "Pending Orders", value: s.pendingOrders, format: num, icon: ClockIcon, accent: "amber" },
+    { key: "completed", label: "Completed Orders", value: s.deliveredOrders, format: num, icon: CheckIcon, accent: "green" },
+    { key: "cancelled", label: "Cancelled Orders", value: s.cancelledOrders, format: num, icon: CancelIcon, accent: "red" },
+    { key: "refunds", label: "Refunds", value: s.refunds, format: num, icon: RefundIcon, accent: "violet" },
     { key: "customers", label: "Total Customers", value: s.totalCustomers, format: num, icon: CustomersIcon, accent: "teal" },
     { key: "products", label: "Total Products", value: s.totalProducts, format: num, icon: ProductsIcon, accent: "violet" },
-    { key: "pending", label: "Pending Orders", value: s.pendingOrders, format: num, icon: ClockIcon, accent: "amber" },
-    { key: "delivered", label: "Delivered Orders", value: s.deliveredOrders, format: num, icon: CheckIcon, accent: "green" },
   ];
 
   return (
@@ -111,21 +142,30 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError("");
+  const load = useCallback(async (silent = false) => {
+    if (!silent) {
+      setLoading(true);
+      setError("");
+    }
     try {
       setData(await fetchAdminDashboard());
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : "Failed to load dashboard.");
+      // A failed silent refresh keeps the current numbers on screen.
+      if (!silent) {
+        setError(e instanceof ApiError ? e.message : "Failed to load dashboard.");
+      }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
     load();
   }, [load]);
+
+  // Live metrics: order/stock events broadcast a dashboard:update nudge —
+  // silently refetch so cancellation (and all other) numbers move instantly.
+  useAdminRealtime({ onDashboard: () => load(true) });
 
   return (
     <section className="admin-page admin-dashboard">
@@ -146,7 +186,7 @@ export default function AdminDashboardPage() {
       ) : error ? (
         <div className="admin-dash-error">
           <p className="admin-error">{error}</p>
-          <button className="admin-btn" onClick={load}>
+          <button className="admin-btn" onClick={() => load()}>
             Retry
           </button>
         </div>

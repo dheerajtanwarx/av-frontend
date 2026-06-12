@@ -126,12 +126,18 @@ export function TrendLineChart({
           );
         })}
 
+        {/* `points` lives in `animate`, so live data updates morph the shape
+            smoothly instead of snapping (the point count is constant — one
+            per day in the window — so the string interpolates cleanly). */}
         <motion.polygon
           points={areaPts}
           fill="url(#revFill)"
           initial={{ opacity: 0 }}
-          animate={drawn ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 0.6, delay: reduce ? 0 : 0.9 }}
+          animate={drawn ? { opacity: 1, points: areaPts } : { opacity: 0 }}
+          transition={{
+            opacity: { duration: 0.6, delay: reduce ? 0 : 0.9 },
+            points: { duration: reduce ? 0 : 0.8, ease: [0.16, 1, 0.3, 1] },
+          }}
         />
         <motion.polyline
           points={linePts}
@@ -142,13 +148,18 @@ export function TrendLineChart({
           strokeLinecap="round"
           filter="url(#revGlow)"
           initial={{ pathLength: 0 }}
-          animate={drawn ? { pathLength: 1 } : { pathLength: 0 }}
-          transition={{ duration: reduce ? 0 : 1.5, ease: [0.4, 0, 0.2, 1] }}
+          animate={drawn ? { pathLength: 1, points: linePts } : { pathLength: 0 }}
+          transition={{
+            pathLength: { duration: reduce ? 0 : 1.5, ease: [0.4, 0, 0.2, 1] },
+            points: { duration: reduce ? 0 : 0.8, ease: [0.16, 1, 0.3, 1] },
+          }}
         />
 
-        {/* Peak marker with a gentle pulse */}
+        {/* Peak marker with a gentle pulse; keyed by position so it re-pops
+            when a live update moves the peak to another day. */}
         {max > 0 && (
           <motion.circle
+            key={peakIdx}
             cx={x(peakIdx)}
             cy={y(values[peakIdx])}
             r={4}
@@ -259,19 +270,21 @@ export function TrendBarChart({ data }: { data: DashboardDailyPoint[] }) {
         })}
 
         {values.map((v, i) => {
-          const h = (v / max) * innerH;
+          // Full-height rect scaled from the baseline: bar height is purely
+          // scaleY = v/max, so live data updates tween smoothly (no y/height
+          // attribute jumps) and the entrance grow-in still works.
           return (
             <motion.rect
               key={i}
               x={cx(i) - barW / 2}
-              y={padTop + innerH - h}
+              y={padTop}
               width={barW}
-              height={h}
+              height={innerH}
               rx={3}
               className="admin-chart-bar"
               fill={hover === i ? "var(--rani-deep)" : "url(#barFill)"}
               initial={{ scaleY: 0, opacity: 0 }}
-              animate={grow ? { scaleY: 1, opacity: 1 } : { scaleY: 0 }}
+              animate={grow ? { scaleY: v / max, opacity: 1 } : { scaleY: 0 }}
               transition={{
                 duration: reduce ? 0 : 0.6,
                 delay: reduce ? 0 : 0.15 + i * 0.025,

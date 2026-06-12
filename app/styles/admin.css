@@ -696,6 +696,7 @@
 .admin-stat-card.accent-violet { --spark-violet: #6d28d9; }
 .admin-stat-card.accent-amber  { --spark-amber: #b45309; }
 .admin-stat-card.accent-green  { --spark-green: #15803d; }
+.admin-stat-card.accent-red    { --spark-red: #c0392b; }
 
 .admin-stat-icon {
   width: 46px;

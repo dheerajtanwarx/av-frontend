@@ -7,6 +7,7 @@ import {
   type AdminOrdersResponse,
   type AdminOrderStatusFilter,
 } from "../../lib/api";
+import { useAdminRealtime } from "../../lib/admin-realtime";
 
 const FILTERS: { key: AdminOrderStatusFilter; label: string }[] = [
   { key: "all", label: "All" },
@@ -70,21 +71,35 @@ export default function AdminOrdersPage() {
     setPage(1);
   }, [query, status]);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError("");
-    try {
-      setData(await fetchAdminOrders({ q: query, status, page }));
-    } catch (e) {
-      setError(e instanceof ApiError ? e.message : "Failed to load orders.");
-    } finally {
-      setLoading(false);
-    }
-  }, [query, status, page]);
+  const load = useCallback(
+    async (silent = false) => {
+      if (!silent) {
+        setLoading(true);
+        setError("");
+      }
+      try {
+        setData(await fetchAdminOrders({ q: query, status, page }));
+      } catch (e) {
+        // A failed silent refresh keeps showing the current (stale) list.
+        if (!silent) {
+          setError(e instanceof ApiError ? e.message : "Failed to load orders.");
+        }
+      } finally {
+        if (!silent) setLoading(false);
+      }
+    },
+    [query, status, page]
+  );
 
   useEffect(() => {
     load();
   }, [load]);
+
+  // Live refresh: any order/stock event (new order, cancellation, status
+  // change) nudges open dashboards — silently refetch so rows and filter-chip
+  // counts move (e.g. a cancelled order jumps to the Cancelled tab) without
+  // a page refresh or loading flash.
+  useAdminRealtime({ onDashboard: () => load(true) });
 
   const orders = data?.orders ?? [];
 

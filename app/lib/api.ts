@@ -603,6 +603,104 @@ export function updateAdminOrderStatus(
   });
 }
 
+/** Append a timestamped internal note to an order (admin-facing only). */
+export function adminAddOrderNote(
+  id: number,
+  note: string
+): Promise<{ id: number; notes: string }> {
+  return apiSend("PATCH", `/api/orders/admin/${id}/notes`, { note });
+}
+
+/** Mark any still-captured payment on a cancelled/returned order refunded.
+    Idempotent — refunded is 0 when the cancel already auto-refunded. */
+export function adminProcessRefund(
+  id: number
+): Promise<{ refunded: number; message: string }> {
+  return apiSend("POST", `/api/orders/admin/${id}/refund`);
+}
+
+/** Mark one notification read for the signed-in admin. */
+export function markNotificationRead(id: number): Promise<unknown> {
+  return apiSend("PATCH", `/api/admin/notifications/${id}/read`);
+}
+
+export type NotificationPriority = "CRITICAL" | "HIGH" | "MEDIUM" | "INFO";
+
+export type AdminNotification = {
+  id: number;
+  type: string;
+  priority: NotificationPriority;
+  title: string;
+  body: string;
+  orderId: number | null;
+  orderNo: string | null;
+  meta: unknown;
+  createdAt: string;
+  read: boolean;
+  readAt: string | null;
+  archived: boolean;
+  archivedAt: string | null;
+};
+
+export type AdminNotificationsResponse = {
+  notifications: AdminNotification[];
+  unread: number;
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+};
+
+export type NotificationSort = "newest" | "oldest" | "priority" | "unread";
+
+export function fetchAdminNotifications(params: {
+  page?: number;
+  pageSize?: number;
+  q?: string;
+  type?: string;
+  unread?: boolean;
+  archived?: boolean;
+  sort?: NotificationSort;
+}): Promise<AdminNotificationsResponse> {
+  const q = new URLSearchParams();
+  if (params.page) q.set("page", String(params.page));
+  if (params.pageSize) q.set("pageSize", String(params.pageSize));
+  if (params.q) q.set("q", params.q);
+  if (params.type) q.set("type", params.type);
+  if (params.unread) q.set("unread", "1");
+  if (params.archived) q.set("archived", "1");
+  if (params.sort) q.set("sort", params.sort);
+  return apiGet(`/api/admin/notifications?${q.toString()}`);
+}
+
+export function archiveNotification(id: number): Promise<unknown> {
+  return apiSend("PATCH", `/api/admin/notifications/${id}/archive`);
+}
+
+export function unarchiveNotification(id: number): Promise<unknown> {
+  return apiSend("PATCH", `/api/admin/notifications/${id}/unarchive`);
+}
+
+export function markNotificationUnread(id: number): Promise<unknown> {
+  return apiSend("PATCH", `/api/admin/notifications/${id}/unread`);
+}
+
+export function readAllNotifications(): Promise<{ updated: number }> {
+  return apiSend("POST", `/api/admin/notifications/read-all`);
+}
+
+export function bulkReadNotifications(ids: number[]): Promise<{ updated: number }> {
+  return apiSend("POST", `/api/admin/notifications/read`, { ids });
+}
+
+export function bulkArchiveNotifications(ids: number[]): Promise<{ updated: number }> {
+  return apiSend("POST", `/api/admin/notifications/archive`, { ids });
+}
+
+export function bulkUnarchiveNotifications(ids: number[]): Promise<{ updated: number }> {
+  return apiSend("POST", `/api/admin/notifications/unarchive`, { ids });
+}
+
 /* ---------- Admin: customer management (ADMIN role only) ---------- */
 
 export type AdminCustomerListItem = {
@@ -687,6 +785,9 @@ export type DashboardStats = {
   totalProducts: number;
   pendingOrders: number;
   deliveredOrders: number;
+  todayOrders: number;
+  cancelledOrders: number;
+  refunds: number;
 };
 
 export type DashboardDailyPoint = {

@@ -8,6 +8,7 @@ import {
   ReviewsIcon,
   ReportsIcon,
   SettingsIcon,
+  BellIcon,
 } from "./icons";
 
 export type AdminNavItem = {
@@ -24,6 +25,7 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { label: "Customers", href: "/admin/customers", icon: CustomersIcon },
   { label: "Inventory", href: "/admin/inventory", icon: InventoryIcon },
   { label: "Reviews", href: "/admin/reviews", icon: ReviewsIcon },
+  { label: "Notifications", href: "/admin/notifications", icon: BellIcon },
   { label: "Reports", href: "/admin/reports", icon: ReportsIcon },
   { label: "Settings", href: "/admin/settings", icon: SettingsIcon },
 ];

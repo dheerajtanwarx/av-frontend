@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import AdminGuard from "../auth/AdminGuard";
 import AdminSidebar from "./AdminSidebar";
 import AdminProfileMenu from "./AdminProfileMenu";
+import NotificationBell from "./NotificationBell";
 import { MenuIcon } from "./icons";
 import { activeNavItem } from "./nav";
 
@@ -48,6 +49,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </button>
               <h1 className="admin-topbar-title">{title}</h1>
               <div className="admin-topbar-spacer" />
+              <NotificationBell />
               <AdminProfileMenu user={user} />
             </header>
 
