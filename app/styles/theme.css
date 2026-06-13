@@ -42,4 +42,31 @@
   /* --- Announcement bar overrides (matches handoff) --- */
   --announce-bg: #ddd0c3;
   --announce-ink: #393939;
+
+  /* ============================================================
+     MOTION — Emil-style custom curves. Built-in easings are too
+     weak; these give entrances/presses their intentional punch.
+     ============================================================ */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);     /* entrances, reveals      */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); /* on-screen movement      */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);  /* iOS-like sheets/drawers */
+  --t-press: 140ms;  /* button :active feedback                              */
+  --t-quick: 200ms;  /* hovers, small popovers                               */
+  --t-base: 260ms;   /* dropdowns, cards, reveals                            */
+
+  /* --- Corner radius: restrained. Pills are banned on primary CTAs. --- */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 8px;
+
+  /* --- Mobile system metrics --- */
+  --tap: 48px;           /* minimum tap target — non-negotiable on touch     */
+  --bottomnav-h: 60px;   /* height of the fixed mobile bottom nav            */
+
+  /* --- Semantic z-index scale (no arbitrary 999s) --- */
+  --z-sticky: 40;
+  --z-bottomnav: 60;
+  --z-fab: 70;
+  --z-drawer: 90;
+  --z-toast: 100;
 }

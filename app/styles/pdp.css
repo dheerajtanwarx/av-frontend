@@ -206,6 +206,8 @@
   aspect-ratio: 4/5;
   overflow: hidden;
   cursor: zoom-in;
+  /* Horizontal gestures are the swipe; vertical still scrolls the page. */
+  touch-action: pan-y;
 }
 .pdp .g-frame .gimg {
   position: absolute;
@@ -272,6 +274,45 @@
 .pdp .g-zoomhint svg {
   width: 13px;
   height: 13px;
+}
+
+/* Swipe position counter — replaces dots/arrows on touch. Desktop hides it
+   (the thumb filmstrip + hover-zoom are the desktop controls). */
+.pdp .g-count {
+  display: none;
+}
+
+/* On touch there is no hover: kill the tap-zoom, drop the "hover" hint, and
+   surface the swipe counter. */
+@media (hover: none) {
+  .pdp .g-frame {
+    cursor: default;
+  }
+  .pdp .g-frame.zoom .gimg.show {
+    transform: none;
+  }
+  .pdp .g-zoomhint {
+    display: none;
+  }
+  .pdp .g-count {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    background: rgba(27, 32, 24, 0.6);
+    color: #fff;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+    padding: 5px 13px;
+    border-radius: 999px;
+  }
 }
 .pdp .gal-ed .g-row {
   display: grid;
@@ -344,18 +385,27 @@
   gap: 11px;
   margin-top: 16px;
 }
-.pdp .bb .stars {
-  color: var(--gold);
-  font-size: 14px;
-  letter-spacing: 0.1em;
-}
+/* Numeric rating (AJIO-style) — one gold star + the score, never a row of
+   icons. Reads at a glance without the generic five-star block. */
 .pdp .bb .rate .rn {
-  font-size: 12.5px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 14px;
   color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.pdp .bb .rate .rstar {
+  color: var(--gold);
+  font-size: 12px;
 }
 .pdp .bb .rate .rn b {
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 500;
+  font-size: 15px;
+}
+.pdp .bb .rate .rn-of {
+  color: var(--muted);
 }
 .pdp .bb .rate a {
   font-size: 12px;
@@ -373,7 +423,7 @@
 .pdp .bb .price {
   font-family: var(--serif);
   font-size: 32px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink);
 }
 .pdp .bb .was {
@@ -389,7 +439,7 @@
   text-transform: uppercase;
   padding: 5px 11px;
   border-radius: 4px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .pdp .bb .tax {
   font-size: 11.5px;
@@ -400,7 +450,7 @@
 .pdp .bb .desc {
   font-family: var(--serif);
   font-size: 18px;
-  line-height: 1.55;
+  line-height: 1.65;
   color: var(--ink-soft);
   margin-top: 22px;
 }
@@ -537,7 +587,7 @@
 }
 .pdp .size-guide td:first-child {
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 500;
   font-family: var(--serif);
   font-size: 15px;
 }
@@ -595,9 +645,8 @@
   background: var(--rani);
   color: #fff;
   cursor: pointer;
-  font-size: 11.5px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.02em;
   font-weight: 500;
   overflow: hidden;
   transition: background 0.3s var(--ease), transform 0.25s var(--ease), box-shadow 0.3s;
@@ -711,11 +760,10 @@
   background: none;
   color: var(--ink);
   cursor: pointer;
-  font-size: 11.5px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.02em;
   font-weight: 500;
-  transition: all 0.25s;
+  transition: background 0.25s var(--ease-out), color 0.25s var(--ease-out);
 }
 .pdp .buynow:hover {
   background: var(--ink);
@@ -746,7 +794,7 @@
 .pdp .bb-trust .t .tt {
   font-family: var(--serif);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink);
   line-height: 1.1;
 }
@@ -776,7 +824,7 @@
   text-align: left;
   font-family: var(--serif);
   font-size: 17px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink);
   transition: color 0.2s;
 }
@@ -824,7 +872,7 @@
 }
 .pdp .acc .a .inner b {
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 /* ============ FULL-PAGE SECTIONS ============ */
@@ -930,7 +978,7 @@
 .pdp .craft .specs .s .sv {
   font-family: var(--serif);
   font-size: 17px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink);
   margin-top: 3px;
 }
@@ -965,16 +1013,16 @@
 .pdp .rv-score .big {
   font-family: var(--serif);
   font-size: 62px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1;
   color: var(--ink);
 }
-.pdp .rv-score .stars {
-  color: var(--gold);
-  font-size: 18px;
+.pdp .rv-score .rv-outof {
+  font-size: 12px;
   letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
   margin-top: 8px;
-  display: block;
 }
 .pdp .rv-score .cnt {
   font-size: 12px;
@@ -1059,7 +1107,7 @@
   justify-content: center;
   font-family: var(--serif);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .pdp .rv-card .who .nm {
   font-size: 13px;
@@ -1179,7 +1227,7 @@
 .pdp .stl-list .li .info .nm {
   font-family: var(--serif);
   font-size: 19px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink);
 }
 .pdp .stl-list .li .info .ty {
@@ -1244,6 +1292,37 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 28px;
+}
+
+/* "You may also like" category chips */
+.pdp .reco-cats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: -8px 0 28px;
+}
+.pdp .reco-cat {
+  flex: 0 0 auto;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--line-2);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
+}
+.pdp .reco-cat:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+.pdp .reco-cat.on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
 }
 .pdp .prod {
   cursor: pointer;
@@ -1314,7 +1393,7 @@
   display: block;
   font-family: var(--serif);
   font-size: 19px;
-  font-weight: 600;
+  font-weight: 500;
   margin-top: 15px;
   line-height: 1.18;
 }
@@ -1333,7 +1412,7 @@
 }
 .pdp .prod .price {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .pdp .prod .was {
   font-size: 12px;
@@ -1435,7 +1514,7 @@
 .pdp .toast .tinfo .tn {
   font-family: var(--serif);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink);
   margin-top: 4px;
   line-height: 1.15;
@@ -1504,12 +1583,51 @@
     padding-left: 20px;
     padding-right: 20px;
   }
+  /* Strictly two columns — a single column makes the pieces feel small and
+     wastes the screen. Premium grids stay paired on mobile. */
   .pdp .prods {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px 14px;
   }
   .pdp .bb-trust {
     grid-template-columns: 1fr;
     gap: 16px;
+  }
+}
+
+/* ============ MOBILE STICKY ADD-TO-BAG BAR ============
+   The buy row leaves the flow and pins to the thumb zone, just above the
+   bottom nav, so the primary CTA is always one thumb away. Pure CSS — it
+   reuses the existing controls and their handlers; no markup logic changes.
+   Quantity defaults to 1 here (adjustable in the bag), keeping the bar calm. */
+@media (max-width: 860px) {
+  .pdp {
+    padding-bottom: 76px;
+  }
+  .pdp .buy-row {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--bottomnav-h) + env(safe-area-inset-bottom, 0px));
+    z-index: var(--z-sticky);
+    margin: 0;
+    gap: 10px;
+    padding: 10px 16px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    -webkit-backdrop-filter: saturate(1.1) blur(14px);
+    backdrop-filter: saturate(1.1) blur(14px);
+    border-top: 1px solid var(--line-2);
+  }
+  .pdp .buy-row .qty {
+    display: none;
+  }
+  .pdp .buy-row .addbtn {
+    height: 52px;
+  }
+  .pdp .buy-row .wishbtn {
+    width: 52px;
+    height: 52px;
+    flex: 0 0 auto;
   }
 }
 
@@ -1542,3 +1660,62 @@
 .pdp .buynow:disabled,
 .pdp .buynow:disabled:hover { opacity: 0.45; cursor: not-allowed; }
 .pdp .qty button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ============ MOBILE PDP REDESIGN ============
+   On phones the editorial "craft" story and the "Shop the Look" styling block
+   are dropped to keep the page short and shopping-focused; the "You may also
+   like" rail becomes a swipeable, category-filtered carousel. Desktop keeps the
+   full editorial layout untouched. */
+@media (max-width: 860px) {
+  /* Drop the long-form craft band, the shop-the-look section, and the buy-box
+     trust band (Free Shipping / Made to Measure / Secure Checkout) on mobile. */
+  .pdp .craft,
+  .pdp .sec.tint,
+  .pdp .bb-trust {
+    display: none;
+  }
+
+  /* Let the recommendation rail bleed to the screen edges. */
+  .pdp .sec.reco {
+    overflow: hidden;
+  }
+
+  /* Category chips: a single scrollable row, left-aligned, edge-to-edge. */
+  .pdp .reco-cats {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    margin: -4px -20px 20px;
+    padding: 4px 20px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pdp .reco-cats::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Horizontally scrolling, snapping product carousel. */
+  .pdp .prods.reco-rail {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 62%;
+    grid-template-columns: none;
+    gap: 14px;
+    overflow-x: auto;
+    margin: 0 -20px;
+    padding: 2px 20px 8px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pdp .prods.reco-rail::-webkit-scrollbar {
+    display: none;
+  }
+  .pdp .prods.reco-rail > .prod {
+    scroll-snap-align: start;
+  }
+  /* No hover on touch — surface the quick "View Product" link instead. */
+  .pdp .prods.reco-rail .qa {
+    display: none;
+  }
+}

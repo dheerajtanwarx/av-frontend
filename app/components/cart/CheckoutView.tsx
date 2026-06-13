@@ -476,7 +476,7 @@ export default function CheckoutView() {
             )}
 
             <button className="place-order" onClick={goToPayment}>
-              Continue to Payment {CartIc.arrowR}
+              Continue to payment {CartIc.arrowR}
             </button>
               </>
             ) : (
@@ -574,7 +574,7 @@ export default function CheckoutView() {
                 disabled={placing}
                 style={{ marginTop: 22 }}
               >
-                {placing ? "Placing your order…" : <>{CartIc.lock} Place Order · {inr(grand)}</>}
+                {placing ? "Placing your order…" : <>{CartIc.lock} Place order · {inr(grand)}</>}
               </button>
               <button className="co-back" onClick={backToDetails} type="button">
                 {CartIc.arrowL} Back to details &amp; address

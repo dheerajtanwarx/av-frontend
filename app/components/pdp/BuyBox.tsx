@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { colorImages, type AccordionItem, type PdpColor, type PdpProduct } from "../../lib/pdp-data";
-import { Ic, Stars } from "./icons";
+import { Ic } from "./icons";
 import { usePdp } from "./PdpContext";
 import { useCart } from "../landing/CartContext";
 import { useWishlist } from "../landing/WishlistContext";
@@ -57,7 +57,7 @@ function AddToBag({
   if (soldOut) {
     return (
       <button className="addbtn oos" data-state="idle" disabled>
-        <span className="lab l-add">Out of Stock</span>
+        <span className="lab l-add">Out of stock</span>
       </button>
     );
   }
@@ -79,12 +79,12 @@ function AddToBag({
   return (
     <button className="addbtn" data-state={state} onClick={onClick}>
       <span className="lab l-add">
-        {Ic.cart} Add to Bag · {product.price}
+        {Ic.cart} Add to bag · {product.price}
       </span>
       <span className="lab l-adding">
         <span className="spin" /> Adding…
       </span>
-      <span className="lab l-added">{Ic.check} Added to Bag</span>
+      <span className="lab l-added">{Ic.check} Added to bag</span>
     </button>
   );
 }
@@ -199,9 +199,10 @@ export default function BuyBox({
       <div className="rate">
         {product.reviewCount > 0 ? (
           <>
-            <Stars n={product.rating} />
             <span className="rn">
-              <b>{product.rating}</b> / 5
+              <span className="rstar" aria-hidden="true">★</span>
+              <b>{product.rating}</b>
+              <span className="rn-of"> / 5</span>
             </span>
             <a href="#reviews">
               {product.reviewCount} {product.reviewCount === 1 ? "review" : "reviews"}
@@ -301,7 +302,7 @@ export default function BuyBox({
         </button>
       </div>
       <button className="buynow" onClick={buyNow} disabled={soldOut}>
-        {soldOut ? "Out of Stock" : "Buy It Now"}
+        {soldOut ? "Out of stock" : "Buy it now"}
       </button>
 
       <div className="bb-trust">

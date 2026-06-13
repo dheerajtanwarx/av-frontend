@@ -7,9 +7,12 @@
    ============================================================ */
 
 :root {
-  --serif: var(--font-cormorant), Georgia, serif;
-  --display: var(--font-marcellus), Georgia, serif;
-  --sans: var(--font-jost), system-ui, sans-serif;
+  /* --serif / --display now resolve to the geometric display face (Jost);
+     names kept for the many existing call sites. See globals.css for the
+     AJIO-referenced type system. */
+  --serif: var(--font-display), "Century Gothic", system-ui, sans-serif;
+  --display: var(--font-display), "Century Gothic", system-ui, sans-serif;
+  --sans: var(--font-text), system-ui, sans-serif;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -586,6 +589,14 @@
   from { width: 0; }
   to { width: 100%; }
 }
+/* Where the hero doesn't auto-advance (phones / no-hover / reduced motion) the
+   progress fill would mislead — show the active dot as a solid bar instead. */
+@media (max-width: 860px), (hover: none), (prefers-reduced-motion: reduce) {
+  .av .hero-dots button.active .fill {
+    animation: none;
+    width: 100%;
+  }
+}
 .av .hero-count {
   position: absolute;
   z-index: 6;
@@ -596,7 +607,7 @@
   font-size: 17px;
   letter-spacing: 0.1em;
 }
-.av .hero-count b { font-weight: 600; color: #fff; font-size: 22px; }
+.av .hero-count b { font-weight: 500; color: #fff; font-size: 22px; }
 
 /* trust strip */
 .av .trust {
@@ -621,7 +632,7 @@
 .av .trust .it .t {
   font-family: var(--serif);
   font-size: 19px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink);
 }
 .av .trust .it .s {
@@ -728,7 +739,7 @@
 .av .cat .label .n {
   font-family: var(--serif);
   font-size: 23px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.12;
 }
 .av .cat .label .c {
@@ -805,7 +816,7 @@
 .av .odhni-art .float .cap {
   font-family: var(--serif);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   text-align: center;
   margin-top: 9px;
   color: var(--ink);
@@ -849,7 +860,7 @@
 .av .odhni-copy .lead {
   font-family: var(--serif);
   font-size: 21px;
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--ink-soft);
   margin: 22px 0 0;
   max-width: 460px;
@@ -865,7 +876,7 @@
 .av .odhni-feats .f .ft {
   font-family: var(--serif);
   font-size: 19px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--rani);
 }
 .av .odhni-feats .f .fs {
@@ -954,45 +965,84 @@
   grid-template-columns: 1fr 1fr;
   gap: 6px;
   z-index: 3;
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.42s var(--ease), transform 0.42s var(--ease);
+  /* Visible by default so touch users can always reach it. On hover-capable
+     pointers we hide it and reveal on hover (the desktop flourish). */
+  opacity: 1;
+  transform: none;
+  transition: opacity var(--t-base) var(--ease-out),
+    transform var(--t-base) var(--ease-out);
 }
-.av .prod:hover .card-btns { opacity: 1; transform: none; }
+@media (hover: hover) and (pointer: fine) {
+  .av .prod .card-btns {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  .av .prod:hover .card-btns {
+    opacity: 1;
+    transform: none;
+  }
+}
 .av .prod .addcart {
   background: var(--ink);
   color: #fff;
   border: none;
   cursor: pointer;
-  padding: 11px 6px;
+  padding: 12px 6px;
   font-family: var(--sans);
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
   font-weight: 500;
-  border-radius: 5px;
-  transition: background 0.25s;
+  border-radius: var(--r-sm);
+  transition: background var(--t-quick) var(--ease-out),
+    transform var(--t-press) var(--ease-out);
   white-space: nowrap;
   text-align: center;
 }
 .av .prod .addcart:hover { background: var(--rani-deep); }
+.av .prod .addcart:active { transform: scale(0.97); }
 .av .prod .buynow {
   background: var(--rani);
   color: #fff;
   border: none;
   cursor: pointer;
-  padding: 11px 6px;
+  padding: 12px 6px;
   font-family: var(--sans);
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
   font-weight: 500;
-  border-radius: 5px;
-  transition: background 0.25s;
+  border-radius: var(--r-sm);
+  transition: background var(--t-quick) var(--ease-out),
+    transform var(--t-press) var(--ease-out);
   white-space: nowrap;
   text-align: center;
 }
 .av .prod .buynow:hover { background: var(--rani-deep); }
+.av .prod .buynow:active { transform: scale(0.97); }
+
+/* On phones the card carries one clean primary action. Buy-now stays on the
+   PDP; two micro-buttons on a ~175px card would crowd. Tap targets grow to
+   meet touch, and the wishlist sits visible since there is no hover. */
+@media (max-width: 860px) {
+  .av .prod .card-btns {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .av .prod .buynow { display: none; }
+  .av .prod .addcart {
+    min-height: 46px;
+    font-size: 13px;
+    border-radius: var(--r-md);
+  }
+  .av .prod .wish {
+    width: 42px;
+    height: 42px;
+    opacity: 1;
+  }
+  .av .prod .wish svg { width: 17px; height: 17px; }
+}
 
 /* image placeholder for products with no image */
 .av .prod .img-ph {
@@ -1003,7 +1053,7 @@
 .av .prod .pname {
   font-family: var(--serif);
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 500;
   margin-top: 18px;
   color: var(--ink);
   line-height: 1.2;
@@ -1023,13 +1073,20 @@
   align-items: baseline;
   margin-top: 9px;
 }
-.av .prod .price { font-size: 16px; color: var(--ink); font-weight: 600; }
+.av .prod .price { font-size: 16px; color: var(--ink); font-weight: 500; }
 .av .prod .was { font-size: 13px; color: var(--muted); text-decoration: line-through; }
 .av .prod .stars {
-  font-size: 11px;
-  color: var(--gold);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--ink-soft);
   margin-left: auto;
-  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+}
+.av .prod .stars .rstar {
+  color: var(--gold);
+  font-size: 11px;
 }
 
 /* horizontal-scroll product row */
@@ -1124,7 +1181,7 @@
   transition: all 0.28s var(--ease);
   box-shadow: 0 14px 30px -16px rgba(0, 0, 0, 0.5);
 }
-.av .hotspot .tip .nm { font-family: var(--serif); font-size: 15px; font-weight: 600; }
+.av .hotspot .tip .nm { font-family: var(--serif); font-size: 15px; font-weight: 500; }
 .av .hotspot .tip .pr { font-size: 11px; color: var(--rani); letter-spacing: 0.04em; }
 .av .hotspot:hover .tip { opacity: 1; transform: translateY(-50%) scale(1); }
 @keyframes pulse {
@@ -1160,7 +1217,7 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.16);
   padding-bottom: 13px;
 }
-.av .look-list .nm { font-family: var(--serif); font-size: 19px; font-weight: 600; }
+.av .look-list .nm { font-family: var(--serif); font-size: 19px; font-weight: 500; }
 .av .look-list .pr { font-size: 14px; color: var(--gold-soft); }
 
 /* editorial split band */
@@ -1206,7 +1263,7 @@
   font-size: 18px;
   color: rgba(255, 255, 255, 0.86);
   margin-bottom: 24px;
-  line-height: 1.5;
+  line-height: 1.65;
 }
 
 /* reels */
@@ -1355,7 +1412,7 @@
   line-height: 1.8;
   margin-top: 20px;
   max-width: 320px;
-  font-weight: 300;
+  font-weight: 400;
 }
 .av .foot-social { display: flex; gap: 12px; margin-top: 24px; }
 .av .foot-social a {
@@ -1384,7 +1441,7 @@
   display: block;
   font-size: 13.5px;
   margin-bottom: 12px;
-  font-weight: 300;
+  font-weight: 400;
   transition: color 0.2s;
 }
 .av .foot-col a:hover { color: var(--gold-bright); }
@@ -1435,9 +1492,15 @@
 }
 @media (max-width: 860px) {
   .av .wrap { padding: 0 24px; }
-  .av .topnav { grid-template-columns: auto 1fr auto; }
+  /* Mobile header = brand only. The fixed bottom nav owns search, wishlist,
+     cart and profile, so the top icons would only duplicate it. A single
+     centred mark answers "where am I?" the instant the page loads. */
+  .av .topnav { grid-template-columns: 1fr; height: 64px; }
   .av .topnav nav { display: none; }
-  .av .navtoggle { display: flex; }
+  .av .navtoggle { display: none; }
+  .av .navleft { display: none; }
+  .av .acts { display: none; }
+  .av .logo { grid-column: 1; }
   .av .slide .inner { padding: 0 30px; max-width: 100%; }
   .av .slide .content.r { justify-content: flex-start; text-align: left; }
   .av .slide .content.r .cta,
@@ -1524,6 +1587,113 @@
   color: var(--muted);
   letter-spacing: 0.04em;
 }
+/* Controls cluster: price slider + sort, right-aligned in the bar. */
+.av .cat-controls {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+/* ---- Price range filter ---- */
+.av .cat-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 210px;
+}
+.av .cat-filter-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.av .cat-filter-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.av .cat-filter-vals {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.av .cat-filter-reset {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--sans);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rani);
+  cursor: pointer;
+}
+.av .cat-filter-reset:hover { color: var(--rani-deep); }
+
+/* Dual-thumb slider: two overlaid range inputs with a transparent native
+   track; the visible track + fill sit underneath and only the thumbs are
+   interactive so both handles can be grabbed. */
+.av .cat-range {
+  position: relative;
+  height: 24px;
+}
+.av .cat-range-track,
+.av .cat-range-fill {
+  position: absolute;
+  top: 50%;
+  height: 3px;
+  transform: translateY(-50%);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.av .cat-range-track {
+  left: 0;
+  right: 0;
+  background: var(--line);
+}
+.av .cat-range-fill { background: var(--rani); }
+.av .cat-range-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  background: none;
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.av .cat-range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--rani);
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 1px 4px rgba(43, 32, 24, 0.18);
+  transition: border-color 0.2s, transform 0.1s;
+}
+.av .cat-range-input::-webkit-slider-thumb:hover { border-color: var(--rani-deep); }
+.av .cat-range-input:active::-webkit-slider-thumb { transform: scale(1.12); }
+.av .cat-range-input::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--rani);
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 1px 4px rgba(43, 32, 24, 0.18);
+}
+.av .cat-range-input::-webkit-slider-runnable-track { background: none; }
+.av .cat-range-input::-moz-range-track { background: none; }
+
 .av .cat-sort {
   display: flex;
   align-items: center;
@@ -1583,6 +1753,15 @@
 }
 @media (max-width: 760px) {
   .av .cat-grid { grid-template-columns: repeat(2, 1fr); gap: 28px 18px; }
+  /* Let the controls span the row so the price slider gets full width. */
+  .av .cat-bar { align-items: stretch; }
+  .av .cat-controls {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 22px;
+  }
+  .av .cat-filter { min-width: 0; }
 }
 @media (max-width: 480px) {
   .av .cat-grid { gap: 20px 12px; }
@@ -1599,7 +1778,7 @@
   font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--rani-deep);
 }
 .av .prod .addcart:disabled,

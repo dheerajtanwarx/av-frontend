@@ -48,7 +48,7 @@
 .auth-title {
   font-family: var(--font-cormorant), serif;
   font-size: 32px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink);
   line-height: 1.1;
 }

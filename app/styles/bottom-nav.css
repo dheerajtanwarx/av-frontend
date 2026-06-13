@@ -1,0 +1,97 @@
+/* ============================================================
+   AV CREATION — MOBILE BOTTOM NAVIGATION
+   ------------------------------------------------------------
+   Lives in the thumb zone on phones and replaces the top
+   hamburger drawer. Desktop keeps the full top nav, so the bar
+   only appears at the same breakpoint where the top nav hides.
+   ============================================================ */
+
+.botnav {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  /* Reserve room so fixed content never hides behind the bar — but only on
+     pages that actually render it (it returns null on cart/checkout, so
+     those keep their natural bottom edge). */
+  body:has(.botnav) {
+    padding-bottom: calc(var(--bottomnav-h) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .botnav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-bottomnav);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    height: calc(var(--bottomnav-h) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    /* Separation via hairline + frosted ground, not a drop shadow. */
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    -webkit-backdrop-filter: saturate(1.1) blur(14px);
+    backdrop-filter: saturate(1.1) blur(14px);
+    border-top: 1px solid var(--line-2);
+  }
+
+  .botnav-it {
+    /* Whole cell is the tap target — comfortably past the 48px floor. */
+    min-height: var(--tap);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-decoration: none;
+    transition: color var(--t-quick) var(--ease-out),
+      transform var(--t-press) var(--ease-out);
+  }
+  .botnav-it svg {
+    width: 23px;
+    height: 23px;
+  }
+  /* Press feedback — the bar must feel like it heard the thumb. */
+  .botnav-it:active {
+    transform: scale(0.92);
+  }
+  .botnav-it.on {
+    color: var(--rani);
+  }
+
+  /* Icon wrapper carries the count badge. */
+  .botnav-ic {
+    position: relative;
+    display: inline-flex;
+  }
+  .botnav-badge {
+    position: absolute;
+    top: -6px;
+    right: -9px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--rani);
+    color: #fff;
+    font-size: 10px;
+    line-height: 1;
+    border-radius: 999px; /* badges may be pill — the ban is for primary CTAs */
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .botnav-it:active {
+      transform: none;
+    }
+  }
+}

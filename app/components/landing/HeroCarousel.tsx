@@ -50,6 +50,17 @@ export default function HeroCarousel() {
   const schedule = useCallback(() => {
     if (timer.current) clearTimeout(timer.current);
     if (paused.current) return;
+    // Don't auto-advance on phones or for reduced-motion users: a static
+    // editorial hero reads (and converts) better on mobile, and an auto-
+    // playing carousel is the generic move. Manual nav (dots / arrows /
+    // keyboard) still works everywhere; desktop keeps the hover-pausable
+    // autoplay.
+    if (typeof window !== "undefined") {
+      const noAutoplay = window.matchMedia(
+        "(max-width: 860px), (hover: none), (prefers-reduced-motion: reduce)"
+      ).matches;
+      if (noAutoplay) return;
+    }
     timer.current = setTimeout(
       () => setActive((i) => (i + 1) % slides.length),
       DURATION

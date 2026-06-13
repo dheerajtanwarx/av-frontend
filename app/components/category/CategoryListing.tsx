@@ -1,20 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import ProductCard from "../landing/ProductCard";
+import { usePriceSort, PriceSortBar } from "../product/PriceSortBar";
 import type { Product } from "../../lib/landing-data";
-
-type SortKey = "featured" | "price-asc" | "price-desc";
-
-function parsePrice(p: string): number {
-  return parseInt(p.replace(/[^\d]/g, ""), 10) || 0;
-}
-
-const SORT_LABELS: Record<SortKey, string> = {
-  featured: "Featured",
-  "price-asc": "Price ↑",
-  "price-desc": "Price ↓",
-};
 
 export default function CategoryListing({
   categoryName,
@@ -23,13 +11,8 @@ export default function CategoryListing({
   categoryName: string;
   products: Product[];
 }) {
-  const [sort, setSort] = useState<SortKey>("featured");
-
-  const sorted = [...products].sort((a, b) => {
-    if (sort === "price-asc") return parsePrice(a.price) - parsePrice(b.price);
-    if (sort === "price-desc") return parsePrice(b.price) - parsePrice(a.price);
-    return 0;
-  });
+  const ps = usePriceSort(products);
+  const { filtered, isFiltered, reset } = ps;
 
   return (
     <main className="cat-page">
@@ -57,33 +40,32 @@ export default function CategoryListing({
       <div className="wrap">
         <div className="cat-bar">
           <span className="cat-bar-count">
-            {sorted.length} product{sorted.length !== 1 ? "s" : ""}
+            {filtered.length} product{filtered.length !== 1 ? "s" : ""}
           </span>
-          <div className="cat-sort">
-            <span className="cat-sort-label">Sort</span>
-            {(Object.keys(SORT_LABELS) as SortKey[]).map((k) => (
-              <button
-                key={k}
-                className={`cat-sort-btn${sort === k ? " active" : ""}`}
-                onClick={() => setSort(k)}
-              >
-                {SORT_LABELS[k]}
-              </button>
-            ))}
-          </div>
+          <PriceSortBar state={ps} />
         </div>
 
-        {sorted.length === 0 ? (
+        {filtered.length === 0 ? (
           <div className="cat-empty">
-            <p>No products in this collection yet — check back soon.</p>
-            <a href="/" className="btn btn-rani">
-              Back to Home
-            </a>
+            <p>
+              {isFiltered
+                ? "No pieces in this price range — try widening it."
+                : "No products in this collection yet — check back soon."}
+            </p>
+            {isFiltered ? (
+              <button type="button" className="btn btn-rani" onClick={reset}>
+                Clear price filter
+              </button>
+            ) : (
+              <a href="/" className="btn btn-rani">
+                Back to Home
+              </a>
+            )}
           </div>
         ) : (
           <div className="prods cat-grid">
-            {sorted.map((p, i) => (
-              <ProductCard key={p.slug} product={p} index={i} />
+            {filtered.map((p, i) => (
+              <ProductCard key={p.slug} product={p} index={i} reveal={false} />
             ))}
           </div>
         )}

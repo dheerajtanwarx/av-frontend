@@ -4,6 +4,8 @@
 @import "./styles/theme.css";
 /* Landing page structure, typography scale & motion */
 @import "./styles/landing.css";
+/* Phase-1 landing redesign — restrained editorial reskin, scoped to .av-lp */
+@import "./styles/landing-redesign.css";
 /* Product detail page */
 @import "./styles/pdp.css";
 /* Cart & checkout flow (cool "soft slate" palette, scoped to .flow) */
@@ -24,11 +26,25 @@
 @import "./styles/admin-layout.css";
 /* Admin review moderation page (scoped to .admin) */
 @import "./styles/admin.css";
+/* Mobile bottom navigation (thumb-zone nav bar) */
+@import "./styles/bottom-nav.css";
 
 @theme inline {
-  --font-cormorant: var(--font-cormorant);
-  --font-marcellus: var(--font-marcellus);
-  --font-jost: var(--font-jost);
+  --font-display: var(--font-display);
+  --font-text: var(--font-text);
+}
+
+/* ── AJIO-referenced type system ────────────────────────────────
+   Display  → Jost  (geometric, Twentieth Century / Futura lineage — AJIO's
+              wordmark + heading look), loaded as --font-display.
+   Body/UI  → Inter (clean, legible grotesque), loaded as --font-text.
+   The former Cormorant / Marcellus / Jost variable names are kept as aliases
+   so every existing `var(--font-*)` call site keeps resolving — no need to
+   rewrite the hundreds of references across the stylesheets. */
+:root {
+  --font-cormorant: var(--font-display); /* was elegant serif → geometric display */
+  --font-marcellus: var(--font-display); /* was serif display → geometric display */
+  --font-jost: var(--font-text);         /* was geometric UI → Inter body / UI    */
 }
 
 html {
@@ -38,6 +54,14 @@ html {
 body {
   background: var(--bg);
   color: var(--ink);
+}
+
+/* Two-weight system: 400 (regular) + 500 (medium). The browser default for
+   <b>/<strong> is 700, which reads as aggressive rather than elegant — cap it
+   to the medium so emphasis comes from weight 500 + size, never bold. */
+b,
+strong {
+  font-weight: 500;
 }
 
 /* ── Global responsive safety net ───────────────────────────────
@@ -64,7 +88,7 @@ svg {
   position: fixed;
   right: 22px;
   bottom: 22px;
-  z-index: 1000;
+  z-index: var(--z-fab);
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -112,13 +136,64 @@ svg {
   }
 }
 
+/* Where the bottom nav appears, lift the FAB clear of it so the two
+   never collide in the thumb zone. */
+@media (max-width: 860px) {
+  .wa-fab {
+    bottom: calc(var(--bottomnav-h) + env(safe-area-inset-bottom, 0px) + 16px);
+  }
+  /* The product page owns the thumb zone with its sticky Add-to-bag bar.
+     A third floating control there is clutter — stand the FAB down. */
+  body:has(.pdp) .wa-fab {
+    display: none;
+  }
+}
+
 /* On phones, collapse to a clean circular icon button. */
 @media (max-width: 600px) {
   .wa-fab {
     right: 16px;
-    bottom: 16px;
     padding: 14px;
     gap: 0;
   }
   .wa-fab-label { display: none; }
+}
+
+/* ── Mobile "return back" button ────────────────────────────────
+   Fixed top-left chip, rendered once in the root layout. Desktop has
+   the full top nav + breadcrumbs, so it only appears at the same
+   breakpoint where the mobile header collapses to a centred logo and
+   frees the top-left corner. */
+.backfab { display: none; }
+
+@media (max-width: 860px) {
+  .backfab {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 14px);
+    left: 14px;
+    z-index: var(--z-fab);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    color: var(--ink);
+    /* Frosted parchment circle so it reads cleanly over the marquee at the
+       top of the page and over the sticky header once scrolled. */
+    background: color-mix(in srgb, var(--surface) 86%, transparent);
+    -webkit-backdrop-filter: saturate(1.1) blur(14px);
+    backdrop-filter: saturate(1.1) blur(14px);
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(43, 32, 24, 0.12);
+    cursor: pointer;
+    transition: transform var(--t-press) var(--ease-out),
+      color var(--t-quick) var(--ease-out);
+  }
+  .backfab:active { transform: scale(0.92); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .backfab:active { transform: none; }
+  }
 }

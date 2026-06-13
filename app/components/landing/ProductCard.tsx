@@ -11,7 +11,18 @@ import { parseINR } from "../../lib/cart-data";
 
 const delay = ["", "d1", "d2", "d3"];
 
-export default function ProductCard({ product, index }: { product: Product; index: number }) {
+export default function ProductCard({
+  product,
+  index,
+  reveal = true,
+}: {
+  product: Product;
+  index: number;
+  /** Scroll-reveal entrance (fade-up). Disable on sortable/filterable grids,
+      where re-ordering re-renders cards faster than the one-shot reveal
+      observer can catch them — leaving never-revealed cards stuck invisible. */
+  reveal?: boolean;
+}) {
   const router = useRouter();
   const { addItem, notifyAdded } = useCart();
   const { isWished, toggle } = useWishlist();
@@ -21,6 +32,9 @@ export default function ProductCard({ product, index }: { product: Product; inde
   const mainImg = img(product.main, 900);
   const altImg = img(product.alt, 900);
   const wished = isWished(product.slug);
+  // Derive an integer rating from the seed glyph string (cards carry no
+  // decimal) so we can show an AJIO-style "★ 5" rather than a five-icon row.
+  const ratingValue = (product.stars?.match(/★/g) || []).length;
   const soldOut = product.soldOut === true;
   const lowStock =
     !soldOut &&
@@ -85,7 +99,7 @@ export default function ProductCard({ product, index }: { product: Product; inde
   };
 
   return (
-    <article className={`prod reveal ${delay[index % 4]}`}>
+    <article className={`prod${reveal ? ` reveal ${delay[index % 4]}` : ""}`}>
       <div className="imgwrap">
         <Link href={`/product/${product.slug}`} className="ph" aria-label={product.name}>
           {mainImg ? (
@@ -129,10 +143,10 @@ export default function ProductCard({ product, index }: { product: Product; inde
         </button>
         <div className="card-btns">
           <button className="addcart" onClick={onAdd} disabled={soldOut}>
-            {soldOut ? "Sold Out" : added ? "✓ Added" : "Cart"}
+            {soldOut ? "Sold out" : added ? "✓ Added" : "Add to bag"}
           </button>
           <button className="buynow" onClick={onBuyNow} disabled={soldOut}>
-            Buy Now
+            Buy now
           </button>
         </div>
       </div>
@@ -143,7 +157,12 @@ export default function ProductCard({ product, index }: { product: Product; inde
       <div className="pmeta">
         <span className="price">{product.price}</span>
         {product.was && <span className="was">{product.was}</span>}
-        <span className="stars">{product.stars}</span>
+        {ratingValue > 0 && (
+          <span className="stars" aria-label={`Rated ${ratingValue} out of 5`}>
+            <span className="rstar" aria-hidden="true">★</span>
+            {ratingValue}
+          </span>
+        )}
       </div>
       {lowStock ? (
         <div className="pstock" role="status">

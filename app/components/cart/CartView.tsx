@@ -126,7 +126,7 @@ function OrderSummary() {
         disabled={hasUnavailableItems}
         aria-disabled={hasUnavailableItems}
       >
-        {CartIc.lock} Proceed to Checkout
+        {CartIc.lock} Proceed to checkout
       </button>
       <div className="sum-trust">
         <span className="ti">{CartIc.shield} Secure payment</span>

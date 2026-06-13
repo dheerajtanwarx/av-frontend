@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "../landing/ProductCard";
 import { SearchIcon } from "../landing/Icons";
+import SearchSuggestions from "./SearchSuggestions";
+import { usePriceSort, PriceSortBar } from "../product/PriceSortBar";
 import { searchProducts } from "../../lib/api";
 import type { Product } from "../../lib/landing-data";
 
@@ -14,6 +16,11 @@ export default function SearchView() {
   const [q, setQ] = useState(() => params.get("q") ?? "");
   const [results, setResults] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [suggestOpen, setSuggestOpen] = useState(false);
+
+  // Sort + price filter applied client-side over the current result set.
+  const ps = usePriceSort(results);
+  const { filtered, reset } = ps;
 
   // Keep the URL shareable as the query changes (no history spam).
   const syncUrl = useCallback(() => {
@@ -58,26 +65,44 @@ export default function SearchView() {
           <h1>
             Search the <em>Atelier</em>
           </h1>
-          <form
-            className="search-field"
-            onSubmit={(e) => e.preventDefault()}
-            role="search"
-          >
-            <SearchIcon />
-            <input
-              type="search"
-              value={q}
-              autoFocus
-              placeholder="Search by name or tag — sarees, lehengas, bandhej, gota patti…"
-              onChange={(e) => setQ(e.target.value)}
-              aria-label="Search products"
-            />
-            {q && (
-              <button type="button" className="search-clear" onClick={() => setQ("")}>
-                Clear
-              </button>
+          <div className="search-field-wrap">
+            <form
+              className="search-field"
+              onSubmit={(e) => e.preventDefault()}
+              role="search"
+            >
+              <SearchIcon />
+              <input
+                type="search"
+                value={q}
+                autoFocus
+                placeholder="Search by name or tag — sarees, lehengas, bandhej, gota patti…"
+                onChange={(e) => setQ(e.target.value)}
+                onFocus={() => setSuggestOpen(true)}
+                onBlur={() => setTimeout(() => setSuggestOpen(false), 120)}
+                aria-label="Search products"
+              />
+              {q && (
+                <button
+                  type="button"
+                  className="search-clear"
+                  onClick={() => setQ("")}
+                >
+                  Clear
+                </button>
+              )}
+            </form>
+            {suggestOpen && (
+              /* Keep the input focused when a suggestion is tapped so the click
+                 lands before blur closes the panel. */
+              <div onMouseDown={(e) => e.preventDefault()}>
+                <SearchSuggestions
+                  query={q}
+                  onSelect={() => setSuggestOpen(false)}
+                />
+              </div>
             )}
-          </form>
+          </div>
         </div>
       </div>
 
@@ -87,22 +112,32 @@ export default function SearchView() {
             <span className="cat-bar-count">
               {loading
                 ? "Searching…"
-                : `${results.length} product${results.length !== 1 ? "s" : ""}`}
+                : `${filtered.length} product${filtered.length !== 1 ? "s" : ""}`}
             </span>
+            {!loading && results.length > 0 && (
+              <PriceSortBar state={ps} showSort={false} />
+            )}
           </div>
 
-          {!loading && results.length === 0 ? (
+          {!loading && filtered.length === 0 ? (
             <div className="cat-empty">
               <p>
-                {q.trim()
+                {results.length > 0
+                  ? "No pieces in this price range — try widening it."
+                  : q.trim()
                   ? "No pieces match your search — try a different name or tag."
                   : "Start typing to search our collections."}
               </p>
+              {results.length > 0 && (
+                <button type="button" className="btn btn-rani" onClick={reset}>
+                  Clear price filter
+                </button>
+              )}
             </div>
           ) : (
             <div className={`prods cat-grid${loading ? " is-loading" : ""}`}>
-              {results.map((p, i) => (
-                <ProductCard key={p.slug} product={p} index={i} />
+              {filtered.map((p, i) => (
+                <ProductCard key={p.slug} product={p} index={i} reveal={false} />
               ))}
             </div>
           )}

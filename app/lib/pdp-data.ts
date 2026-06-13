@@ -178,6 +178,42 @@ const DEFAULT_RELATED: RelatedItem[] = [
   },
 ];
 
+/* A "you may also like" item carries its storefront category so the PDP can
+   group / filter recommendations into chips. */
+export type RecoItem = RelatedItem & { cat: string };
+
+/* Bucket a piece into one of the storefront's headline categories. */
+function categoryOf(name: string, type: string): string {
+  const hay = `${name} ${type}`.toLowerCase();
+  if (hay.includes("odhni") || hay.includes("dupatta")) return "Odhnis";
+  if (hay.includes("saree")) return "Sarees";
+  if (hay.includes("suit")) return "Suits";
+  return "Lehengas";
+}
+
+/* Categorised recommendations drawn from the live storefront pools
+   (bestsellers + odhni edit), excluding the product being viewed. Powers the
+   "You may also like" rail with its category chips. */
+export function recommendedFor(slug: string): RecoItem[] {
+  const seen = new Set<string>();
+  const out: RecoItem[] = [];
+  for (const p of [...bestsellers, ...odhniEdit]) {
+    if (p.slug === slug || seen.has(p.slug)) continue;
+    seen.add(p.slug);
+    out.push({
+      slug: p.slug,
+      nm: p.name,
+      ty: p.type,
+      pr: p.price,
+      was: p.was,
+      image: img(p.main, 1100),
+      flag: p.flag?.label,
+      cat: categoryOf(p.name, p.type),
+    });
+  }
+  return out;
+}
+
 /* Map a product to the nav link it belongs under. */
 function navHotFor(name: string, type: string): string {
   const hay = `${name} ${type}`.toLowerCase();

@@ -64,6 +64,7 @@ function MobileNav({ open, onClose }: { open: boolean; onClose: () => void }) {
   );
 }
 import { AccountIcon, CartIcon, HeartIcon, SearchIcon } from "./Icons";
+import SearchSuggestions from "../search/SearchSuggestions";
 import { useCart } from "./CartContext";
 import { useWishlist } from "./WishlistContext";
 import { getSession, logout, type SessionUser } from "../../lib/api";
@@ -197,7 +198,7 @@ function HeaderSearch() {
         value={term}
         placeholder="Search the atelier…"
         onChange={(e) => setTerm(e.target.value)}
-        onBlur={() => !term && setOpen(false)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
         aria-label="Search products"
         tabIndex={open ? 0 : -1}
       />
@@ -210,6 +211,18 @@ function HeaderSearch() {
       >
         <SearchIcon />
       </button>
+      {open && (
+        /* Keep focus on mousedown so tapping a suggestion fires before blur. */
+        <div className="hsearch-sug" onMouseDown={(e) => e.preventDefault()}>
+          <SearchSuggestions
+            query={term}
+            onSelect={() => {
+              setOpen(false);
+              setTerm("");
+            }}
+          />
+        </div>
+      )}
     </form>
   );
 }

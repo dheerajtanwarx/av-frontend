@@ -1,343 +1,244 @@
 import {
   categories as staticCategories,
-  editorial,
-  img,
-  lookbook,
-  mapDirectionsUrl,
-  odhniFeatures,
+  odhniEdit as staticOdhniEdit,
+  bestsellers as staticBestsellers,
   reels,
   stores,
-  trust,
+  mapDirectionsUrl,
+  img,
 } from "./lib/landing-data";
 import { fetchProducts, fetchCategories } from "./lib/api";
-import Header from "./components/landing/Header";
-import HeroCarousel from "./components/landing/HeroCarousel";
-import ScrollReveal from "./components/landing/ScrollReveal";
-import ProductCard from "./components/landing/ProductCard";
-import Footer from "./components/landing/Footer";
-import {
-  PlayIcon,
-  trustIcons,
-} from "./components/landing/Icons";
+import RedesignHeader from "./components/landing/redesign/RedesignHeader";
+import RedesignProductCard from "./components/landing/redesign/RedesignProductCard";
+import LandingHero from "./components/landing/redesign/LandingHero";
 
-function MultilineTitle({ text }: { text: string }) {
-  return (
-    <>
-      {text.split("\n").map((line, i) => (
-        <span key={i}>
-          {i > 0 && <br />}
-          {line}
-        </span>
-      ))}
-    </>
-  );
+/* ============================================================
+   AV CREATION — Landing (Phase-1 redesign)
+   A restrained, editorial reskin scoped to `.av-lp`. Live catalog
+   with a static fallback so the page always renders. The earlier
+   maximalist sections (auto-carousel, reels, lookbook, stores) are
+   retired in favour of the resolved design: one still hero, a calm
+   2-up wardrobe, the Odhni signature, two product edits and a quiet
+   footer.
+   ============================================================ */
+
+const footerCols = [
+  {
+    title: "Shop",
+    links: [
+      { label: "Odhni", href: "/category/jaipuri-odhni" },
+      { label: "Lehenga", href: "/category/lehenga" },
+      { label: "Saree", href: "/category/designer-saree" },
+      { label: "Suits", href: "/category/suit-sets" },
+    ],
+  },
+  {
+    title: "Help",
+    links: [
+      { label: "Track order", href: "/track-order" },
+      { label: "Returns", href: "/shipping-returns" },
+      { label: "Size guide", href: "/size-guide" },
+      { label: "Contact", href: "/contact" },
+    ],
+  },
+  {
+    title: "House",
+    links: [
+      { label: "Our story", href: "/our-story" },
+      { label: "Artisans", href: "/artisans" },
+      { label: "Stores", href: "/stores" },
+      { label: "Careers", href: "/careers" },
+    ],
+  },
+];
+
+function catHref(c: { slug?: string; href?: string }): string {
+  if (c.slug) return `/category/${c.slug}`;
+  return c.href ?? "/search";
 }
 
 export default async function Home() {
-  // Pull the live catalog from the API; fall back to the bundled static
-  // content if the backend is unreachable so the page always renders.
   const [odhniEdit, bestsellers, categories] = await Promise.all([
-    fetchProducts({ category: "jaipuri-odhni" }).catch(() => []),
-    fetchProducts({ bestseller: true }).catch(() => []),
+    fetchProducts({ category: "jaipuri-odhni" }).catch(() => staticOdhniEdit),
+    fetchProducts({ bestseller: true }).catch(() => staticBestsellers),
     fetchCategories().catch(() => staticCategories),
   ]);
 
-  return (
-    <div className="av">
-      <ScrollReveal />
-      <Header />
-      <HeroCarousel />
+  const edit = (odhniEdit.length ? odhniEdit : staticOdhniEdit).slice(0, 4);
+  const best = (bestsellers.length ? bestsellers : staticBestsellers).slice(0, 4);
+  const cats = (categories.length ? categories : staticCategories).slice(0, 5);
 
-      {/* TRUST */}
-      <div className="trust">
-        <div className="wrap">
-          {trust.map((t) => (
-            <div className="it" key={t.t}>
-              {trustIcons[t.icon]}
-              <div className="t">{t.t}</div>
-              <div className="s">{t.s}</div>
-            </div>
-          ))}
-        </div>
+  return (
+    <div className="av-lp">
+      <RedesignHeader />
+
+      {/* HERO — auto-sliding 4-image carousel under one steady headline */}
+      <LandingHero />
+
+      {/* QUIET TRUST LINE */}
+      <div className="lp-trustline">
+        Hand-blocked · 7-day returns · Free shipping over ₹2,999
       </div>
 
-      {/* CATEGORIES */}
-      <section className="sec" id="shop">
-        <div className="wrap">
-          <div className="sec-title reveal">
-            <span className="eyebrow">The Wardrobe</span>
-            <h2>
-              Shop by <em>Category</em>
-            </h2>
-            <div className="orn">
-              <span className="d">✦</span>
-            </div>
+      {/* WARDROBE — shop by category */}
+      <section className="lp-section" id="wardrobe">
+        <div className="lp-wrap">
+          <div className="lp-head-center">
+            <div className="lp-eyebrow">The Wardrobe</div>
+            <div className="lp-title">Shop by category</div>
           </div>
-          <div className="cats">
-            {categories.map((c, i) => (
-              <a
-                className={`cat reveal ${["", "d1", "d2", "d3", "d4"][i] ?? ""}${
-                  c.featured ? " feat" : ""
-                }`}
-                href={c.href}
-                key={c.name}
-              >
-                <div className="imgw">
-                  {c.featured && <span className="badge-feat">Signature</span>}
-                  <div className="ph">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img className="main" src={img(c.main, 900) || undefined} alt={c.name} />
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      className="alt"
-                      src={img(c.alt, 900) || undefined}
-                      alt={`${c.name} styled`}
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="label">
-                    <div className="n">{c.name}</div>
-                    <div className="c">{c.count}</div>
-                    <div className="shop">
-                      Explore <span>&rarr;</span>
-                    </div>
-                  </div>
+          <div className="lp-cats">
+            {cats.map((c) => (
+              <a key={c.name} href={catHref(c)} className="lp-cat">
+                <div className="lp-cat-img">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={img(c.main, 600) || undefined} alt={c.name} loading="lazy" />
+                </div>
+                <div className="lp-cat-label">
+                  <div className="lp-cat-name">{c.name}</div>
+                  <div className="lp-cat-count">{c.count}</div>
                 </div>
               </a>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* JAIPURI ODHNI SPOTLIGHT */}
-      <section className="odhni" id="odhni">
-        <div className="wrap">
-          <div className="odhni-grid">
-            <div className="odhni-art reveal">
-              <div className="main">
-                <div className="gold-line" />
-                <div className="ph">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img("photo-1693336429270-094637e16d38", 1200)} alt="Jaipuri Odhni detail" />
-                </div>
-              </div>
-              <div className="stamp">
-                <div className="txt">
-                  HAND
-                  <br />
-                  BLOCKED
-                  <br />· JAIPUR ·
-                </div>
-              </div>
-              <div className="float f1">
-                <div className="ph">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={img("premium_photo-1682096034925-468c545d1c12", 600)}
-                    alt="Bandhej detail"
-                  />
-                </div>
-                <div className="cap">Bandhej, up close</div>
-              </div>
-            </div>
-            <div className="odhni-copy reveal d1">
-              <span className="eyebrow">The House Signature</span>
-              <h2>
-                The Jaipuri <em>Odhni</em>
-              </h2>
-              <p className="lead">
-                Our most-loved drape — tied, dyed and block-printed by hand in the lanes of Jaipur.
-                No two are ever quite alike.
-              </p>
-              <div className="odhni-feats">
-                {odhniFeatures.map((f) => (
-                  <div className="f" key={f.ft}>
-                    <div className="ft">{f.ft}</div>
-                    <div className="fs">{f.fs}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="odhni-cta">
-                <a href="#new" className="btn btn-rani">
-                  Shop the Odhni Edit
-                </a>
-                <a href="#look" className="btn btn-line">
-                  How it&apos;s made
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ODHNI EDIT PRODUCTS */}
-      <section className="sec" id="new" style={{ paddingTop: 24 }}>
-        <div className="wrap">
-          <div className="sec-head reveal">
-            <div>
-              <span className="eyebrow">Fresh off the Loom</span>
-              <h2>
-                The Odhni <em>Edit</em>
-              </h2>
-            </div>
-            <a href="/category/jaipuri-odhni" className="seeall">
-              Explore All →
+          <div className="lp-section-foot">
+            <a href="/search" className="lp-underlink">
+              All categories
             </a>
           </div>
-          <div className="prods-row">
-            {odhniEdit.map((p, i) => (
-              <ProductCard key={p.name} product={p} index={i} />
+        </div>
+      </section>
+
+      {/* THE HOUSE SIGNATURE — Jaipuri Odhni */}
+      <section className="lp-bleed lp-signature">
+        <div className="lp-bleed-img">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={img("photo-1597983073493-88cd35cf93b0", 1100)} alt="The Jaipuri Odhni" loading="lazy" />
+        </div>
+        <div className="lp-signature-copy">
+          <div className="lp-eyebrow">The House Signature</div>
+          <div className="lp-title">The Jaipuri Odhni</div>
+          <p>
+            Tied, dyed and block-printed by hand in the lanes of the Pink City. No two drapes are
+            ever quite alike.
+          </p>
+          <a href="/category/jaipuri-odhni" className="lp-underlink">
+            Explore the Odhni edit
+          </a>
+        </div>
+      </section>
+
+      {/* THE ODHNI EDIT */}
+      <section className="lp-section tight" id="odhni-edit">
+        <div className="lp-wrap">
+          <div className="lp-head-row">
+            <div>
+              <div className="lp-eyebrow">Fresh off the loom</div>
+              <div className="lp-title">The Odhni Edit</div>
+            </div>
+            <a href="/category/jaipuri-odhni" className="lp-viewall">
+              View all
+            </a>
+          </div>
+          <div className="lp-products">
+            {edit.map((p) => (
+              <RedesignProductCard key={p.slug} product={p} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* EDITORIAL SPLIT */}
-      <section className="split reveal">
-        {editorial.map((e) => (
-          <div className="panel" key={e.eyebrow}>
-            <div className="ph">
+      {/* REELS — horizontally-scrolling social strip */}
+      <section className="lp-reels" id="reels" aria-label="As seen on reels">
+        <div className="lp-head-center">
+          <div className="lp-eyebrow">As seen on reels</div>
+          <div className="lp-title">#DrapedInAV</div>
+        </div>
+        <div className="lp-reels-track">
+          {reels.map((r, i) => (
+            <a
+              key={i}
+              href="https://www.instagram.com/jaipuri_odhni/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="lp-reel"
+              aria-label={`Reel — ${r.views} views`}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img(e.image, 1200)} alt={e.eyebrow} />
-            </div>
-            <div className="scrim2" />
-            <div className="pc">
-              <span className="eyebrow">{e.eyebrow}</span>
-              <h3>
-                <MultilineTitle text={e.title} />
-              </h3>
-              <p>{e.copy}</p>
-              <a href="#shop" className="btn btn-ghost">
-                {e.cta}
-              </a>
-            </div>
+              <img src={img(r.image, 500)} alt="" loading="lazy" />
+              <div className="lp-reel-scrim" />
+              <span className="lp-reel-play" aria-hidden="true">
+                <svg width="11" height="13" viewBox="0 0 11 13" fill="currentColor">
+                  <path d="M0 1.2v10.6a.6.6 0 0 0 .92.5l8.6-5.3a.6.6 0 0 0 0-1L.92.7A.6.6 0 0 0 0 1.2Z" />
+                </svg>
+              </span>
+              <span className="lp-reel-views" aria-hidden="true">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                {r.views}
+              </span>
+            </a>
+          ))}
+        </div>
+        <div className="lp-reels-handle">Follow @jaipuri_odhni</div>
+      </section>
+
+      {/* THE BRIDAL ATELIER — overlay editorial */}
+      <section className="lp-editorial" aria-label="The Bridal Atelier">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={img("photo-1583846783214-7229a91b20ed", 1600)} alt="" loading="lazy" />
+        <div className="lp-editorial-scrim" />
+        <div className="lp-editorial-copy">
+          <div className="lp-eyebrow">The Bridal Atelier</div>
+          <div className="lp-editorial-title">
+            Heirlooms in <em>the making</em>
           </div>
-        ))}
+          <p>Months of zardozi and kundan — for the day you&apos;ll remember forever.</p>
+          <a href="/search?q=bridal" className="lp-underlink lp-hero-cta">
+            Discover bridal
+          </a>
+        </div>
       </section>
 
       {/* BESTSELLERS */}
-      <section className="sec" id="best">
-        <div className="wrap">
-          <div className="sec-title reveal">
-            <span className="eyebrow">Loved by Thousands</span>
-            <h2>
-              This Season&apos;s <em>Bestsellers</em>
-            </h2>
-            <div className="orn">
-              <span className="d">✦</span>
-            </div>
+      <section className="lp-section" id="bestsellers">
+        <div className="lp-wrap">
+          <div className="lp-head-center">
+            <div className="lp-eyebrow">Most loved</div>
+            <div className="lp-title">This season&apos;s bestsellers</div>
           </div>
-          <div className="prods">
-            {bestsellers.map((p, i) => (
-              <ProductCard key={p.name} product={p} index={i} />
+          <div className="lp-products">
+            {best.map((p) => (
+              <RedesignProductCard key={p.slug} product={p} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* LOOKBOOK */}
-      <section className="look" id="look">
-        <div className="wrap">
-          <div className="look-grid">
-            <div className="look-art reveal">
-              <div className="frame">
-                <div className="ph">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img(lookbook.image, 1100)} alt="Darbar twilight look" />
-                </div>
-              </div>
-              {lookbook.hotspots.map((h) => (
-                <div className="hotspot" style={{ top: h.top, left: h.left }} key={h.name}>
-                  <div className="tip">
-                    <div className="nm">{h.name}</div>
-                    <div className="pr">{h.price}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="look-copy reveal d1">
-              <span className="eyebrow">The Lookbook</span>
-              <h2>
-                Shop the Look —<br />
-                Darbar Twilight
-              </h2>
-              <p>
-                One regal silhouette, completed head to toe — from the velvet lehenga to the polki
-                jhumkas. Tap a marker to add each piece.
-              </p>
-              <div className="look-list">
-                {lookbook.items.map((it) => (
-                  <div className="it" key={it.name}>
-                    <span className="nm">{it.name}</span>
-                    <span className="pr">{it.price}</span>
-                  </div>
-                ))}
-              </div>
-              <a href="#" className="btn btn-rani">
-                Add Full Look — {lookbook.total}
-              </a>
-            </div>
+      {/* OFFLINE STORES — come say namaste */}
+      <section className="lp-section" id="stores">
+        <div className="lp-wrap">
+          <div className="lp-head-center">
+            <div className="lp-eyebrow">Come say namaste</div>
+            <div className="lp-title">Our offline stores</div>
           </div>
-        </div>
-      </section>
-
-      {/* REELS */}
-      <section className="sec reels" id="reels">
-        <div className="wrap">
-          <div className="sec-title reveal">
-            <span className="eyebrow">As Seen on Reels</span>
-            <h2>#DrapedInAV</h2>
-            <div className="orn">
-              <span className="d">Follow @avcreation</span>
-            </div>
-          </div>
-          <div className="reels-grid">
-            {reels.map((r, i) => (
-              <a className={`reel reveal ${["", "d1", "d2", "d3", "d4"][i] ?? ""}`} href="#" key={i}>
-                <div className="ph">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img(r.image, 700)} alt="Reel" />
-                </div>
-                <div className="play">
-                  <span>
-                    <PlayIcon />
-                  </span>
-                </div>
-                <div className="views">▶ {r.views}</div>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* OFFLINE STORES */}
-      <section className="sec stores" id="stores">
-        <div className="wrap">
-          <div className="sec-title reveal">
-            <span className="eyebrow">Come Say Namaste</span>
-            <h2>
-              Our Offline <em>Stores</em>
-            </h2>
-            <div className="orn">
-              <span className="d">✦</span>
-            </div>
-          </div>
-          <div className="stores-grid">
-            {stores.map((s, i) => (
-              <div className={`store-card reveal ${["", "d1", "d2"][i] ?? ""}`} key={s.name}>
-                <div className="store-photo">
+          <div className="lp-stores-grid">
+            {stores.map((s) => (
+              <div className="lp-store" key={s.name}>
+                <div className="lp-store-img">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={img(s.image, 800)} alt={`${s.name} store`} loading="lazy" />
                 </div>
-                <div className="store-body">
-                  <address className="store-addr">{s.address}</address>
+                <div className="lp-store-body">
+                  <address className="lp-store-addr">{s.address}</address>
                   <a
-                    className="btn btn-rani store-dir"
+                    className="lp-btn-rani"
                     href={mapDirectionsUrl(s.lat, s.lng)}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Get Directions →
+                    Get directions →
                   </a>
                 </div>
               </div>
@@ -346,7 +247,47 @@ export default async function Home() {
         </div>
       </section>
 
-      <Footer />
+      {/* FOOTER */}
+      <footer className="lp-footer">
+        <div className="lp-footer-inner">
+          <div>
+            <div className="lp-footer-brand">
+              <div className="lp-footer-mark">AV CREATION</div>
+              <div className="lp-footer-sub">Jaipuri Atelier</div>
+            </div>
+            <div className="lp-news">
+              <div className="lp-news-label">Join the house</div>
+              <form className="lp-news-field" action="/search">
+                <input
+                  type="email"
+                  name="newsletter"
+                  placeholder="Email address"
+                  aria-label="Email address"
+                />
+                <button type="submit" aria-label="Subscribe">
+                  &rarr;
+                </button>
+              </form>
+            </div>
+          </div>
+          <div className="lp-footer-cols">
+            {footerCols.map((col) => (
+              <div key={col.title}>
+                <h4>{col.title}</h4>
+                {col.links.map((l) => (
+                  <a key={l.label} href={l.href}>
+                    {l.label}
+                  </a>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="lp-footer-bot">
+          <span>© 2026 AV Creation</span>
+          <span>UPI · Cards · COD</span>
+        </div>
+      </footer>
     </div>
   );
 }

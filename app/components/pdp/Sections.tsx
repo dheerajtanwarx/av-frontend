@@ -1,8 +1,9 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { PdpProduct, PdpReview } from "../../lib/pdp-data";
+import { recommendedFor } from "../../lib/pdp-data";
 import { Ic, Stars } from "./icons";
 import { usePdp } from "./PdpContext";
 import { parseINR } from "../../lib/cart-data";
@@ -106,7 +107,7 @@ export function ReviewsSection({ product }: { product: PdpProduct }) {
           <div className="rv-top">
             <div className="rv-score">
               <div className="big">{avg}</div>
-              <Stars n={avg} />
+              <div className="rv-outof">out of 5</div>
               <div className="cnt">
                 Based on {count} {count === 1 ? "review" : "reviews"}
               </div>
@@ -235,19 +236,43 @@ export function ShopTheLook({ product }: { product: PdpProduct }) {
 }
 
 export function Related({ product }: { product: PdpProduct }) {
+  // Categorised recommendations pulled from the live storefront pools, so the
+  // shopper sees genuinely different pieces — not just more of this category.
+  const items = useMemo(() => recommendedFor(product.slug), [product.slug]);
+  const cats = useMemo(
+    () => ["All", ...Array.from(new Set(items.map((i) => i.cat)))],
+    [items]
+  );
+  const [cat, setCat] = useState("All");
+  const shown = cat === "All" ? items : items.filter((i) => i.cat === cat);
+
   return (
-    <section className="sec">
+    <section className="sec reco">
       <div className="sec-title">
         <span className="eyebrow">More from the Atelier</span>
         <h2>
-          You may also <em>love</em>
+          You may also <em>like</em>
         </h2>
         <div className="orn">
           <span className="d">✦</span>
         </div>
       </div>
-      <div className="prods">
-        {product.related.map((p) => (
+      {/* Category chips — horizontally scrollable on mobile alongside the rail. */}
+      <div className="reco-cats" role="tablist" aria-label="Filter recommendations">
+        {cats.map((c) => (
+          <button
+            key={c}
+            role="tab"
+            aria-selected={c === cat}
+            className={`reco-cat${c === cat ? " on" : ""}`}
+            onClick={() => setCat(c)}
+          >
+            {c}
+          </button>
+        ))}
+      </div>
+      <div className="prods reco-rail">
+        {shown.map((p) => (
           <article className="prod" key={p.slug}>
             <div className="imgwrap">
               <Link href={`/product/${p.slug}`} className="ph" aria-label={p.nm}>
@@ -266,7 +291,6 @@ export function Related({ product }: { product: PdpProduct }) {
             <div className="pmeta">
               <span className="price">{p.pr}</span>
               {p.was && <span className="was">{p.was}</span>}
-              <span className="stars">★★★★★</span>
             </div>
           </article>
         ))}

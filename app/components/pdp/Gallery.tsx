@@ -34,6 +34,28 @@ export default function Gallery({ images: rawImages, flag }: { images: string[];
     if (shown) shown.style.transformOrigin = `${x}% ${y}%`;
   };
 
+  // Native swipe navigation for touch. A quick flick (velocity) or a decisive
+  // drag (distance) advances the frame; mostly-vertical gestures are left to
+  // the page scroll. No dots, no arrows — the swipe is the control.
+  const swipe = useRef<{ x: number; y: number; t: number } | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    swipe.current = { x: t.clientX, y: t.clientY, t: Date.now() };
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const start = swipe.current;
+    swipe.current = null;
+    if (!start || images.length < 2) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) <= Math.abs(dy)) return; // vertical → let the page scroll
+    const velocity = Math.abs(dx) / Math.max(Date.now() - start.t, 1);
+    if (Math.abs(dx) < 45 && velocity < 0.3) return; // too small / too slow
+    if (dx < 0) setIdx((i) => Math.min(i + 1, images.length - 1));
+    else setIdx((i) => Math.max(i - 1, 0));
+  };
+
   return (
     <div className="gal-ed">
       <div className={`g-stage${zoom ? " zooming" : ""}`}>
@@ -43,6 +65,8 @@ export default function Gallery({ images: rawImages, flag }: { images: string[];
           onMouseEnter={() => setZoom(true)}
           onMouseLeave={() => setZoom(false)}
           onMouseMove={onMove}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
         >
           {images.map((src, k) => (
             // eslint-disable-next-line @next/next/no-img-element
@@ -52,6 +76,11 @@ export default function Gallery({ images: rawImages, flag }: { images: string[];
         <div className="gold-inset" />
         {flag && <span className="g-flag">{flag}</span>}
         <span className="g-zoomhint">{Ic.zoom} Hover to zoom</span>
+        {images.length > 1 && (
+          <span className="g-count" aria-hidden="true">
+            {idx + 1} / {images.length}
+          </span>
+        )}
       </div>
       <div className="g-row">
         {images.map((src, k) => (
