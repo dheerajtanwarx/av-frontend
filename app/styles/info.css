@@ -472,6 +472,52 @@
 .av .role-card-body ul { margin-bottom: 0; }
 .av .role-cta { flex-shrink: 0; padding-top: 4px; }
 
+/* ── Stores page — card track ─────────────────────────────────── */
+.av .store-track {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  align-items: stretch;
+}
+.av .store-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.av .store-card-img {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--bg-2);
+}
+.av .store-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.av .store-card-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(20, 14, 10, 0.78);
+  color: var(--bg);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  backdrop-filter: blur(4px);
+}
+.av .store-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 32px 30px;
+  border-top: 3px solid var(--gold);
+}
+
 /* ── Stores page hours ────────────────────────────────────────── */
 .av .hours-row {
   display: flex;
@@ -555,6 +601,24 @@
   .av .info-split { grid-template-columns: 1fr; gap: 40px; }
   .av .pledge-grid { grid-template-columns: 1fr; }
   .av .role-card { flex-direction: column; gap: 20px; }
+
+  /* Stores: switch to a horizontal scroll-snap carousel */
+  .av .store-track {
+    display: flex;
+    grid-template-columns: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 16px;
+    margin: 0 -20px;
+    padding: 4px 20px 18px;
+    scrollbar-width: none;
+  }
+  .av .store-track::-webkit-scrollbar { display: none; }
+  .av .store-card {
+    flex: 0 0 86%;
+    scroll-snap-align: center;
+  }
 }
 @media (max-width: 600px) {
   .av .info-hero { padding: 80px 0 64px; }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { use } from "react";
-import { Star, Check, Download, ArrowLeft, ImageOff } from "lucide-react";
+import { Star, Check, Download, ArrowLeft, ImageOff, Clock, ShieldCheck } from "lucide-react";
 import Header from "../../components/landing/Header";
 import { fetchOrder, cancelOrder, returnOrder, advanceOrder, submitReview, downloadInvoice, ApiError, type MyOrder, type OrderShippingAddress } from "../../lib/api";
 import OrderProgress, { statusLabel } from "../../components/OrderProgress";
@@ -230,6 +230,64 @@ function CancelSection({ order, onCancelled }: { order: MyOrder; onCancelled: (u
             </div>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Refund Status ───────────────────────────────────────── */
+
+/** Where the customer's money goes back to, phrased per payment method. */
+const REFUND_DESTINATION: Record<string, string> = {
+  UPI: "your UPI account",
+  CARD: "your card",
+  NETBANKING: "your bank account",
+  WALLET: "your wallet",
+  COD: "your account",
+};
+
+/* Reassurance panel shown on cancelled / returned orders that had a payment.
+   PENDING tells the customer their money is on its way; once an admin marks the
+   refund completed, the same panel flips to COMPLETED automatically. */
+function RefundStatus({ order }: { order: MyOrder }) {
+  const refund = order.refund;
+  if (!refund) return null;
+
+  const pending = refund.status === "PENDING";
+  const destination = REFUND_DESTINATION[refund.method ?? ""] ?? "your original payment method";
+  const amount = inr(refund.amount);
+
+  return (
+    <div className={`order-refund-panel ${pending ? "pending" : "done"}`}>
+      <span className="order-refund-icon" aria-hidden="true">
+        {pending ? <Clock strokeWidth={2} /> : <ShieldCheck strokeWidth={2} />}
+      </span>
+      <div className="order-refund-content">
+        <div className="order-refund-top">
+          <span className="order-refund-title">
+            {pending ? "Refund in progress" : "Refund completed"}
+          </span>
+          <span className={`refund-badge ${pending ? "pending" : "done"}`}>
+            {pending ? "Pending" : "Completed"}
+          </span>
+        </div>
+        <div className="order-refund-amount">{amount}</div>
+        <p className="order-refund-note">
+          {pending ? (
+            <>
+              Don&apos;t worry — your payment of <strong>{amount}</strong>
+              {refund.method ? <> made via {refund.method}</> : null} will be refunded to{" "}
+              <strong>{destination}</strong> within 5–7 business days. You&apos;ll see this update
+              to <strong>Completed</strong> here as soon as it&apos;s processed.
+            </>
+          ) : (
+            <>
+              Your refund of <strong>{amount}</strong> has been processed and credited back to{" "}
+              <strong>{destination}</strong>. Depending on your bank it may take a few business days
+              to reflect in your statement.
+            </>
+          )}
+        </p>
       </div>
     </div>
   );
@@ -608,6 +666,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
         {/* progress tracker */}
         <OrderProgress status={order.status} />
+
+        {/* refund reassurance — cancelled/returned paid orders */}
+        <RefundStatus order={order} />
 
         {/* body */}
         <div className="order-detail-body">

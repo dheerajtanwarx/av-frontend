@@ -24,7 +24,7 @@ export const IMG_REMAP: Record<string, string> = {
 
 const img = (id: string, w: number) => {
   if (!id) return "";
-  if (id.startsWith("http")) return id;
+  if (id.startsWith("http") || id.startsWith("/")) return id;
   const safe = IMG_REMAP[id] ?? id;
   return `https://images.unsplash.com/${safe}?w=${w}&q=78&auto=format&fit=crop`;
 };
@@ -323,21 +323,21 @@ export type Store = {
 export const stores: Store[] = [
   {
     name: "AV Creation — Khaniya",
-    image: "premium_photo-1682096032284-0b2ab20b65dd",
+    image: "/shop-images/khaniya-shop.jpeg",
     address: "Khaniya, Jaipur, Rajasthan",
     lat: 26.8926118,
     lng: 75.8661174,
   },
   {
     name: "AV Creation — Bassi",
-    image: "premium_photo-1682096034925-468c545d1c12",
+    image: "/shop-images/bassi-shop.jpeg",
     address: "Bassi, Jaipur, Rajasthan",
     lat: 26.8335104,
     lng: 76.0502381,
   },
   {
     name: "AV Creation — Jaipur",
-    image: "premium_photo-1682096037844-e43413e887a8",
+    image: "/shop-images/bassi-shop.jpeg",
     address: "Jaipur, Rajasthan",
     lat: 26.9051441,
     lng: 75.8998953,

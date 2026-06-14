@@ -244,12 +244,22 @@ export type OrderShippingAddress = {
   pincode: string;
 };
 
+/** Refund state for a cancelled/returned order. Null when no money was ever
+    captured (COD / unpaid). PENDING = owed, being processed; COMPLETED = the
+    admin has marked it refunded and the money is on its way back. */
+export type OrderRefund = {
+  status: "PENDING" | "COMPLETED";
+  amount: number;
+  method: string | null;
+};
+
 export type MyOrder = {
   no: string;
   id: number;
   status: string;
   placedAt: string;
   returnEligibleUntil: string | null;
+  refund: OrderRefund | null;
   subtotal: number;
   discount: number;
   shippingFee: number;
@@ -641,11 +651,13 @@ export function adminAddOrderNote(
   return apiSend("PATCH", `/api/orders/admin/${id}/notes`, { note });
 }
 
-/** Mark any still-captured payment on a cancelled/returned order refunded.
-    Idempotent — refunded is 0 when the cancel already auto-refunded. */
+/** Mark a cancelled/returned order's captured payment refunded — moves the
+    customer's refund status from PENDING to COMPLETED. Returns the refreshed
+    order so the admin UI can update in place. Idempotent: refunded is 0 when
+    there was nothing left to refund. */
 export function adminProcessRefund(
   id: number
-): Promise<{ refunded: number; message: string }> {
+): Promise<{ refunded: number; message: string; order: AdminOrderDetail | null }> {
   return apiSend("POST", `/api/orders/admin/${id}/refund`);
 }
 

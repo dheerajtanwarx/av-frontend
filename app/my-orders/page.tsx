@@ -95,6 +95,12 @@ function OrderCard({ order }: { order: MyOrder }) {
           </div>
           <div className="order-card-amount">{inr(order.total)}</div>
         </div>
+
+        {order.refund && (
+          <span className={`refund-badge ${order.refund.status === "PENDING" ? "pending" : "done"}`}>
+            {order.refund.status === "PENDING" ? "Refund pending" : "Refund completed"}
+          </span>
+        )}
       </div>
 
       <div className="order-card-chev" aria-hidden="true">

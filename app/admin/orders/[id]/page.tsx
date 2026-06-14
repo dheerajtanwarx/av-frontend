@@ -6,6 +6,7 @@ import {
   updateAdminOrderStatus,
   updateAdminOrderTracking,
   downloadAdminPackingSlip,
+  adminProcessRefund,
   ApiError,
   ADMIN_STATUS_FLOW,
   type AdminOrderDetail,
@@ -142,6 +143,76 @@ function StatusWorkflow({
           >
             {busy ? "Updating…" : `Mark as ${next}`}
           </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* Refund control for cancelled / returned orders. Only shown when the order
+   actually had a captured payment (order.refund is null for COD / unpaid).
+   PENDING → the customer has been promised a refund; the admin clicks to
+   complete it, which flips the payment to REFUNDED so the customer's view
+   updates to "Completed". */
+function RefundPanel({
+  order,
+  onUpdated,
+}: {
+  order: AdminOrderDetail;
+  onUpdated: (o: AdminOrderDetail) => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  const refund = order.refund;
+  if (!refund) return null;
+  const pending = refund.status === "PENDING";
+
+  async function complete() {
+    setBusy(true);
+    setError("");
+    try {
+      const res = await adminProcessRefund(order.id);
+      if (res.order) onUpdated(res.order);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Could not process the refund.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="admin-side-panel">
+      <div className="admin-side-head">Refund</div>
+      <div className="admin-side-body">
+        <div className="admin-summary-row" style={{ marginBottom: 10 }}>
+          <dt>Amount</dt>
+          <dd>{inr(refund.amount)}</dd>
+        </div>
+        <span className={`refund-badge ${pending ? "pending" : "done"}`}>
+          {pending ? "Refund pending" : "Refund completed"}
+        </span>
+        {pending ? (
+          <>
+            <p className="admin-cell-sub" style={{ marginTop: 10 }}>
+              The customer paid via {refund.method ?? "—"} and has been told their refund is on the
+              way. Issue the refund, then mark it completed — the customer&apos;s order page will
+              show it as refunded.
+            </p>
+            {error && <p className="admin-error" style={{ marginTop: 8 }}>{error}</p>}
+            <button
+              className="admin-btn approve admin-status-cta"
+              disabled={busy}
+              onClick={complete}
+              style={{ marginTop: 12 }}
+            >
+              {busy ? "Processing…" : "Mark refund completed"}
+            </button>
+          </>
+        ) : (
+          <p className="admin-cell-sub" style={{ marginTop: 10, color: "#2e7d52" }}>
+            Refund completed — the customer now sees this order as refunded.
+          </p>
         )}
       </div>
     </div>
@@ -407,6 +478,8 @@ export default function AdminOrderDetailPage({
         {/* Right: status + customer + address + payment */}
         <aside className="admin-order-side">
           <StatusWorkflow order={order} onUpdated={setOrder} />
+
+          <RefundPanel order={order} onUpdated={setOrder} />
 
           <QrPanel order={order} />
 

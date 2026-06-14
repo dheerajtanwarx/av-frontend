@@ -787,6 +787,27 @@
 }
 .av-lp .lp-btn-rani:hover { background: var(--p-rani-deep); }
 
+/* offline stores: horizontal scroll-snap carousel on mobile
+   (placed after the base .lp-stores-grid grid rule so it wins;
+    the desktop grid is restored in the min-width: 861px block) */
+@media (max-width: 860px) {
+  .av-lp .lp-stores-grid {
+    display: flex;
+    grid-template-columns: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 16px;
+    padding-bottom: 14px;
+    scrollbar-width: none;
+  }
+  .av-lp .lp-stores-grid::-webkit-scrollbar { display: none; }
+  .av-lp .lp-store {
+    flex: 0 0 82%;
+    scroll-snap-align: center;
+  }
+}
+
 /* ============================================================
    FOOTER
    ============================================================ */

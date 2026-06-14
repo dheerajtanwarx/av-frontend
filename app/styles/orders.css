@@ -131,6 +131,59 @@
   .status-badge.cancelled { @apply bg-gray-100   text-gray-500;   }
   .status-badge.returned  { @apply bg-gray-100   text-gray-500;   }
 
+  /* ── refund badge (shared: customer + admin) ── */
+  .refund-badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-[var(--font-jost)] text-[11px] font-medium uppercase tracking-[0.08em];
+  }
+  .refund-badge::before {
+    content: "";
+    @apply inline-block size-1.5 rounded-full;
+    background: currentColor;
+  }
+  .refund-badge.pending { @apply bg-amber-50 text-amber-700; }
+  .refund-badge.done    { @apply bg-green-50 text-green-700; }
+
+  /* ── refund reassurance panel (customer order detail) ── */
+  .order-refund-panel {
+    @apply mb-5 flex items-start gap-4 border p-5;
+  }
+  .order-refund-panel.pending {
+    @apply border-amber-200 bg-amber-50/60;
+  }
+  .order-refund-panel.done {
+    @apply border-green-200 bg-green-50/60;
+  }
+  .order-refund-icon {
+    @apply grid size-10 shrink-0 place-items-center rounded-full;
+  }
+  .order-refund-panel.pending .order-refund-icon {
+    @apply bg-amber-100 text-amber-700;
+  }
+  .order-refund-panel.done .order-refund-icon {
+    @apply bg-green-100 text-green-700;
+  }
+  .order-refund-icon svg {
+    @apply size-5;
+  }
+  .order-refund-content {
+    @apply min-w-0 flex-1;
+  }
+  .order-refund-top {
+    @apply flex flex-wrap items-center gap-3;
+  }
+  .order-refund-title {
+    @apply font-[var(--font-marcellus)] text-[18px] text-[var(--ink)];
+  }
+  .order-refund-amount {
+    @apply mt-1 font-[var(--font-marcellus)] text-[22px] text-[var(--ink)];
+  }
+  .order-refund-note {
+    @apply mt-2 font-[var(--font-jost)] text-[13px] leading-relaxed text-[var(--ink-soft)];
+  }
+  .order-refund-note strong {
+    @apply font-medium text-[var(--ink)];
+  }
+
   /* ── empty state ── */
   .orders-empty {
     @apply flex flex-col items-center gap-5 border border-dashed border-[var(--line)] bg-white/60 py-16 text-center;

@@ -13,7 +13,7 @@ const stores = [
     badge: "Flagship Atelier",
     name: "Sanganer, Jaipur",
     sub: "The heart of the house",
-    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=900&q=78&auto=format&fit=crop",
+    image: "/shop-images/bassi-shop.jpeg",
     address: ["Plot 14, Sanganer Main Road", "Near Jaipuri Bazaar, Sanganer", "Jaipur, Rajasthan — 302 029"],
     hours: [
       ["Monday – Saturday", "10:00 AM – 7:00 PM"],
@@ -28,7 +28,7 @@ const stores = [
     badge: "Pop-Up Studio",
     name: "Shahpur Jat, New Delhi",
     sub: "The Delhi edit",
-    image: "https://images.unsplash.com/photo-1597983073493-88cd35cf93b0?w=900&q=78&auto=format&fit=crop",
+    image: "/shop-images/khaniya-shop.jpeg",
     address: ["Shop 7, Second Floor, Shabnam Complex", "Shahpur Jat, New Delhi — 110 049"],
     hours: [
       ["Wednesday – Sunday", "11:00 AM – 8:00 PM"],
@@ -61,39 +61,22 @@ export default function StoresPage() {
         </div>
       </div>
 
-      {/* Store cards */}
-      {stores.map((store, i) => (
-        <div className={`info-sec${i % 2 === 1 ? " alt" : ""}`} key={store.name}>
-          <div className="wrap">
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: i % 2 === 0 ? "1.2fr 1fr" : "1fr 1.2fr",
-              gap: "64px",
-              alignItems: "stretch",
-            }}>
-              {i % 2 === 0 ? (
-                <>
-                  <div>
-                    <div className="ph" style={{ minHeight: "400px", paddingBottom: "0" }}>
-                      <img src={store.image} alt={store.name} />
-                    </div>
-                  </div>
-                  <StoreInfo store={store} />
-                </>
-              ) : (
-                <>
-                  <StoreInfo store={store} />
-                  <div>
-                    <div className="ph" style={{ minHeight: "400px", paddingBottom: "0" }}>
-                      <img src={store.image} alt={store.name} />
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
+      {/* Store cards — horizontal scroll on mobile, grid on desktop */}
+      <div className="info-sec">
+        <div className="wrap">
+          <div className="store-track">
+            {stores.map((store) => (
+              <article className="store-card" key={store.name}>
+                <div className="store-card-img">
+                  <img src={store.image} alt={store.name} />
+                  <span className="store-card-badge">{store.badge}</span>
+                </div>
+                <StoreInfo store={store} />
+              </article>
+            ))}
           </div>
         </div>
-      ))}
+      </div>
 
       {/* Styling session */}
       <div className="info-sec alt">
@@ -145,10 +128,7 @@ export default function StoresPage() {
 
 function StoreInfo({ store }: { store: typeof stores[0] }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-      <div style={{ fontSize: "10px", letterSpacing: "0.34em", textTransform: "uppercase", color: "var(--rani)", marginBottom: "6px" }}>
-        {store.badge}
-      </div>
+    <div className="store-card-body" style={{ borderTopColor: store.accentColor }}>
       <h2 style={{ marginBottom: "4px" }}>{store.name}</h2>
       <div style={{ fontSize: "13px", color: "var(--muted)", marginBottom: "28px", letterSpacing: "0.04em" }}>{store.sub}</div>
 
