@@ -139,8 +139,8 @@ export function AccountMenu() {
             My wishlist
           </a>
           {user.role === "ADMIN" && (
-            <a className="acct-profile acct-admin" href="/admin/reviews">
-              Moderate reviews
+            <a className="acct-profile acct-admin" href="/admin/dashboard">
+             Admin Dashboard
             </a>
           )}
           <button className="acct-logout" onClick={handleLogout}>
