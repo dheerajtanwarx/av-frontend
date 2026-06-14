@@ -201,32 +201,45 @@
   overflow: hidden;
   border-radius: 10px;
 }
-.pdp .g-frame {
+.pdp .g-track {
   position: relative;
+  display: flex;
   aspect-ratio: 4/5;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  /* Horizontal = swipe between frames; vertical still scrolls the page. */
+  overscroll-behavior-x: contain;
+}
+.pdp .g-track::-webkit-scrollbar {
+  display: none;
+}
+.pdp .g-slide {
+  position: relative;
+  flex: 0 0 100%;
+  scroll-snap-align: start;
   overflow: hidden;
   cursor: zoom-in;
-  /* Horizontal gestures are the swipe; vertical still scrolls the page. */
-  touch-action: pan-y;
 }
-.pdp .g-frame .gimg {
-  position: absolute;
-  inset: 0;
+.pdp .g-slide .gimg {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center 18%;
-  opacity: 0;
-  transition: opacity 0.55s var(--ease), transform 0.45s var(--ease);
+  transition: transform 0.45s var(--ease);
   transform: scale(1);
   will-change: transform;
+  -webkit-user-select: none;
+  user-select: none;
 }
-.pdp .g-frame .gimg.show {
-  opacity: 1;
-}
-.pdp .g-frame.zoom .gimg.show {
-  transform: scale(1.9);
-  transition: transform 0.12s linear;
+/* Hover-zoom is a desktop affordance only; touch keeps the plain swipe. */
+@media (hover: hover) {
+  .pdp .g-slide.zoom .gimg {
+    transform: scale(1.9);
+    transition: transform 0.12s linear;
+  }
 }
 .pdp .g-stage .gold-inset {
   position: absolute;
@@ -285,10 +298,10 @@
 /* On touch there is no hover: kill the tap-zoom, drop the "hover" hint, and
    surface the swipe counter. */
 @media (hover: none) {
-  .pdp .g-frame {
+  .pdp .g-slide {
     cursor: default;
   }
-  .pdp .g-frame.zoom .gimg.show {
+  .pdp .g-slide .gimg {
     transform: none;
   }
   .pdp .g-zoomhint {

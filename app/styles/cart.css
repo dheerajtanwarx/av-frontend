@@ -459,8 +459,23 @@
     box-shadow: 0 16px 32px -14px rgba(142, 43, 82, 0.55);
   }
 }
+/* Slim header on tablets/phones: the side labels won't fit beside the centred
+   logo, so collapse them to icon-only (font-size:0 drops the text, the svg keeps
+   its own size) and scale the wordmark down so nothing clips. */
+@media (max-width: 720px) {
+  .flow .co-head .bar { height: 60px; }
+  .flow .co-head .back,
+  .flow .co-head .secure { font-size: 0; gap: 0; }
+  .flow .co-head .back svg,
+  .flow .co-head .secure svg { width: 18px; height: 18px; }
+  .flow .logo .mark { font-size: 18px; letter-spacing: .14em; }
+  .flow.av-flow .logo .mark { letter-spacing: .14em; padding-left: .14em; }
+  .flow .logo .sub { font-size: 7px; letter-spacing: .26em; margin-top: 4px; }
+  .flow.av-flow .logo .sub { letter-spacing: .26em; }
+}
 @media (max-width: 560px) {
   .flow .wrap { padding: 0 16px; }
+  .flow .logo .mark { font-size: 17px; }
   /* stack paired form fields on small phones for legible inputs */
   .flow .field-grid { grid-template-columns: 1fr; }
   /* 16px floor stops iOS auto-zooming on input focus during checkout. */

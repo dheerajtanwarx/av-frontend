@@ -1,21 +1,21 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Ic } from "./icons";
 
-/* Editorial Stack gallery — large zoom stage on top, thumb row below.
-   Hover the stage to zoom; the zoom origin tracks the cursor. */
+/* Editorial gallery — a native horizontal scroll-snap stage on top, thumb row
+   below. On touch the finger drags the slides directly (one slide per snap);
+   on desktop the thumbs drive it and hovering a slide zooms toward the cursor. */
 export default function Gallery({ images: rawImages, flag }: { images: string[]; flag?: string }) {
   const images = rawImages.filter(Boolean);
   const [idx, setIdx] = useState(0);
   const [zoom, setZoom] = useState(false);
-  const frameRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   // When the image set changes (e.g. the shopper picks another colour) snap
-  // back to the first frame and drop any open zoom, so no stale shot lingers
-  // and the active thumbnail resets. Keyed on the URLs, not array identity, so
-  // an unchanged set doesn't reset the shopper's chosen thumbnail. Adjusting
-  // state during render is React's recommended alternative to an effect here.
+  // back to the first frame. Keyed on the URLs, not array identity, so an
+  // unchanged set doesn't reset the shopper's chosen frame. Adjusting state
+  // during render is React's recommended alternative to an effect here.
   const imgKey = images.join("|");
   const [shownKey, setShownKey] = useState(imgKey);
   if (imgKey !== shownKey) {
@@ -24,53 +24,58 @@ export default function Gallery({ images: rawImages, flag }: { images: string[];
     setZoom(false);
   }
 
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = frameRef.current;
+  // Jump the scroller back to the first frame whenever the set changes.
+  useEffect(() => {
+    const el = trackRef.current;
+    if (el) el.scrollTo({ left: 0 });
+  }, [shownKey]);
+
+  // The native scroll position is the source of truth for the active frame, so
+  // the counter and the active thumbnail track the finger as it swipes.
+  const raf = useRef(0);
+  const onScroll = () => {
+    cancelAnimationFrame(raf.current);
+    raf.current = requestAnimationFrame(() => {
+      const el = trackRef.current;
+      if (!el || !el.clientWidth) return;
+      const i = Math.round(el.scrollLeft / el.clientWidth);
+      setIdx((prev) => (prev === i ? prev : i));
+    });
+  };
+
+  // Tapping a thumb smoothly scrolls the stage to that frame.
+  const goto = (k: number) => {
+    const el = trackRef.current;
     if (!el) return;
+    el.scrollTo({ left: k * el.clientWidth, behavior: "smooth" });
+    setIdx(k);
+  };
+
+  // Desktop zoom origin tracks the cursor over the hovered slide.
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
     const r = el.getBoundingClientRect();
     const x = Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100));
     const y = Math.max(0, Math.min(100, ((e.clientY - r.top) / r.height) * 100));
-    const shown = el.querySelector<HTMLImageElement>(".gimg.show");
-    if (shown) shown.style.transformOrigin = `${x}% ${y}%`;
-  };
-
-  // Native swipe navigation for touch. A quick flick (velocity) or a decisive
-  // drag (distance) advances the frame; mostly-vertical gestures are left to
-  // the page scroll. No dots, no arrows — the swipe is the control.
-  const swipe = useRef<{ x: number; y: number; t: number } | null>(null);
-  const onTouchStart = (e: React.TouchEvent) => {
-    const t = e.touches[0];
-    swipe.current = { x: t.clientX, y: t.clientY, t: Date.now() };
-  };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    const start = swipe.current;
-    swipe.current = null;
-    if (!start || images.length < 2) return;
-    const t = e.changedTouches[0];
-    const dx = t.clientX - start.x;
-    const dy = t.clientY - start.y;
-    if (Math.abs(dx) <= Math.abs(dy)) return; // vertical → let the page scroll
-    const velocity = Math.abs(dx) / Math.max(Date.now() - start.t, 1);
-    if (Math.abs(dx) < 45 && velocity < 0.3) return; // too small / too slow
-    if (dx < 0) setIdx((i) => Math.min(i + 1, images.length - 1));
-    else setIdx((i) => Math.max(i - 1, 0));
+    const img = el.querySelector<HTMLImageElement>(".gimg");
+    if (img) img.style.transformOrigin = `${x}% ${y}%`;
   };
 
   return (
     <div className="gal-ed">
       <div className={`g-stage${zoom ? " zooming" : ""}`}>
-        <div
-          className={`g-frame${zoom ? " zoom" : ""}`}
-          ref={frameRef}
-          onMouseEnter={() => setZoom(true)}
-          onMouseLeave={() => setZoom(false)}
-          onMouseMove={onMove}
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
-        >
+        <div className="g-track" ref={trackRef} onScroll={onScroll}>
           {images.map((src, k) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img key={k} className={`gimg${k === idx ? " show" : ""}`} src={src} alt="" />
+            <div
+              key={k}
+              className={`g-slide${zoom ? " zoom" : ""}`}
+              onMouseEnter={() => setZoom(true)}
+              onMouseLeave={() => setZoom(false)}
+              onMouseMove={onMove}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="gimg" src={src} alt="" draggable={false} />
+            </div>
           ))}
         </div>
         <div className="gold-inset" />
@@ -87,7 +92,7 @@ export default function Gallery({ images: rawImages, flag }: { images: string[];
           <button
             key={k}
             className={`g-thumb${k === idx ? " on" : ""}`}
-            onClick={() => setIdx(k)}
+            onClick={() => goto(k)}
             aria-label={`View ${k + 1}`}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}

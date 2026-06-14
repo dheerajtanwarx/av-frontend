@@ -243,6 +243,14 @@
   line-height: 1.2;
   color: var(--p-ink);
   margin-top: 12px;
+  /* Reserve a two-line box so one- vs two-line names keep the price/meta rows
+     aligned across the grid. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.4em;
 }
 .av .cat-page.av-cat .prod .pname:hover { color: var(--p-rani); }
 .av .cat-page.av-cat .prod .ptype {

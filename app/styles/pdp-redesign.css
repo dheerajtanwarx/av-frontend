@@ -147,7 +147,8 @@
   border-radius: 0;
   box-shadow: none;
 }
-.pdp.av-pdp .g-frame { background: var(--p-img); }
+.pdp.av-pdp .g-track,
+.pdp.av-pdp .g-slide { background: var(--p-img); }
 .pdp.av-pdp .g-flag {
   left: 16px;
   top: 16px;
@@ -179,20 +180,29 @@
   color: var(--p-muted);
 }
 .pdp.av-pdp .gal-ed .g-row {
+  display: flex;
   gap: 8px;
-  padding: 10px 0 4px;
+  margin-top: 0;
+  padding: 12px 0 4px;
 }
 .pdp.av-pdp .g-thumb {
-  height: 84px;
+  flex: 1;
+  aspect-ratio: 3/4;
+  height: auto;
   border: 1px solid var(--p-line-2);
   border-radius: 0;
   background: var(--p-img);
   opacity: 0.72;
+  /* The redesign marks the active thumb with a solid border + full opacity;
+     no coloured glow (the base rani shadow bled past the strip on mobile). */
+  box-shadow: none;
   transition: opacity 0.2s ease, border-color 0.2s ease;
 }
+.pdp.av-pdp .g-thumb::after { content: none; }
 .pdp.av-pdp .g-thumb.on {
   border: 1px solid var(--p-ink);
   opacity: 1;
+  box-shadow: none;
 }
 
 /* ---- Buy box ---- */
