@@ -555,7 +555,9 @@ export type AdminOrderListItem = {
   itemCount: number;
 };
 
-export type AdminOrderStatusFilter = "all" | OrderStatus;
+/** Admin orders filters: "all", a single order status, or one of the derived
+    buckets the dashboard links to (pending group / today / refunded). */
+export type AdminOrderStatusFilter = "all" | OrderStatus | "pending" | "today" | "refunded";
 
 export type AdminOrdersResponse = {
   orders: AdminOrderListItem[];
@@ -876,9 +878,19 @@ export type AdminProductListItem = {
 
 export type AdminProductsFilter = "all" | "active" | "inactive";
 
+/** One row of the category aggregation — a category and how many products it
+    holds for the current search. */
+export type AdminCategoryStat = {
+  id: number;
+  name: string;
+  slug: string;
+  count: number;
+};
+
 export type AdminProductsResponse = {
   products: AdminProductListItem[];
   counts: { all: number; active: number; inactive: number };
+  categories: AdminCategoryStat[];
   page: number;
   pageSize: number;
   total: number;
@@ -944,12 +956,16 @@ export type ProductInput = {
 export function fetchAdminProducts(params: {
   q?: string;
   status?: AdminProductsFilter;
+  category?: string;
   page?: number;
   pageSize?: number;
 } = {}): Promise<AdminProductsResponse> {
   const qs = new URLSearchParams();
   if (params.q) qs.set("q", params.q);
   if (params.status && params.status !== "all") qs.set("status", params.status);
+  if (params.category && params.category.toLowerCase() !== "all") {
+    qs.set("category", params.category);
+  }
   if (params.page) qs.set("page", String(params.page));
   if (params.pageSize) qs.set("pageSize", String(params.pageSize));
   const q = qs.toString();

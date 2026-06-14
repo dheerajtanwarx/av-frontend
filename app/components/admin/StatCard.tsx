@@ -80,6 +80,7 @@ export function StatCard({
   accent,
   icon: Icon,
   series,
+  href,
 }: {
   index: number;
   label: string;
@@ -88,17 +89,25 @@ export function StatCard({
   accent: string;
   icon?: (p: { className?: string }) => React.ReactElement;
   series?: number[];
+  /** When set, the card becomes a link to its listing page (e.g. filtered
+      orders). Styling and animations are unchanged. */
+  href?: string;
 }) {
   const pct = series ? trendPct(series) : null;
-  return (
-    <motion.div
-      className={`admin-stat-card accent-${accent}`}
-      custom={index}
-      variants={cardVariants}
-      initial="hidden"
-      animate="show"
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
-    >
+
+  // Shared motion + class props so the link and non-link cards look/animate
+  // identically; only the rendered element differs.
+  const common = {
+    className: `admin-stat-card accent-${accent}${href ? " is-link" : ""}`,
+    custom: index,
+    variants: cardVariants,
+    initial: "hidden" as const,
+    animate: "show" as const,
+    whileHover: { y: -4, transition: { duration: 0.2 } },
+  };
+
+  const body = (
+    <>
       {Icon && (
         <div className="admin-stat-icon">
           <Icon className="admin-stat-icon-svg" />
@@ -120,6 +129,14 @@ export function StatCard({
         )}
       </div>
       {series && series.length > 1 && <Sparkline series={series} accent={accent} />}
-    </motion.div>
+    </>
+  );
+
+  return href ? (
+    <motion.a href={href} {...common}>
+      {body}
+    </motion.a>
+  ) : (
+    <motion.div {...common}>{body}</motion.div>
   );
 }

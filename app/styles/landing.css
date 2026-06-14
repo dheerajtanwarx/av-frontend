@@ -170,7 +170,11 @@
 }
 
 /* header */
-.av header {
+/* Direct child only — the site header chrome. Scoping to `> header` keeps
+   nested page headers (e.g. `.profile-hero`, `.orders-hero`) from inheriting
+   sticky positioning + z-index, which previously let them paint over the
+   account dropdown. */
+.av > header {
   position: sticky;
   top: 0;
   z-index: 80;
@@ -185,6 +189,23 @@
   height: 80px;
 }
 .av .navleft { display: flex; align-items: center; gap: 14px; min-width: 0; }
+/* In-row back control — hidden on desktop (full nav answers "where am I?"),
+   revealed in the collapsed mobile header below. */
+.av .topnav-back {
+  display: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin-left: -8px;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.av .topnav-back:hover { color: var(--rani); }
 .av .topnav nav {
   display: flex;
   gap: 30px;
@@ -1492,15 +1513,18 @@
 }
 @media (max-width: 860px) {
   .av .wrap { padding: 0 24px; }
-  /* Mobile header = brand only. The fixed bottom nav owns search, wishlist,
-     cart and profile, so the top icons would only duplicate it. A single
-     centred mark answers "where am I?" the instant the page loads. */
-  .av .topnav { grid-template-columns: 1fr; height: 64px; }
+  /* Mobile header = back control + centred brand. The fixed bottom nav owns
+     search, wishlist, cart and profile, so the top icons would only duplicate
+     it. A back button on the left and a centred mark answer "where am I?" and
+     "how do I leave?" the instant the page loads. The 44px side columns are
+     symmetric so the wordmark stays optically centred. */
+  .av .topnav { grid-template-columns: 44px 1fr 44px; height: 64px; }
   .av .topnav nav { display: none; }
   .av .navtoggle { display: none; }
   .av .navleft { display: none; }
   .av .acts { display: none; }
-  .av .logo { grid-column: 1; }
+  .av .topnav-back { display: inline-flex; grid-column: 1; }
+  .av .logo { grid-column: 2; }
   .av .slide .inner { padding: 0 30px; max-width: 100%; }
   .av .slide .content.r { justify-content: flex-start; text-align: left; }
   .av .slide .content.r .cta,

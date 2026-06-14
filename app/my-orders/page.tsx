@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 import Header from "../components/landing/Header";
 import { fetchMyOrders, getSession, type MyOrder } from "../lib/api";
 
-type Tab = "all" | "active" | "delivered" | "cancelled";
+type Tab = "all" | "delivered" | "cancelled";
 
-const ACTIVE_STATUSES = new Set(["PLACED", "CONFIRMED", "PROCESSING", "SHIPPED"]);
 const DELIVERED_STATUSES = new Set(["DELIVERED"]);
 const CANCELLED_STATUSES = new Set(["CANCELLED", "RETURNED"]);
 
@@ -55,7 +54,6 @@ function fmtDate(iso: string): string {
 
 function filterOrders(orders: MyOrder[], tab: Tab): MyOrder[] {
   if (tab === "all") return orders;
-  if (tab === "active") return orders.filter((o) => ACTIVE_STATUSES.has(o.status));
   if (tab === "delivered") return orders.filter((o) => DELIVERED_STATUSES.has(o.status));
   if (tab === "cancelled") return orders.filter((o) => CANCELLED_STATUSES.has(o.status));
   return orders;
@@ -83,7 +81,7 @@ function OrderCard({ order }: { order: MyOrder }) {
 
       <div className="order-card-body">
         <div className="order-card-top">
-          <div>
+          <div className="order-card-head">
             <div className="order-card-no">{order.no}</div>
             <div className="order-card-meta">{fmtDate(order.placedAt)}</div>
           </div>
@@ -101,11 +99,10 @@ function OrderCard({ order }: { order: MyOrder }) {
         </div>
       </div>
 
-      <div className="order-card-cta">
+      <div className="order-card-chev" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
           <path d="M9 18l6-6-6-6" />
         </svg>
-        <span>View</span>
       </div>
     </a>
   );
@@ -142,7 +139,6 @@ export default function MyOrdersPage() {
   }, []);
 
   const allCount = orders.length;
-  const activeCount = orders.filter((o) => ACTIVE_STATUSES.has(o.status)).length;
   const deliveredCount = orders.filter((o) => DELIVERED_STATUSES.has(o.status)).length;
   const cancelledCount = orders.filter((o) => CANCELLED_STATUSES.has(o.status)).length;
 
@@ -150,7 +146,6 @@ export default function MyOrdersPage() {
 
   const tabs: { id: Tab; label: string; count: number }[] = [
     { id: "all", label: "All Orders", count: allCount },
-    { id: "active", label: "Active", count: activeCount },
     { id: "delivered", label: "Delivered", count: deliveredCount },
     { id: "cancelled", label: "Cancelled", count: cancelledCount },
   ];
@@ -159,10 +154,6 @@ export default function MyOrdersPage() {
     all: {
       heading: "No orders yet",
       body: "When you place an order it will appear here.",
-    },
-    active: {
-      heading: "No active orders",
-      body: "You have no orders currently being processed.",
     },
     delivered: {
       heading: "No delivered orders",
@@ -207,25 +198,16 @@ export default function MyOrdersPage() {
     <main className="av orders-page">
       <Header />
       <section className="orders-shell">
-        {/* hero */}
-        <div className="orders-hero">
-          <div className="orders-hero-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
-              <rect x="9" y="3" width="6" height="4" rx="1" />
-              <path d="M9 12h6M9 16h4" />
-            </svg>
-          </div>
-          <div className="orders-hero-text">
-            <p className="orders-kicker">My Account</p>
-            <h1>My Orders</h1>
-            <p>
-              {allCount === 0
-                ? "No orders placed yet."
-                : `${allCount} order${allCount !== 1 ? "s" : ""} · crafted in Jaipur`}
-            </p>
-          </div>
-        </div>
+        {/* page head */}
+        <header className="orders-hero">
+          <p className="orders-kicker">My Account</p>
+          <h1>My Orders</h1>
+          <p>
+            {allCount === 0
+              ? "No orders placed yet."
+              : `${allCount} order${allCount !== 1 ? "s" : ""} · crafted in Jaipur`}
+          </p>
+        </header>
 
         {/* tabs */}
         <div className="orders-tabs">

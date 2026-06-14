@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   fetchAdminProducts,
   deleteProduct,
@@ -10,6 +11,9 @@ import {
   type AdminProductListItem,
 } from "../../lib/api";
 import HeroImageManager from "../../components/admin/HeroImageManager";
+import CategoryFilterBar, { type CategoryChip } from "../../components/admin/CategoryFilterBar";
+import CategorySummaryCards from "../../components/admin/CategorySummaryCards";
+import ProductList from "../../components/admin/ProductList";
 
 const FILTERS: { key: AdminProductsFilter; label: string }[] = [
   { key: "all", label: "All" },
@@ -17,14 +21,7 @@ const FILTERS: { key: AdminProductsFilter; label: string }[] = [
   { key: "inactive", label: "Inactive" },
 ];
 
-function inr(amount: number): string {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
+const ALL = "All";
 
 /* Delete confirmation modal. */
 function ConfirmDelete({
@@ -63,10 +60,17 @@ function ConfirmDelete({
   );
 }
 
-export default function AdminProductsPage() {
+function AdminProductsView() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [search, setSearch] = useState("");
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<AdminProductsFilter>("all");
+  // Category filter is the catalogue name (or "All"); seeded from the URL so a
+  // refresh keeps the current view.
+  const [category, setCategory] = useState<string>(() => searchParams.get("category") ?? ALL);
   const [page, setPage] = useState(1);
   const [data, setData] = useState<AdminProductsResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,26 +81,43 @@ export default function AdminProductsPage() {
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [deleteError, setDeleteError] = useState("");
 
+  const isAllCategory = category.toLowerCase() === ALL.toLowerCase();
+
   useEffect(() => {
     const t = setTimeout(() => setQuery(search.trim()), 300);
     return () => clearTimeout(t);
   }, [search]);
 
+  // Any change to the active filters returns to the first page.
   useEffect(() => {
     setPage(1);
-  }, [query, status]);
+  }, [query, status, category]);
+
+  /* Switch category: update state and reflect it in the URL (without a reload)
+     so the view survives a refresh and shows in the browser history. */
+  const selectCategory = useCallback(
+    (name: string) => {
+      setCategory(name);
+      const params = new URLSearchParams(Array.from(searchParams.entries()));
+      if (name.toLowerCase() === ALL.toLowerCase()) params.delete("category");
+      else params.set("category", name);
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    },
+    [router, pathname, searchParams]
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      setData(await fetchAdminProducts({ q: query, status, page }));
+      setData(await fetchAdminProducts({ q: query, status, category, page }));
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Failed to load products.");
     } finally {
       setLoading(false);
     }
-  }, [query, status, page]);
+  }, [query, status, category, page]);
 
   useEffect(() => {
     load();
@@ -119,6 +140,27 @@ export default function AdminProductsPage() {
 
   const products = data?.products ?? [];
 
+  // "All" + every category with matches; keep the selected category visible even
+  // if the current search filtered it down to zero.
+  const chips = useMemo<CategoryChip[]>(() => {
+    const stats = data?.categories ?? [];
+    const allCount = stats.reduce((sum, c) => sum + c.count, 0);
+    const list: CategoryChip[] = [
+      { name: ALL, count: allCount },
+      ...stats.map((c) => ({ name: c.name, count: c.count })),
+    ];
+    if (!isAllCategory && !list.some((c) => c.name.toLowerCase() === category.toLowerCase())) {
+      list.push({ name: category, count: 0 });
+    }
+    return list;
+  }, [data?.categories, category, isAllCategory]);
+
+  // The "New product" link carries the active category so the form preselects it.
+  const newHref = isAllCategory
+    ? "/admin/products/new"
+    : `/admin/products/new?category=${encodeURIComponent(category)}`;
+  const newLabel = isAllCategory ? "+ New product" : `+ Add ${category} Product`;
+
   return (
     <section className="admin-page admin-products">
       <header className="admin-page-head admin-products-head">
@@ -126,12 +168,14 @@ export default function AdminProductsPage() {
           <h2>Products</h2>
           <p>Create, edit and organise the catalogue — products, variants and imagery.</p>
         </div>
-        <a className="admin-btn approve" href="/admin/products/new">
-          + New product
+        <a className="admin-btn approve" href={newHref}>
+          {newLabel}
         </a>
       </header>
 
       <HeroImageManager />
+
+      <CategorySummaryCards categories={chips} active={category} onSelect={selectCategory} />
 
       <div className="admin-orders-toolbar">
         <div className="admin-search">
@@ -141,12 +185,18 @@ export default function AdminProductsPage() {
           </svg>
           <input
             type="search"
-            placeholder="Search products by name or type…"
+            placeholder={
+              isAllCategory
+                ? "Search products by name or type…"
+                : `Search within ${category}…`
+            }
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </div>
+
+      <CategoryFilterBar categories={chips} active={category} onSelect={selectCategory} />
 
       <div className="admin-tabs admin-orders-filters">
         {FILTERS.map((f) => (
@@ -163,77 +213,19 @@ export default function AdminProductsPage() {
 
       {error && <p className="admin-error">{error}</p>}
 
-      <div className="admin-table-wrap">
-        <table className="admin-table admin-products-table">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Category</th>
-              <th className="num">Price</th>
-              <th className="num">Stock</th>
-              <th>Status</th>
-              <th className="actions-col">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((p) => (
-              <tr key={p.id}>
-                <td>
-                  <div className="admin-product-cell">
-                    <div className="admin-product-thumb">
-                      {p.image ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={p.image} alt="" />
-                      ) : (
-                        <span className="admin-product-thumb-empty" />
-                      )}
-                    </div>
-                    <div>
-                      <a className="admin-cell-strong admin-link" href={`/admin/products/edit/${p.id}`}>
-                        {p.name}
-                      </a>
-                      {p.type && <div className="admin-cell-sub">{p.type}</div>}
-                    </div>
-                  </div>
-                </td>
-                <td>{p.category?.name ?? "—"}</td>
-                <td className="num">
-                  {inr(p.price)}
-                  {p.comparePrice ? (
-                    <span className="admin-price-was"> {inr(p.comparePrice)}</span>
-                  ) : null}
-                </td>
-                <td className="num">
-                  <span className={p.stock <= 0 ? "admin-stock-out" : p.stock < 10 ? "admin-stock-low" : ""}>
-                    {p.stock}
-                  </span>
-                </td>
-                <td>
-                  <span className={`status-badge ${p.isActive ? "delivered" : "cancelled"}`}>
-                    {p.isActive ? "Active" : "Inactive"}
-                  </span>
-                </td>
-                <td className="actions-col">
-                  <div className="admin-row-actions">
-                    <a className="admin-btn" href={`/admin/products/edit/${p.id}`}>
-                      Edit
-                    </a>
-                    <button className="admin-btn reject" onClick={() => { setDeleteError(""); setToDelete(p); }}>
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {loading ? (
-          <p className="admin-note">Loading products…</p>
-        ) : products.length === 0 ? (
-          <p className="admin-note">No products match this view.</p>
-        ) : null}
-      </div>
+      <ProductList
+        products={products}
+        loading={loading}
+        emptyLabel={
+          isAllCategory
+            ? "No products match this view."
+            : `No products in ${category} match this view.`
+        }
+        onRequestDelete={(p) => {
+          setDeleteError("");
+          setToDelete(p);
+        }}
+      />
 
       {data && data.totalPages > 1 && (
         <div className="admin-pagination">
@@ -263,5 +255,13 @@ export default function AdminProductsPage() {
         />
       )}
     </section>
+  );
+}
+
+export default function AdminProductsPage() {
+  return (
+    <Suspense fallback={<p className="admin-note">Loading products…</p>}>
+      <AdminProductsView />
+    </Suspense>
   );
 }

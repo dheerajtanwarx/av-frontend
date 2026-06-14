@@ -31,16 +31,6 @@ function display(value: string | undefined, fallback = "Not added") {
   return value?.trim() ? value : fallback;
 }
 
-function initials(user: SessionUser) {
-  const source = user.name || user.email || user.phone || "AV";
-  return source
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
-}
-
 /** Strip a stored +91XXXXXXXXXX down to the 10 local digits for editing. */
 function localPhone(phone: string | undefined): string {
   if (!phone) return "";
@@ -478,15 +468,14 @@ export default function ProfilePage() {
     <main className="av profile-page av-profile">
       <Header />
       <section className="profile-shell">
-        <div className="profile-hero">
-          <div className="profile-avatar">{initials(user)}</div>
+        <header className="profile-hero">
           <div>
             <p className="profile-kicker">My Profile</p>
             <h1>{display(user.name, "AV Creation Customer")}</h1>
             <p>{display(user.email || user.phone, "Account details")}</p>
           </div>
           <button onClick={handleLogout}>Log out</button>
-        </div>
+        </header>
 
         <div className="profile-grid">
           <PersonalDetails user={user} onSaved={setUser} />

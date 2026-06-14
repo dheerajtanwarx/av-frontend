@@ -207,3 +207,8 @@ svg {
     .backfab:active { transform: none; }
   }
 }
+
+/* Pages that render the storefront Header (`.av > header`) carry their own
+   in-row back control in the logo row, so suppress the floating fallback there
+   to avoid a duplicate. Header-less pages (login, signup, product) keep it. */
+body:has(.av > header) .backfab { display: none; }

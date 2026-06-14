@@ -99,6 +99,8 @@ type Card = {
   icon: (p: { className?: string }) => React.ReactElement;
   accent: string;
   series?: number[];
+  /** Listing page this card drills into, reusing existing routes + filters. */
+  href?: string;
 };
 
 function StatCards({ d }: { d: AdminDashboard }) {
@@ -106,15 +108,15 @@ function StatCards({ d }: { d: AdminDashboard }) {
   const revSeries = d.daily.map((p) => p.revenue);
   const orderSeries = d.daily.map((p) => p.orders);
   const cards: Card[] = [
-    { key: "revenue", label: "Revenue", value: s.totalRevenue, format: inr, icon: RupeeIcon, accent: "rani", series: revSeries },
-    { key: "orders", label: "Total Orders", value: s.totalOrders, format: num, icon: OrdersIcon, accent: "blue", series: orderSeries },
-    { key: "today", label: "Today’s Orders", value: s.todayOrders, format: num, icon: CalendarIcon, accent: "teal" },
-    { key: "pending", label: "Pending Orders", value: s.pendingOrders, format: num, icon: ClockIcon, accent: "amber" },
-    { key: "completed", label: "Completed Orders", value: s.deliveredOrders, format: num, icon: CheckIcon, accent: "green" },
-    { key: "cancelled", label: "Cancelled Orders", value: s.cancelledOrders, format: num, icon: CancelIcon, accent: "red" },
-    { key: "refunds", label: "Refunds", value: s.refunds, format: num, icon: RefundIcon, accent: "violet" },
-    { key: "customers", label: "Total Customers", value: s.totalCustomers, format: num, icon: CustomersIcon, accent: "teal" },
-    { key: "products", label: "Total Products", value: s.totalProducts, format: num, icon: ProductsIcon, accent: "violet" },
+    { key: "revenue", label: "Revenue", value: s.totalRevenue, format: inr, icon: RupeeIcon, accent: "rani", series: revSeries, href: "/admin/reports" },
+    { key: "orders", label: "Total Orders", value: s.totalOrders, format: num, icon: OrdersIcon, accent: "blue", series: orderSeries, href: "/admin/orders" },
+    { key: "today", label: "Today’s Orders", value: s.todayOrders, format: num, icon: CalendarIcon, accent: "teal", href: "/admin/orders?status=today" },
+    { key: "pending", label: "Pending Orders", value: s.pendingOrders, format: num, icon: ClockIcon, accent: "amber", href: "/admin/orders?status=pending" },
+    { key: "completed", label: "Completed Orders", value: s.deliveredOrders, format: num, icon: CheckIcon, accent: "green", href: "/admin/orders?status=DELIVERED" },
+    { key: "cancelled", label: "Cancelled Orders", value: s.cancelledOrders, format: num, icon: CancelIcon, accent: "red", href: "/admin/orders?status=CANCELLED" },
+    { key: "refunds", label: "Refunds", value: s.refunds, format: num, icon: RefundIcon, accent: "violet", href: "/admin/orders?status=refunded" },
+    { key: "customers", label: "Total Customers", value: s.totalCustomers, format: num, icon: CustomersIcon, accent: "teal", href: "/admin/customers" },
+    { key: "products", label: "Total Products", value: s.totalProducts, format: num, icon: ProductsIcon, accent: "violet", href: "/admin/products" },
   ];
 
   return (
@@ -129,6 +131,7 @@ function StatCards({ d }: { d: AdminDashboard }) {
           accent={c.accent}
           icon={c.icon}
           series={c.series}
+          href={c.href}
         />
       ))}
     </div>

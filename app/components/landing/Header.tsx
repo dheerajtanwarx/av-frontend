@@ -230,9 +230,18 @@ function HeaderSearch() {
 export default function Header() {
   const { count, openDrawer } = useCart();
   const { count: wishCount } = useWishlist();
+  const router = useRouter();
   const badgeRef = useRef<HTMLSpanElement>(null);
   const first = useRef(true);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Mobile-only back control, living in the logo row so it stays aligned with
+  // the wordmark instead of floating over the marquee (the global .backfab is
+  // suppressed on pages that render this Header — see landing.css).
+  const goBack = () => {
+    if (window.history.length > 1) router.back();
+    else router.push("/");
+  };
 
   // bump animation whenever the cart count changes (skip first render)
   useEffect(() => {
@@ -254,6 +263,22 @@ export default function Header() {
       <Marquee />
       <header>
         <div className="wrap topnav">
+          <button
+            type="button"
+            className="topnav-back"
+            aria-label="Go back"
+            onClick={goBack}
+          >
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none">
+              <path
+                d="M15 5l-7 7 7 7"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
           <div className="navleft">
             <button
               className="navtoggle"

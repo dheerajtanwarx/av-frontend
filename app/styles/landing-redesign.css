@@ -185,6 +185,76 @@
   line-height: 1;
 }
 
+/* Account dropdown — shared AccountMenu component, themed for the redesign
+   header so the profile button behaves the same here as on inner pages. */
+.av-lp .lp-topnav-acts .acct { position: relative; display: inline-flex; }
+.av-lp .lp-topnav-acts .acct-link,
+.av-lp .lp-topnav-acts .acct > button {
+  background: none;
+  border: 0;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--p-ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  line-height: 0;
+  transition: color 0.2s var(--ease-out, ease);
+}
+.av-lp .lp-topnav-acts .acct-link:hover,
+.av-lp .lp-topnav-acts .acct > button:hover { color: var(--p-rani); }
+.av-lp .lp-topnav-acts .acct svg { width: 20px; height: 20px; }
+.av-lp .lp-topnav-acts .acct-link svg { width: 20px; height: 20px; }
+.av-lp .lp-topnav-acts .acct-name {
+  font-family: var(--ui);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.av-lp .lp-topnav-acts .acct-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 168px;
+  background: #fff;
+  border: 1px solid var(--p-line);
+  border-radius: 12px;
+  box-shadow: 0 20px 44px -26px rgba(34, 27, 21, 0.45);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 60;
+}
+.av-lp .lp-topnav-acts .acct-hello {
+  font-family: var(--ui);
+  font-size: 12px;
+  color: var(--p-muted);
+  padding: 4px 8px;
+}
+.av-lp .lp-topnav-acts .acct-menu .acct-profile,
+.av-lp .lp-topnav-acts .acct-menu .acct-logout {
+  font-family: var(--ui);
+  font-size: 13px;
+  color: var(--p-ink);
+  text-align: left;
+  padding: 8px;
+  border-radius: 8px;
+  width: 100%;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.av-lp .lp-topnav-acts .acct-menu .acct-profile {
+  display: block;
+  text-decoration: none;
+}
+.av-lp .lp-topnav-acts .acct-menu .acct-profile:hover,
+.av-lp .lp-topnav-acts .acct-menu .acct-logout:hover {
+  background: var(--p-bg);
+  color: var(--p-rani);
+}
+
 /* ============================================================
    HERO  ·  still, full-bleed, overlay copy
    ============================================================ */

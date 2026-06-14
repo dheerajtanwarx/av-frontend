@@ -107,6 +107,130 @@
   color: var(--rani-deep);
 }
 
+/* ---- Category filter bar (horizontal, scrollable chips) ---- */
+.admin-cat-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 18px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.admin-cat-bar::-webkit-scrollbar {
+  height: 6px;
+}
+
+.admin-cat-bar::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 999px;
+}
+
+.admin-cat-chip {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+}
+
+.admin-cat-chip:hover {
+  border-color: var(--rani);
+  color: var(--ink);
+}
+
+.admin-cat-chip.active {
+  background: var(--rani-wash);
+  border-color: var(--rani);
+  color: var(--rani-deep);
+  font-weight: 600;
+}
+
+.admin-cat-chip-count {
+  background: var(--bg-3);
+  color: var(--ink-soft);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  padding: 1px 8px;
+  min-width: 20px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-cat-chip.active .admin-cat-chip-count {
+  background: var(--rani);
+  color: #fff;
+}
+
+/* ---- Category summary cards ---- */
+.admin-cat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.admin-cat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.admin-cat-card:hover {
+  box-shadow: 0 8px 22px -14px rgba(17, 24, 39, 0.28);
+  border-color: var(--rani);
+  transform: translateY(-1px);
+}
+
+.admin-cat-card.active {
+  border-color: var(--rani);
+  background: var(--rani-wash);
+}
+
+.admin-cat-card-name {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-cat-card.active .admin-cat-card-name {
+  color: var(--rani-deep);
+}
+
+.admin-cat-card-count {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-cat-card-label {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
 /* ---- Review cards ---- */
 .admin-review-list {
   display: flex;
@@ -311,8 +435,53 @@
   color: var(--ink);
 }
 
-.admin-orders-filters {
+/* Count-filter bars (orders, products, inventory, notifications) render as
+   small card-chips — mini versions of the dashboard stat cards rather than
+   underlined text tabs. */
+.admin-tabs.admin-orders-filters {
   flex-wrap: wrap;
+  gap: 10px;
+  border-bottom: none;
+  margin-bottom: 24px;
+}
+
+.admin-orders-filters .admin-tab {
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 9px 14px;
+  margin-bottom: 0;
+  transition: border-color 0.18s ease, background 0.18s ease, color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.admin-orders-filters .admin-tab:hover {
+  border-color: var(--rani);
+  color: var(--ink);
+}
+
+.admin-orders-filters .admin-tab.active {
+  border-color: var(--rani);
+  background: var(--rani-wash);
+  color: var(--rani-deep);
+  font-weight: 600;
+  box-shadow: 0 6px 18px -12px rgba(17, 24, 39, 0.3);
+}
+
+.admin-orders-filters .admin-tab.active .admin-tab-count {
+  background: var(--rani);
+  color: #fff;
+}
+
+/* Tighter chips on small screens so more fit per row. */
+@media (max-width: 640px) {
+  .admin-tabs.admin-orders-filters {
+    gap: 8px;
+  }
+  .admin-orders-filters .admin-tab {
+    padding: 8px 11px;
+    font-size: 0.88rem;
+  }
 }
 
 /* ---- Table ---- */
@@ -633,6 +802,133 @@
 }
 
 /* ============================================================
+   Order cards — the elegant mobile face of the order tables
+   ============================================================ */
+
+/* Card list is hidden on desktop (the dense table shows there); the responsive
+   rule below swaps them at the table breakpoint. */
+.admin-order-cards {
+  display: none;
+}
+
+.admin-order-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  padding: 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.admin-order-card:hover {
+  box-shadow: 0 10px 30px -12px rgba(17, 24, 39, 0.22);
+  border-color: var(--rani);
+  transform: translateY(-2px);
+}
+
+.admin-order-card:focus-visible {
+  outline: 2px solid var(--rani);
+  outline-offset: 2px;
+}
+
+.admin-order-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.admin-order-card-no {
+  font-family: var(--font-jost), sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: var(--rani-deep);
+}
+
+.admin-order-card-cust {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.admin-order-card-name {
+  font-family: var(--font-jost), sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.admin-order-card-email {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.82rem;
+  color: var(--muted);
+  word-break: break-word;
+}
+
+.admin-order-card-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-2);
+}
+
+.admin-order-card-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.admin-order-card-label {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.admin-order-card-value {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Dashboard-style loading skeletons for the order list. */
+.admin-order-skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-order-card.skeleton {
+  height: 150px;
+  border-style: dashed;
+  background: linear-gradient(90deg, var(--bg-2) 25%, var(--surface) 50%, var(--bg-2) 75%);
+  background-size: 400% 100%;
+  animation: admin-shimmer 1.3s ease-in-out infinite;
+}
+
+/* Swap the table for cards once the screen is too narrow for dense rows. */
+@media (max-width: 640px) {
+  .admin-table-mobile-hide {
+    display: none;
+  }
+  .admin-order-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* ============================================================
    Dashboard (stat cards + charts)
    ============================================================ */
 
@@ -661,6 +957,19 @@
 .admin-stat-card:hover {
   box-shadow: 0 10px 30px -12px rgba(17, 24, 39, 0.22);
   border-color: var(--line-1, var(--line-2));
+}
+
+/* Clickable stat cards (drill into a filtered listing) — keep the card's own
+   look, just signal interactivity and strip default link styling. */
+.admin-stat-card.is-link {
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.admin-stat-card.is-link:focus-visible {
+  outline: 2px solid var(--rani);
+  outline-offset: 2px;
 }
 
 /* count-up value + trend footer */

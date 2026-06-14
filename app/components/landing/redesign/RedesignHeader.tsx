@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCart } from "../CartContext";
 import { useWishlist } from "../WishlistContext";
+import { AccountMenu } from "../Header";
 
 /* Top-nav links for desktop. Mirrors the storefront nav but uses the short,
    editorial labels from the redesign ("Odhni", not "Jaipuri Odhni"). */
@@ -30,14 +31,6 @@ function SearchGlyph() {
     <svg {...ICON}>
       <circle cx="11" cy="11" r="8" />
       <path d="m21 21-4.3-4.3" />
-    </svg>
-  );
-}
-function AccountGlyph() {
-  return (
-    <svg {...ICON}>
-      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
     </svg>
   );
 }
@@ -92,9 +85,7 @@ export default function RedesignHeader() {
           <Link href="/search" className="lp-icon-btn" aria-label="Search">
             <SearchGlyph />
           </Link>
-          <Link href="/profile" className="lp-icon-btn" aria-label="Account">
-            <AccountGlyph />
-          </Link>
+          <AccountMenu />
           <Link href="/wishlist" className="lp-icon-btn" aria-label="Wishlist">
             <HeartGlyph />
             {wishCount > 0 && <span className="lp-badge">{wishCount}</span>}

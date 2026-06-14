@@ -92,13 +92,23 @@ export default function ProductForm({
   initial,
   categories,
   mode,
+  initialCategoryId,
 }: {
   initial?: AdminProductDetail | null;
   categories: AdminCategory[];
   mode: "create" | "edit";
+  /** Preselected category for a new product (e.g. opened from a filtered list).
+      Still freely changeable in the form. */
+  initialCategoryId?: number;
 }) {
   const router = useRouter();
-  const [form, setForm] = useState<FormState>(() => initialState(initial));
+  const [form, setForm] = useState<FormState>(() => {
+    const base = initialState(initial);
+    if (mode === "create" && initialCategoryId && !base.categoryId) {
+      return { ...base, categoryId: String(initialCategoryId) };
+    }
+    return base;
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");

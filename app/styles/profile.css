@@ -8,11 +8,7 @@
   }
 
   .profile-hero {
-    @apply grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-[22px] border border-[var(--line)] bg-[var(--surface)] p-7 shadow-[0_24px_70px_-52px_rgba(43,32,24,0.6)];
-  }
-
-  .profile-avatar {
-    @apply grid size-[78px] place-items-center rounded-full bg-[var(--green)] font-[var(--font-marcellus)] text-[28px] text-white;
+    @apply flex flex-wrap items-center justify-between gap-x-6 gap-y-4;
   }
 
   .profile-kicker {
@@ -210,14 +206,9 @@
       @apply w-[min(100%-24px,1120px)] pt-[30px] pb-14;
     }
 
-    .profile-hero,
     .profile-grid,
     .profile-details div {
       @apply grid-cols-1;
-    }
-
-    .profile-hero {
-      @apply justify-items-start p-[22px];
     }
 
     .profile-grid {

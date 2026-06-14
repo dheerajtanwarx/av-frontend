@@ -47,19 +47,13 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* ============ HERO — avatar + greeting ============ */
+/* ============ HEAD — plain greeting (no card) ============ */
 .av .profile-page.av-profile .profile-hero {
-  background: var(--surface);
-  border: 1px solid var(--line-2);
-  border-radius: 14px;
+  background: none;
+  border: none;
+  border-radius: 0;
   box-shadow: none;
-}
-.av .profile-page.av-profile .profile-avatar {
-  background: var(--p-img);
-  color: var(--ink);
-  font-family: var(--serif);
-  font-weight: 500;
-  box-shadow: none;
+  padding: 0;
 }
 .av .profile-page.av-profile .profile-kicker {
   font-family: var(--sans);

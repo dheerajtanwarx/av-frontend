@@ -6,6 +6,7 @@ import {
   ApiError,
   type AdminCustomerDetail,
 } from "../../../lib/api";
+import OrderCard from "../../../components/admin/OrderCard";
 
 const PAYMENT_LABEL: Record<string, string> = {
   UPI: "UPI",
@@ -147,7 +148,7 @@ export default function AdminCustomerDetailPage({
               {orders.length === 0 ? (
                 <p className="admin-cell-sub">This customer hasn&apos;t placed any orders yet.</p>
               ) : (
-                <div className="admin-table-wrap">
+                <div className="admin-table-wrap admin-table-mobile-hide">
                   <table className="admin-table admin-customer-orders-table">
                     <thead>
                       <tr>
@@ -192,6 +193,25 @@ export default function AdminCustomerDetailPage({
                       ))}
                     </tbody>
                   </table>
+                </div>
+              )}
+
+              {orders.length > 0 && (
+                <div className="admin-order-cards">
+                  {orders.map((o) => (
+                    <OrderCard
+                      key={o.id}
+                      order={{
+                        id: o.id,
+                        no: o.no,
+                        status: o.status,
+                        placedAt: o.placedAt,
+                        total: o.total,
+                        payment: o.payment,
+                        itemCount: o.itemCount,
+                      }}
+                    />
+                  ))}
                 </div>
               )}
             </div>
