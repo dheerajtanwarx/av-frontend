@@ -7,6 +7,7 @@ import {
   mapDirectionsUrl,
   img,
 } from "./lib/landing-data";
+import { Play } from "lucide-react";
 import { fetchProducts, fetchCategories } from "./lib/api";
 import RedesignHeader from "./components/landing/redesign/RedesignHeader";
 import RedesignProductCard from "./components/landing/redesign/RedesignProductCard";
@@ -168,14 +169,10 @@ export default async function Home() {
               <img src={img(r.image, 500)} alt="" loading="lazy" />
               <div className="lp-reel-scrim" />
               <span className="lp-reel-play" aria-hidden="true">
-                <svg width="11" height="13" viewBox="0 0 11 13" fill="currentColor">
-                  <path d="M0 1.2v10.6a.6.6 0 0 0 .92.5l8.6-5.3a.6.6 0 0 0 0-1L.92.7A.6.6 0 0 0 0 1.2Z" />
-                </svg>
+                <Play size={13} fill="currentColor" stroke="none" />
               </span>
               <span className="lp-reel-views" aria-hidden="true">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
+                <Play size={11} fill="currentColor" stroke="none" />
                 {r.views}
               </span>
             </a>

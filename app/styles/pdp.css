@@ -1389,6 +1389,44 @@
 .pdp .prod .qa:hover {
   background: var(--rani);
 }
+.pdp .prod .wish {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(250, 245, 236, 0.88);
+  backdrop-filter: blur(4px);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+  opacity: 0.72;
+  transition: opacity 0.3s, background 0.25s, transform 0.25s var(--ease);
+}
+.pdp .prod:hover .wish {
+  opacity: 1;
+}
+.pdp .prod .wish:hover {
+  background: #fff;
+  transform: scale(1.12);
+}
+.pdp .prod .wish.on {
+  background: #fff;
+  opacity: 1;
+}
+.pdp .prod .wish svg {
+  width: 15px;
+  height: 15px;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.pdp .prod .wish.on svg {
+  color: var(--rani);
+}
 .pdp .prod .pname {
   display: block;
   font-family: var(--serif);
@@ -1571,8 +1609,16 @@
   .pdp .ph-head nav {
     display: none;
   }
+  /* The bottom nav owns search, account and cart on phones, so the header
+     actions (incl. the account name and cart icon) are redundant here —
+     hide them and centre the wordmark, mirroring the main mobile header. */
+  .pdp .ph-acts {
+    display: none;
+  }
   .pdp .ph-head {
-    grid-template-columns: auto 1fr auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 @media (max-width: 560px) {

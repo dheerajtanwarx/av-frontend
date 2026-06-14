@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ImageOff, ChevronRight, User, ClipboardList } from "lucide-react";
 import Header from "../components/landing/Header";
 import { fetchMyOrders, getSession, type MyOrder } from "../lib/api";
 
@@ -71,10 +72,7 @@ function OrderCard({ order }: { order: MyOrder }) {
           <img src={firstItem.image} alt={firstItem.name} />
         ) : (
           <div className="order-card-thumb-placeholder">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="size-8 opacity-30">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <path d="M3 9h18M9 21V9" />
-            </svg>
+            <ImageOff strokeWidth={1.5} className="size-8 opacity-30" />
           </div>
         )}
       </div>
@@ -100,9 +98,7 @@ function OrderCard({ order }: { order: MyOrder }) {
       </div>
 
       <div className="order-card-chev" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 18l6-6-6-6" />
-        </svg>
+        <ChevronRight strokeWidth={2} />
       </div>
     </a>
   );
@@ -182,9 +178,7 @@ export default function MyOrdersPage() {
         <Header />
         <section className="orders-shell">
           <div className="orders-empty" style={{ marginTop: 0, border: "1px solid var(--line)" }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-            </svg>
+            <User strokeWidth={1.5} />
             <h3>Sign in to view your orders</h3>
             <p>Your order history and tracking appear here once you're logged in.</p>
             <a href="/login">Log in</a>
@@ -227,9 +221,7 @@ export default function MyOrdersPage() {
         {visible.length === 0 ? (
           <div className="orders-list">
             <div className="orders-empty">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
+              <ClipboardList strokeWidth={1.5} />
               <h3>{emptyMessages[tab].heading}</h3>
               <p>{emptyMessages[tab].body}</p>
               {tab === "all" && <a href="/">Start Shopping</a>}

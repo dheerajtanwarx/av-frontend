@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { RectangleVertical, Columns2, Columns3 } from "lucide-react";
 import ProductCard from "../landing/ProductCard";
 import { usePriceSort, PriceSortBar } from "../product/PriceSortBar";
 import type { Product } from "../../lib/landing-data";
@@ -11,36 +12,9 @@ import type { Product } from "../../lib/landing-data";
    CSS, so the shared ProductCard stays untouched. */
 type Density = 1 | 2 | 3;
 const VIEWS: { d: Density; label: string; icon: React.ReactElement }[] = [
-  {
-    d: 1,
-    label: "One per row",
-    icon: (
-      <svg width="18" height="14" viewBox="0 0 18 14" fill="currentColor" aria-hidden="true">
-        <rect x="2" y="2" width="14" height="10" rx="1.5" />
-      </svg>
-    ),
-  },
-  {
-    d: 2,
-    label: "Two per row",
-    icon: (
-      <svg width="18" height="14" viewBox="0 0 18 14" fill="currentColor" aria-hidden="true">
-        <rect x="1.5" y="2" width="6.5" height="10" rx="1.3" />
-        <rect x="10" y="2" width="6.5" height="10" rx="1.3" />
-      </svg>
-    ),
-  },
-  {
-    d: 3,
-    label: "Three per row",
-    icon: (
-      <svg width="18" height="14" viewBox="0 0 18 14" fill="currentColor" aria-hidden="true">
-        <rect x="1.3" y="2" width="4" height="10" rx="1" />
-        <rect x="7" y="2" width="4" height="10" rx="1" />
-        <rect x="12.7" y="2" width="4" height="10" rx="1" />
-      </svg>
-    ),
-  },
+  { d: 1, label: "One per row", icon: <RectangleVertical size={18} strokeWidth={1.6} /> },
+  { d: 2, label: "Two per row", icon: <Columns2 size={18} strokeWidth={1.6} /> },
+  { d: 3, label: "Three per row", icon: <Columns3 size={18} strokeWidth={1.6} /> },
 ];
 
 function ViewControl({

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Search } from "lucide-react";
 import {
   fetchAdminNotifications,
   bulkReadNotifications,
@@ -194,10 +195,7 @@ export default function AdminNotificationsPage() {
 
       <div className="admin-orders-toolbar">
         <div className="admin-search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="7" />
-            <path d="M21 21l-4.3-4.3" />
-          </svg>
+          <Search size={18} strokeWidth={2} aria-hidden="true" />
           <input
             type="search"
             placeholder="Search by order ID, customer name or content…"

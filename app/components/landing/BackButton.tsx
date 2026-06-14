@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { ChevronLeft } from "lucide-react";
 
 /**
  * Mobile-only "return back" control. Rendered once in the root layout so it
@@ -29,15 +30,7 @@ export default function BackButton() {
 
   return (
     <button type="button" className="backfab" aria-label="Go back" onClick={goBack}>
-      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none">
-        <path
-          d="M15 5l-7 7 7 7"
-          stroke="currentColor"
-          strokeWidth="1.7"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+      <ChevronLeft size={22} strokeWidth={1.7} aria-hidden="true" />
     </button>
   );
 }

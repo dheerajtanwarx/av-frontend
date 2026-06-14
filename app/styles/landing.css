@@ -1523,7 +1523,11 @@
   .av .navtoggle { display: none; }
   .av .navleft { display: none; }
   .av .acts { display: none; }
-  .av .topnav-back { display: inline-flex; grid-column: 1; }
+  /* In-row arrow stays hidden on mobile — the global floating back chip
+     (.backfab) is the single, more discoverable back affordance here. The
+     left 44px column is kept empty so the wordmark stays optically centred
+     and the floating chip sits in that freed corner. */
+  .av .topnav-back { display: none; }
   .av .logo { grid-column: 2; }
   .av .slide .inner { padding: 0 30px; max-width: 100%; }
   .av .slide .content.r { justify-content: flex-start; text-align: left; }

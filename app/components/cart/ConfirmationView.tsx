@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { useCart } from "../landing/CartContext";
 import { CheckoutHeader, SlimFooter } from "./CheckoutChrome";
 import { CartIc } from "./icons";
@@ -70,16 +71,7 @@ export default function ConfirmationView() {
       <main className="wrap confirm">
         <div className="hero">
           <div className="seal">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2.4}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M5 12.5l4.2 4.5L19 7" />
-            </svg>
+            <Check strokeWidth={2.4} aria-hidden="true" />
           </div>
           <h1>
             Thank you, <em>{sessionUser?.name ?? "we’ve got it"}</em>

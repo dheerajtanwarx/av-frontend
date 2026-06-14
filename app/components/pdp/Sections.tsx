@@ -6,6 +6,8 @@ import type { PdpProduct, PdpReview } from "../../lib/pdp-data";
 import { recommendedFor } from "../../lib/pdp-data";
 import { Ic, Stars } from "./icons";
 import { usePdp } from "./PdpContext";
+import { useWishlist } from "../landing/WishlistContext";
+import { HeartIcon } from "../landing/Icons";
 import { parseINR } from "../../lib/cart-data";
 import { fetchReviews } from "../../lib/api";
 
@@ -246,6 +248,39 @@ export function Related({ product }: { product: PdpProduct }) {
   const [cat, setCat] = useState("All");
   const shown = cat === "All" ? items : items.filter((i) => i.cat === cat);
 
+  const { addToCart } = usePdp();
+  const { isWished, toggle } = useWishlist();
+  // Brief "✓ Added" confirmation on the card just acted on.
+  const [added, setAdded] = useState<string | null>(null);
+
+  const onWish = (p: (typeof items)[number]) =>
+    toggle({
+      slug: p.slug,
+      name: p.nm,
+      type: p.ty,
+      price: p.pr,
+      was: p.was ?? null,
+      img: p.image,
+    });
+
+  const onAdd = async (p: (typeof items)[number]) => {
+    const ok = await addToCart({
+      id: p.slug,
+      name: p.nm,
+      type: p.ty,
+      color: LOOK_COLOR,
+      size: "Free Size",
+      madeToMeasure: false,
+      price: parseINR(p.pr),
+      was: p.was ? parseINR(p.was) : null,
+      qty: 1,
+      img: p.image,
+    });
+    if (!ok) return;
+    setAdded(p.slug);
+    setTimeout(() => setAdded((s) => (s === p.slug ? null : s)), 1100);
+  };
+
   return (
     <section className="sec reco">
       <div className="sec-title">
@@ -280,9 +315,18 @@ export function Related({ product }: { product: PdpProduct }) {
                 <img src={p.image || undefined} alt={p.nm} />
               </Link>
               {p.flag && <span className="flag">{p.flag}</span>}
-              <Link href={`/product/${p.slug}`} className="qa">
-                View Product
-              </Link>
+              <button
+                type="button"
+                className={`wish${isWished(p.slug) ? " on" : ""}`}
+                aria-label={isWished(p.slug) ? "Remove from wishlist" : "Add to wishlist"}
+                aria-pressed={isWished(p.slug)}
+                onClick={() => onWish(p)}
+              >
+                <HeartIcon filled={isWished(p.slug)} />
+              </button>
+              <button type="button" className="qa" onClick={() => onAdd(p)}>
+                {added === p.slug ? "✓ Added" : "Add to Bag"}
+              </button>
             </div>
             <Link href={`/product/${p.slug}`} className="pname">
               {p.nm}

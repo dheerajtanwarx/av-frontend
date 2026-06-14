@@ -1,18 +1,114 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { House } from "lucide-react";
 import { SearchIcon, AccountIcon, CartIcon, HeartIcon } from "./Icons";
 import { useCart } from "./CartContext";
 import { useWishlist } from "./WishlistContext";
+import { getSession, logout, type SessionUser } from "../../lib/api";
 
-/* Home icon — kept local; the shared set has no house glyph. */
-function HomeIcon() {
+function firstName(user: SessionUser): string {
+  return (user.name || user.email || "Account").trim().split(/\s+/)[0];
+}
+
+/**
+ * Profile tab. When signed in it opens the account menu upward (the same set
+ * of links the header dropdown shows); when signed out it links straight to
+ * login. Replaces the old plain link that only went to /profile.
+ */
+function AccountTab({ active }: { active: boolean }) {
+  const [user, setUser] = useState<SessionUser | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let alive = true;
+    getSession().then((u) => {
+      if (alive) {
+        setUser(u);
+        setLoaded(true);
+      }
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // close on outside tap
+  useEffect(() => {
+    if (!open) return;
+    const onClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [open]);
+
+  async function handleLogout() {
+    try {
+      await logout();
+    } finally {
+      setUser(null);
+      setOpen(false);
+    }
+  }
+
+  // Signed out (or still resolving) — go straight to login.
+  if (!loaded || !user) {
+    return (
+      <Link
+        className={`botnav-it${active ? " on" : ""}`}
+        href="/login"
+        aria-current={active ? "page" : undefined}
+      >
+        <AccountIcon />
+        <span>Profile</span>
+      </Link>
+    );
+  }
+
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-      <path d="M4 11.5 12 5l8 6.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M6 10.5V19h12v-8.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <div className="botnav-acct" ref={ref}>
+      {open && (
+        <div className="botnav-acct-menu" role="menu">
+          <span className="botnav-acct-hello">Hi, {firstName(user)}</span>
+          <Link className="botnav-acct-item" href="/profile" onClick={() => setOpen(false)}>
+            View profile
+          </Link>
+          <Link className="botnav-acct-item" href="/my-orders" onClick={() => setOpen(false)}>
+            My orders
+          </Link>
+          <Link className="botnav-acct-item" href="/wishlist" onClick={() => setOpen(false)}>
+            My wishlist
+          </Link>
+          {user.role === "ADMIN" && (
+            <Link
+              className="botnav-acct-item botnav-acct-admin"
+              href="/admin/dashboard"
+              onClick={() => setOpen(false)}
+            >
+              Admin Dashboard
+            </Link>
+          )}
+          <button className="botnav-acct-item botnav-acct-logout" onClick={handleLogout}>
+            Log out
+          </button>
+        </div>
+      )}
+      <button
+        type="button"
+        className={`botnav-it${open || active ? " on" : ""}`}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <AccountIcon />
+        <span>Profile</span>
+      </button>
+    </div>
   );
 }
 
@@ -41,7 +137,7 @@ export default function BottomNav() {
   return (
     <nav className="botnav" aria-label="Primary">
       <Link className={`botnav-it${isHome ? " on" : ""}`} href="/" aria-current={isHome ? "page" : undefined}>
-        <HomeIcon />
+        <House />
         <span>Home</span>
       </Link>
       <Link className={`botnav-it${onSearch ? " on" : ""}`} href="/search" aria-current={onSearch ? "page" : undefined}>
@@ -62,10 +158,7 @@ export default function BottomNav() {
         </span>
         <span>Cart</span>
       </button>
-      <Link className={`botnav-it${onAcct ? " on" : ""}`} href="/profile" aria-current={onAcct ? "page" : undefined}>
-        <AccountIcon />
-        <span>Profile</span>
-      </Link>
+      <AccountTab active={onAcct} />
     </nav>
   );
 }

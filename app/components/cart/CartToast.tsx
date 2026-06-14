@@ -1,5 +1,6 @@
 "use client";
 
+import { Check } from "lucide-react";
 import { useCart } from "../landing/CartContext";
 
 /** Global "added to cart" toast. Rendered once near the cart drawer so any
@@ -21,9 +22,7 @@ export default function CartToast() {
       </div>
       <div className="cart-toast-info">
         <div className="cart-toast-ok">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 13l4 4L19 7" />
-          </svg>
+          <Check strokeWidth={2.5} aria-hidden="true" />
           Added to cart
         </div>
         <div className="cart-toast-name">{toast?.name ?? ""}</div>

@@ -2,24 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronLeft, Menu, X } from "lucide-react";
 import { announcements, nav } from "../../lib/landing-data";
 
 function BurgerIcon({ open }: { open: boolean }) {
-  return (
-    <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" fill="none">
-      {open ? (
-        <>
-          <path d="M5 5l12 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-          <path d="M17 5L5 17" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        </>
-      ) : (
-        <>
-          <path d="M3 6h16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-          <path d="M3 11h16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-          <path d="M3 16h16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        </>
-      )}
-    </svg>
+  return open ? (
+    <X size={22} strokeWidth={1.6} aria-hidden="true" />
+  ) : (
+    <Menu size={22} strokeWidth={1.6} aria-hidden="true" />
   );
 }
 
@@ -269,15 +259,7 @@ export default function Header() {
             aria-label="Go back"
             onClick={goBack}
           >
-            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none">
-              <path
-                d="M15 5l-7 7 7 7"
-                stroke="currentColor"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <ChevronLeft size={22} strokeWidth={1.7} aria-hidden="true" />
           </button>
           <div className="navleft">
             <button

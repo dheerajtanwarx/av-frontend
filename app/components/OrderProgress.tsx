@@ -1,6 +1,7 @@
 /** Live, status-driven order tracker. Shared by the My Orders detail page and
     the public Track Your Order result so both render the same journey from a
     real order status fetched from the backend. */
+import { Check, X } from "lucide-react";
 
 export function statusLabel(status: string): string {
   const map: Record<string, string> = {
@@ -26,13 +27,10 @@ const JOURNEY = [
 const STATUS_ORDER = ["PLACED", "CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED"];
 
 function CheckIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 13l4 4L19 7" />
-    </svg>
-  );
+  return <Check strokeWidth={2.5} />;
 }
 
+/* Small filled status dot for the current step — no lucide equivalent. */
 function DotIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor">
@@ -42,11 +40,7 @@ function DotIcon() {
 }
 
 function CrossIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M18 6L6 18M6 6l12 12" />
-    </svg>
-  );
+  return <X strokeWidth={2.5} />;
 }
 
 type StepState = "done" | "current" | "upcoming" | "cancelled";

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Heart } from "lucide-react";
 import { img, type Product } from "../../../lib/landing-data";
 import { parseINR } from "../../../lib/cart-data";
 import { useCart } from "../CartContext";
@@ -79,9 +80,7 @@ export default function RedesignProductCard({ product }: { product: Product }) {
             onWish();
           }}
         >
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M12 20s-7-4.4-9.2-8.5C1.3 8.3 2.7 5 6 5c2 0 3.2 1.2 4 2.3C10.8 6.2 12 5 14 5c3.3 0 4.7 3.3 3.2 6.5C19 15.6 12 20 12 20z" />
-          </svg>
+          <Heart size={19} strokeWidth={1.5} fill={wished ? "currentColor" : "none"} />
         </button>
       </Link>
       <div className="lp-prod-body">

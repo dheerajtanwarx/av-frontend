@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "motion/react";
+import { IndianRupee, Clock, Check, Calendar, CircleX, Undo2 } from "lucide-react";
 import {
   fetchAdminDashboard,
   ApiError,
@@ -39,57 +40,24 @@ function inrCompact(amount: number): string {
 
 const num = (n: number) => new Intl.NumberFormat("en-IN").format(n);
 
-function RupeeIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 3h12M6 8h12M6 13l8.5 8M6 13h3a5 5 0 0 0 0-10" />
-    </svg>
-  );
-}
-
-function ClockIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3 2" />
-    </svg>
-  );
-}
-
-function CheckIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
-  );
-}
-
-function CalendarIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="5" width="18" height="16" rx="2" />
-      <path d="M8 3v4M16 3v4M3 10h18" />
-    </svg>
-  );
-}
-
-function CancelIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="9" />
-      <path d="M15 9l-6 6M9 9l6 6" />
-    </svg>
-  );
-}
-
-function RefundIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 10h13a5 5 0 0 1 0 10h-6" />
-      <path d="M7 6l-4 4 4 4" />
-    </svg>
-  );
-}
+const RupeeIcon = ({ className }: { className?: string }) => (
+  <IndianRupee className={className} strokeWidth={2} />
+);
+const ClockIcon = ({ className }: { className?: string }) => (
+  <Clock className={className} strokeWidth={2} />
+);
+const CheckIcon = ({ className }: { className?: string }) => (
+  <Check className={className} strokeWidth={2} />
+);
+const CalendarIcon = ({ className }: { className?: string }) => (
+  <Calendar className={className} strokeWidth={2} />
+);
+const CancelIcon = ({ className }: { className?: string }) => (
+  <CircleX className={className} strokeWidth={2} />
+);
+const RefundIcon = ({ className }: { className?: string }) => (
+  <Undo2 className={className} strokeWidth={2} />
+);
 
 type Card = {
   key: string;

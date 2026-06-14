@@ -181,7 +181,9 @@ svg {
     position: fixed;
     top: calc(env(safe-area-inset-top, 0px) + 14px);
     left: 14px;
-    z-index: var(--z-fab);
+    /* Above the sticky storefront header (z-index: 80) so the chip stays
+       visible and tappable on header pages, but below the cart drawer (90). */
+    z-index: 85;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -208,7 +210,7 @@ svg {
   }
 }
 
-/* Pages that render the storefront Header (`.av > header`) carry their own
-   in-row back control in the logo row, so suppress the floating fallback there
-   to avoid a duplicate. Header-less pages (login, signup, product) keep it. */
-body:has(.av > header) .backfab { display: none; }
+/* One consistent back affordance everywhere: the floating frosted chip shows on
+   every interior page (header and header-less alike). The storefront Header's
+   subtle in-row arrow is hidden on mobile (see landing.css) so the two never
+   duplicate. Home and the admin area opt out in BackButton.tsx. */

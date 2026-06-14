@@ -7,6 +7,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { Bell, Archive } from "lucide-react";
 import {
   fetchAdminNotifications,
   fetchAdminNotificationsAfter,
@@ -253,10 +254,7 @@ export default function NotificationDropdown({
               </div>
             ) : items.length === 0 ? (
               <div className="admin-notif-empty">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-                  <path d="M13.7 21a2 2 0 0 1-3.4 0" />
-                </svg>
+                <Bell strokeWidth={1.4} aria-hidden />
                 <strong>You’re all caught up</strong>
                 <span>New order activity will show up here.</span>
               </div>
@@ -296,10 +294,7 @@ export default function NotificationDropdown({
                           handleArchive(n);
                         }}
                       >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                          <rect x="3" y="4" width="18" height="5" rx="1" />
-                          <path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4" />
-                        </svg>
+                        <Archive size={18} strokeWidth={1.8} aria-hidden />
                       </button>
                     </motion.div>
                   ))}
