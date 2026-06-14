@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { img, slides } from "../../../lib/landing-data";
+import { fetchHeroSettings } from "../../../lib/api";
 
 const DURATION = 5000;
 
@@ -11,6 +12,7 @@ const DURATION = 5000;
    reduced-motion users and while the tab is hidden. */
 export default function LandingHero() {
   const [active, setActive] = useState(0);
+  const [overrides, setOverrides] = useState<(string | null)[]>([]);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reduced = useRef(false);
 
@@ -18,6 +20,20 @@ export default function LandingHero() {
     reduced.current =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+    fetchHeroSettings()
+      .then((d) => {
+        if (alive) setOverrides(d.images);
+      })
+      .catch(() => {
+        /* keep built-in defaults if the settings call fails */
+      });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   const schedule = useCallback(() => {
@@ -51,7 +67,7 @@ export default function LandingHero() {
       {slides.map((s, i) => (
         <div className={`lp-hero-slide${i === active ? " on" : ""}`} key={i} aria-hidden={i !== active}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={img(s.image, 1600)} alt="" />
+          <img src={overrides[i] ?? img(s.image, 1600)} alt="" />
         </div>
       ))}
       <div className="lp-hero-scrim" />
