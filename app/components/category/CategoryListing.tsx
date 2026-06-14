@@ -1,8 +1,73 @@
 "use client";
 
+import { useState } from "react";
 import ProductCard from "../landing/ProductCard";
 import { usePriceSort, PriceSortBar } from "../product/PriceSortBar";
 import type { Product } from "../../lib/landing-data";
+
+/* The handoff's signature control: retile the grid one tap apart — editorial
+   one-up, the balanced two-up house standard, or a dense three-up scan. The
+   density only drives `data-density` on the grid; the cards adapt purely in
+   CSS, so the shared ProductCard stays untouched. */
+type Density = 1 | 2 | 3;
+const VIEWS: { d: Density; label: string; icon: React.ReactElement }[] = [
+  {
+    d: 1,
+    label: "One per row",
+    icon: (
+      <svg width="18" height="14" viewBox="0 0 18 14" fill="currentColor" aria-hidden="true">
+        <rect x="2" y="2" width="14" height="10" rx="1.5" />
+      </svg>
+    ),
+  },
+  {
+    d: 2,
+    label: "Two per row",
+    icon: (
+      <svg width="18" height="14" viewBox="0 0 18 14" fill="currentColor" aria-hidden="true">
+        <rect x="1.5" y="2" width="6.5" height="10" rx="1.3" />
+        <rect x="10" y="2" width="6.5" height="10" rx="1.3" />
+      </svg>
+    ),
+  },
+  {
+    d: 3,
+    label: "Three per row",
+    icon: (
+      <svg width="18" height="14" viewBox="0 0 18 14" fill="currentColor" aria-hidden="true">
+        <rect x="1.3" y="2" width="4" height="10" rx="1" />
+        <rect x="7" y="2" width="4" height="10" rx="1" />
+        <rect x="12.7" y="2" width="4" height="10" rx="1" />
+      </svg>
+    ),
+  },
+];
+
+function ViewControl({
+  density,
+  onChange,
+}: {
+  density: Density;
+  onChange: (d: Density) => void;
+}) {
+  return (
+    <div className="cat-view" role="group" aria-label="Grid density">
+      {VIEWS.map((v) => (
+        <button
+          key={v.d}
+          type="button"
+          className={"cat-view-seg" + (density === v.d ? " on" : "")}
+          aria-pressed={density === v.d}
+          aria-label={v.label}
+          title={v.label}
+          onClick={() => onChange(v.d)}
+        >
+          {v.icon}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export default function CategoryListing({
   categoryName,
@@ -13,9 +78,10 @@ export default function CategoryListing({
 }) {
   const ps = usePriceSort(products);
   const { filtered, isFiltered, reset } = ps;
+  const [density, setDensity] = useState<Density>(2);
 
   return (
-    <main className="cat-page">
+    <main className="cat-page av-cat">
       <div className="cat-hero">
         <div className="wrap">
           <nav className="cat-breadcrumb">
@@ -42,7 +108,10 @@ export default function CategoryListing({
           <span className="cat-bar-count">
             {filtered.length} product{filtered.length !== 1 ? "s" : ""}
           </span>
-          <PriceSortBar state={ps} />
+          <div className="cat-bar-controls">
+            <PriceSortBar state={ps} />
+            <ViewControl density={density} onChange={setDensity} />
+          </div>
         </div>
 
         {filtered.length === 0 ? (
@@ -63,11 +132,14 @@ export default function CategoryListing({
             )}
           </div>
         ) : (
-          <div className="prods cat-grid">
-            {filtered.map((p, i) => (
-              <ProductCard key={p.slug} product={p} index={i} reveal={false} />
-            ))}
-          </div>
+          <>
+            <div className="prods cat-grid" data-density={density}>
+              {filtered.map((p, i) => (
+                <ProductCard key={p.slug} product={p} index={i} reveal={false} />
+              ))}
+            </div>
+            <p className="cat-endnote">You&rsquo;ve reached the end of the edit.</p>
+          </>
         )}
       </div>
     </main>

@@ -305,7 +305,7 @@ export default function CheckoutView() {
   if (items.length === 0 && !placed.current) return null;
 
   return (
-    <div className="app flow">
+    <div className="app flow av-flow">
       <CheckoutHeader backHref="/cart" backLabel="Back to Bag" />
       <main className="wrap">
         <div className="page-head">

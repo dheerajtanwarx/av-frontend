@@ -54,7 +54,7 @@ export default function SearchView() {
   }, [q]);
 
   return (
-    <main className="search-page">
+    <main className="search-page av-search">
       <div className="search-hero">
         <div className="wrap">
           <nav className="cat-breadcrumb">

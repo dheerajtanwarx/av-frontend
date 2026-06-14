@@ -1,0 +1,6 @@
+[
+  { "date": "2026-06-13", "macrostructure": "Account/Settings", "theme": "AV editorial (system)", "enrichment": "none", "brief": "AV Creation · Profile / account page (Phase 5b)" },
+  { "date": "2026-06-13", "macrostructure": "Search/Results", "theme": "AV editorial (system)", "enrichment": "none", "brief": "AV Creation · Search page — field, live-suggest, results grid (Phase 5a)" },
+  { "date": "2026-06-13", "macrostructure": "Catalogue", "theme": "AV editorial (system)", "enrichment": "none", "brief": "AV Creation · Category page — view-density control (Phase 4)" },
+  { "date": "2026-06-13", "macrostructure": "Long Document", "theme": "AV editorial (system)", "enrichment": "none", "brief": "AV Creation · Cart & Checkout flow (Phase 3)" }
+]

@@ -450,7 +450,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <main className="av profile-page">
+      <main className="av profile-page av-profile">
         <Header />
         <section className="profile-shell">
           <div className="profile-loading">Loading your profile...</div>
@@ -461,7 +461,7 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <main className="av profile-page">
+      <main className="av profile-page av-profile">
         <Header />
         <section className="profile-shell">
           <div className="profile-empty">
@@ -475,7 +475,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="av profile-page">
+    <main className="av profile-page av-profile">
       <Header />
       <section className="profile-shell">
         <div className="profile-hero">

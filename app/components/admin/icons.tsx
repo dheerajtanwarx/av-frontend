@@ -105,3 +105,10 @@ export const LogoutIcon = (p: IconProps) => (
     <path d="M10 8l-4 4 4 4M6 12h11" />
   </svg>
 );
+
+export const ScanIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2" />
+    <path d="M4 12h16" />
+  </svg>
+);

@@ -8,8 +8,12 @@
 @import "./styles/landing-redesign.css";
 /* Product detail page */
 @import "./styles/pdp.css";
+/* Phase-2 product-page redesign — editorial reskin, scoped to .av-pdp */
+@import "./styles/pdp-redesign.css";
 /* Cart & checkout flow (cool "soft slate" palette, scoped to .flow) */
 @import "./styles/cart.css";
+/* Phase-3 cart/checkout redesign — editorial reskin, scoped to .flow.av-flow */
+@import "./styles/cart-redesign.css";
 /* Login & signup pages (scoped to .auth) */
 @import "./styles/auth.css";
 /* Account profile page */
@@ -22,6 +26,12 @@
 @import "./styles/wishlist.css";
 /* Search + filter page, and the header search field */
 @import "./styles/search.css";
+/* Phase-4 category-page redesign — editorial reskin + view-density control, scoped to .cat-page.av-cat */
+@import "./styles/category-redesign.css";
+/* Phase-5a search-page redesign — editorial reskin, scoped to .search-page.av-search */
+@import "./styles/search-redesign.css";
+/* Phase-5b profile-page redesign — editorial reskin, scoped to .profile-page.av-profile */
+@import "./styles/profile-redesign.css";
 /* Admin panel shell — sidebar, topbar, profile menu, placeholders */
 @import "./styles/admin-layout.css";
 /* Admin review moderation page (scoped to .admin) */

@@ -1,0 +1,435 @@
+/* Hallmark · macrostructure: Long Document (checkout flow) · tone: luxury-editorial · anchor hue: rani 350°
+ * pre-emit critique: P5 H4 E5 S5 R5 V4
+ * redesign (Phase 3) · system-managed: shares the AV editorial DNA from Phases 1–2 (.av-lp, .av-pdp)
+ * deliberate deviation · gate 38a: EB Garamond italic emphasis kept on headings — established house signature
+ */
+
+/* ============================================================
+   AV CREATION — CART & CHECKOUT REDESIGN (Phase 3)
+   ------------------------------------------------------------
+   The third sibling of the storefront redesign. The whole flow
+   (`.flow`) was a cool "soft slate" palette set through CSS
+   custom properties — so bringing it into the warm editorial
+   system is, at its core, a TOKEN RE-POINT, layered over
+   cart.css and scoped to `.flow.av-flow` so the original is
+   left untouched.
+
+   Resolved direction (from the Phase-3 design handoff):
+     · Carries the picks forward — same parchment, same calm
+       INK inline action (no rani buttons, no sticky chrome).
+     · Rani stays a whisper: eyebrows, tags, the bag badge.
+     · Green (#1d5042) means "free / applied / confirmed".
+     · Selected option = ink hairline + warm #efe7d8 fill.
+     · Two faces, two weights: EB Garamond + Hanken Grotesk.
+
+   Every selector carries `.flow.av-flow` so it outweighs the
+   matching `.flow …` rule in cart.css regardless of load order.
+   ============================================================ */
+
+/* ---- the token re-point: cool slate → warm parchment ---- */
+.flow.av-flow {
+  /* grounds */
+  --bg: #f9f7f3;          /* parchment page ground            */
+  --bg-2: #efe7d8;        /* warm tint — chips, notes, selected */
+  --bg-3: #e7ddcd;        /* image placeholder fill           */
+  --surface: #fffdf8;     /* raised card                      */
+
+  /* ink */
+  --ink: #221b15;         /* primary text + outlines          */
+  --ink-soft: #5a4d40;    /* body copy                        */
+  --muted: #a2937f;       /* meta, captions                   */
+
+  /* hairlines */
+  --line: rgba(34, 27, 21, 0.16);
+  --line-2: rgba(34, 27, 21, 0.08);
+
+  /* brand accents, retuned to the editorial whisper */
+  --rani: #b23a66;
+  --rani-deep: #8e2b52;
+  --rani-wash: #f6e7ec;   /* faint pink ground (rarely used now) */
+  --green-2: #1d5042;
+
+  /* editorial extras introduced by this phase */
+  --p-field: #faf6ee;     /* input fill                       */
+  --p-tint-2: #efe9de;    /* summary / order-card fill        */
+  --p-green-wash: #e6efe7;/* applied-promo ground             */
+  --p-footer: #1c1610;    /* slim footer ground               */
+  --p-line-3: rgba(34, 27, 21, 0.2);
+
+  /* type — two faces, two weights */
+  --serif: var(--font-garamond), "EB Garamond", Georgia, serif;
+  --display: var(--font-garamond), "EB Garamond", Georgia, serif;
+  --sans: var(--font-hanken), "Hanken Grotesk", system-ui, sans-serif;
+
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The parchment ground reaches the page frame too. */
+.app.flow.av-flow,
+.flow.av-flow.cartbody { background: var(--bg); }
+
+/* ============ SLIM CHECKOUT HEADER ============ */
+.flow.av-flow .co-head {
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  -webkit-backdrop-filter: saturate(1.1) blur(12px);
+  backdrop-filter: saturate(1.1) blur(12px);
+  border-bottom: 1px solid var(--line-2);
+}
+.flow.av-flow .co-head .back {
+  font-family: var(--sans);
+  color: var(--ink-soft);
+  letter-spacing: 0.12em;
+}
+.flow.av-flow .co-head .back:hover { color: var(--rani); }
+.flow.av-flow .co-head .secure { color: var(--green-2); }
+.flow.av-flow .logo .mark {
+  font-family: var(--serif);
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  padding-left: 0.26em;
+  color: var(--ink);
+}
+.flow.av-flow .logo .sub { color: var(--muted); letter-spacing: 0.34em; }
+
+/* ============ PAGE TITLES ============ */
+.flow.av-flow .page-head h1 {
+  font-family: var(--serif);
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: 0.005em;
+}
+.flow.av-flow .page-head h1 em { font-style: italic; color: var(--rani); }
+.flow.av-flow .page-head .meta { color: var(--muted); letter-spacing: 0.16em; }
+
+/* ============ CART — LINE ITEMS ============ */
+.flow.av-flow .cart-list .lh .t { color: var(--muted); }
+.flow.av-flow .cart-list .lh .t b { color: var(--ink); }
+.flow.av-flow .citem .pic {
+  background: var(--bg-3);
+  border: 1px solid var(--line-2);
+  border-radius: 4px;
+}
+.flow.av-flow .citem .pic .mtm,
+.flow.av-flow .citem .pic .oos-tag {
+  background: rgba(20, 14, 9, 0.78);
+  color: var(--bg);
+  letter-spacing: 0.16em;
+}
+.flow.av-flow .citem .nm { font-family: var(--serif); color: var(--ink); }
+.flow.av-flow .citem .nm:hover { color: var(--rani); }
+.flow.av-flow .citem .ty { color: var(--muted); }
+.flow.av-flow .citem .opt {
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  color: var(--ink-soft);
+}
+.flow.av-flow .citem .opt.mtm { color: var(--rani); }
+.flow.av-flow .citem .stylenote svg { color: var(--rani); }
+.flow.av-flow .citem .row-actions button:hover { color: var(--rani); }
+.flow.av-flow .citem .price { font-family: var(--sans); color: var(--ink); }
+.flow.av-flow .citem .was { color: var(--muted); }
+.flow.av-flow .qty {
+  background: none;
+  border: 1px solid var(--p-line-3);
+  border-radius: 6px;
+}
+.flow.av-flow .qty button { color: var(--ink); }
+.flow.av-flow .qty button:disabled { color: #cbbca8; }
+.flow.av-flow .stock-note.low { color: var(--rani); }
+.flow.av-flow .stock-note.oos { color: var(--muted); }
+.flow.av-flow .cart-foot .cont:hover { color: var(--rani); }
+.flow.av-flow .cart-foot .assured svg { color: var(--green-2); }
+
+/* ============ CART — ORDER SUMMARY ============ */
+.flow.av-flow .summary {
+  background: var(--p-tint-2);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  box-shadow: none;
+}
+.flow.av-flow .summary h3 { font-family: var(--serif); font-weight: 500; color: var(--ink); }
+/* retire the gold rule → quiet hairline */
+.flow.av-flow .summary .gold-rule { background: var(--line); }
+.flow.av-flow .sum-rows .r { color: var(--ink-soft); }
+.flow.av-flow .sum-rows .r .v { color: var(--ink); }
+.flow.av-flow .sum-rows .r.disc .v { color: var(--green-2); }
+.flow.av-flow .sum-rows .free { color: var(--green-2); }
+.flow.av-flow .sum-rows .muted { color: var(--muted); }
+.flow.av-flow .sum-total .l { font-family: var(--serif); color: var(--ink); }
+.flow.av-flow .sum-total .l span { font-family: var(--sans); color: var(--muted); }
+.flow.av-flow .sum-total .amt { font-family: var(--sans); font-weight: 500; color: var(--ink); }
+.flow.av-flow .sum-trust .ti svg { color: var(--green-2); }
+.flow.av-flow .sum-pay span { border: 1px solid var(--line); color: var(--muted); border-radius: 0; }
+
+/* promo */
+.flow.av-flow .promo input {
+  background: var(--p-field);
+  border: 1px solid var(--p-line-3);
+  border-radius: 7px;
+  font-family: var(--sans);
+  color: var(--ink);
+}
+.flow.av-flow .promo input:focus { border-color: var(--ink); }
+.flow.av-flow .promo .apply {
+  border: 1px solid var(--ink);
+  background: none;
+  color: var(--ink);
+  border-radius: 7px;
+  letter-spacing: 0.06em;
+}
+.flow.av-flow .promo .apply:hover { background: var(--ink); color: var(--bg); }
+.flow.av-flow .promo .applied {
+  background: var(--p-green-wash);
+  border: 1px solid var(--green-2);
+  border-radius: 8px;
+}
+.flow.av-flow .promo .applied .code { color: var(--green-2); }
+.flow.av-flow .promo .applied .rm { color: var(--ink-soft); }
+.flow.av-flow .msg.err { color: var(--rani); }
+.flow.av-flow .msg.err svg { color: var(--rani); }
+
+/* ---- the calm INK action (handoff: no rani buttons) ---- */
+.flow.av-flow .checkout-cta {
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 7px;
+  height: 54px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  box-shadow: none;
+}
+.flow.av-flow .checkout-cta:hover {
+  background: #100c08;
+  transform: none;
+  box-shadow: none;
+}
+.flow.av-flow .checkout-cta:disabled { background: #cbbca8; }
+
+/* ============ EMPTY BAG ============ */
+.flow.av-flow .empty .sadbag .bag { color: var(--muted); }
+.flow.av-flow .empty .sadbag .eye { color: var(--ink); }
+.flow.av-flow .empty .sadbag .tear { background: var(--rani); }
+.flow.av-flow .empty h2 { font-family: var(--serif); color: var(--ink); }
+.flow.av-flow .empty p { color: var(--ink-soft); }
+.flow.av-flow .empty .cta {
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 7px;
+  letter-spacing: 0.16em;
+}
+.flow.av-flow .empty .cta:hover { background: #100c08; transform: none; box-shadow: none; }
+
+/* ============ CHECKOUT — PROGRESS STEPS ============ */
+.flow.av-flow .co-steps .cn {
+  font-family: var(--serif);
+  border: 1.5px solid var(--p-line-3);
+  background: none;
+  color: var(--muted);
+}
+.flow.av-flow .co-steps .cs.on .cn,
+.flow.av-flow .co-steps .cs.done .cn {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+  box-shadow: none;
+}
+.flow.av-flow .co-steps .cs.on .cl { color: var(--ink); }
+.flow.av-flow .co-steps .cs .cl { color: var(--muted); letter-spacing: 0.1em; }
+.flow.av-flow .co-steps .cbar { background: var(--line); }
+.flow.av-flow .co-steps .cbar.fill { background: var(--ink); }
+
+/* ============ CHECKOUT — PANELS & FIELDS ============ */
+.flow.av-flow .panel {
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+}
+.flow.av-flow .panel.active { border-color: var(--line); box-shadow: none; }
+.flow.av-flow .panel .ph .pn {
+  font-family: var(--serif);
+  border: 1px solid var(--p-line-3);
+  color: var(--ink-soft);
+}
+.flow.av-flow .panel .ph .pt { font-family: var(--serif); color: var(--ink); }
+.flow.av-flow .prefill-note {
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  color: var(--ink-soft);
+  border-radius: 8px;
+}
+.flow.av-flow .prefill-note svg { color: var(--green-2); }
+.flow.av-flow .addr-picker-head { color: var(--ink-soft); letter-spacing: 0.16em; }
+.flow.av-flow .fld label { color: var(--ink-soft); letter-spacing: 0.04em; }
+.flow.av-flow .fld .req { color: var(--rani); }
+.flow.av-flow .fld input,
+.flow.av-flow .fld select {
+  background: var(--p-field);
+  border: 1px solid var(--p-line-3);
+  border-radius: 7px;
+  font-family: var(--sans);
+  color: var(--ink);
+  height: 50px;
+}
+.flow.av-flow .fld input:focus,
+.flow.av-flow .fld select:focus { border-color: var(--ink); box-shadow: none; }
+.flow.av-flow .fld input[aria-invalid="true"],
+.flow.av-flow .fld select[aria-invalid="true"] { border-color: var(--rani); box-shadow: none; }
+
+/* ============ CHECKOUT — SELECTABLE OPTIONS ============
+   delivery / address / payment radio cards: handoff selects with an
+   ink hairline + warm fill, not the rani-wash of the cool design. */
+.flow.av-flow .dopt {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.flow.av-flow .dopt:hover { border-color: var(--p-line-3); }
+.flow.av-flow .dopt.on { border-color: var(--ink); background: var(--bg-2); }
+.flow.av-flow .dopt .radio { border: 1px solid var(--p-line-3); }
+.flow.av-flow .dopt.on .radio { border-color: var(--ink); }
+.flow.av-flow .dopt.on .radio::after { background: var(--ink); }
+.flow.av-flow .dopt .di .dt { font-family: var(--serif); font-weight: 500; color: var(--ink); }
+.flow.av-flow .dopt .di .ds { color: var(--muted); }
+.flow.av-flow .dopt .dp { color: var(--green-2); }
+
+.flow.av-flow .pm {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.flow.av-flow .pm.on { border-color: var(--ink); }
+.flow.av-flow .pm.on .pm-head { background: var(--bg-2); }
+.flow.av-flow .pm .radio { border: 1px solid var(--p-line-3); }
+.flow.av-flow .pm.on .radio { border-color: var(--ink); }
+.flow.av-flow .pm.on .radio::after { background: var(--ink); }
+.flow.av-flow .pm .pm-name { font-family: var(--serif); font-weight: 500; color: var(--ink); }
+.flow.av-flow .pm .pm-desc { color: var(--muted); }
+.flow.av-flow .pm .pm-tags span { border: 1px solid var(--line); color: var(--muted); border-radius: 0; }
+.flow.av-flow .pm .upi-apps .ua {
+  border: 1px solid var(--p-line-3);
+  color: var(--ink-soft);
+  border-radius: 7px;
+}
+.flow.av-flow .pm .upi-apps .ua.on { border-color: var(--ink); background: var(--bg-2); color: var(--ink); }
+.flow.av-flow .pm .cod-note {
+  background: var(--bg-2);
+  color: var(--ink-soft);
+  border-radius: 8px;
+}
+.flow.av-flow .pm .cod-note svg { color: var(--rani); }
+
+/* ---- place-order / back / terms ---- */
+.flow.av-flow .place-order {
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 7px;
+  height: 54px;
+  letter-spacing: 0.04em;
+  box-shadow: none;
+}
+.flow.av-flow .place-order:hover { background: #100c08; transform: none; box-shadow: none; }
+.flow.av-flow .place-order:disabled { background: #cbbca8; }
+.flow.av-flow .co-back {
+  border: 1px solid var(--ink);
+  border-radius: 7px;
+  color: var(--ink);
+  background: none;
+}
+.flow.av-flow .co-back:hover { background: var(--ink); color: var(--bg); }
+.flow.av-flow .placeterms { color: var(--muted); }
+
+/* ============ CHECKOUT — ORDER SUMMARY (sidebar) ============ */
+.flow.av-flow .co-summary .co-mini {
+  background: var(--p-tint-2);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  box-shadow: none;
+}
+.flow.av-flow .co-summary h3 { font-family: var(--serif); font-weight: 500; color: var(--ink); }
+.flow.av-flow .co-summary .mt { background: var(--bg-3); }
+.flow.av-flow .co-summary .mt .q { background: var(--ink); color: var(--bg); }
+.flow.av-flow .co-summary .mn { font-family: var(--serif); color: var(--ink); }
+.flow.av-flow .co-summary .mv { color: var(--muted); }
+.flow.av-flow .co-summary .mp { font-family: var(--sans); color: var(--ink); }
+.flow.av-flow .co-summary .mrows .r { color: var(--ink-soft); }
+.flow.av-flow .co-summary .mrows .r .v { color: var(--ink); }
+.flow.av-flow .co-summary .mrows .r.disc .v { color: var(--green-2); }
+.flow.av-flow .co-summary .mtotal .l { font-family: var(--serif); color: var(--ink); }
+.flow.av-flow .co-summary .mtotal .amt { font-family: var(--sans); font-weight: 500; color: var(--ink); }
+.flow.av-flow .co-assure .a { color: var(--ink-soft); }
+.flow.av-flow .co-assure .a b { color: var(--ink); }
+.flow.av-flow .co-assure .a svg { color: var(--rani); }
+
+/* ============ CONFIRMATION ============ */
+.flow.av-flow .confirm .seal {
+  background: var(--green-2);
+  color: var(--bg);
+  box-shadow: none;
+}
+.flow.av-flow .confirm .hero h1 { font-family: var(--serif); font-weight: 500; color: var(--ink); }
+.flow.av-flow .confirm .hero h1 em { font-style: italic; color: var(--rani); }
+.flow.av-flow .confirm .hero .lead { font-family: var(--serif); color: var(--ink-soft); }
+.flow.av-flow .confirm .hero .ordno { color: var(--muted); }
+.flow.av-flow .confirm .hero .ordno b { color: var(--ink); }
+
+.flow.av-flow .conf-card {
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  box-shadow: none;
+}
+.flow.av-flow .conf-card h3 { font-family: var(--serif); font-weight: 500; color: var(--ink); }
+.flow.av-flow .conf-card .csub { color: var(--muted); }
+/* timeline */
+.flow.av-flow .tl .step .marker .dot { border-color: var(--p-line-3); background: var(--surface); }
+.flow.av-flow .tl .step.cur .marker .dot { background: var(--ink); border-color: var(--ink); }
+.flow.av-flow .tl .step .marker .vline { background: var(--line); }
+.flow.av-flow .tl .step .tt { font-family: var(--serif); color: var(--ink); }
+.flow.av-flow .tl .step .td { color: var(--ink-soft); }
+.flow.av-flow .tl .step .when { color: var(--muted); letter-spacing: 0.04em; }
+/* stylist + ship-to cards */
+.flow.av-flow .conf-card.stylist { background: var(--bg-2); }
+.flow.av-flow .conf-card.stylist .si svg { color: var(--rani); }
+.flow.av-flow .conf-card.stylist .st { font-family: var(--serif); color: var(--ink); }
+.flow.av-flow .conf-card.stylist .sd { color: var(--ink-soft); }
+.flow.av-flow .conf-card.ship-to .lbl { color: var(--ink-soft); letter-spacing: 0.16em; }
+.flow.av-flow .conf-card.ship-to .addr { color: var(--ink-soft); }
+.flow.av-flow .conf-card.ship-to .addr b { color: var(--ink); }
+.flow.av-flow .conf-items .ci .t { background: var(--bg-3); }
+.flow.av-flow .conf-items .ci .cn { font-family: var(--serif); color: var(--ink); }
+.flow.av-flow .conf-items .ci .cp { font-family: var(--sans); color: var(--ink); }
+.flow.av-flow .conf-items .ci .cmeta { color: var(--muted); }
+/* confirmation CTAs */
+.flow.av-flow .conf-cta .pri {
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 7px;
+  letter-spacing: 0.04em;
+  box-shadow: none;
+}
+.flow.av-flow .conf-cta .pri:hover { background: #100c08; transform: none; box-shadow: none; }
+.flow.av-flow .conf-cta .sec {
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  border-radius: 7px;
+}
+.flow.av-flow .conf-cta .sec:hover { background: var(--ink); color: var(--bg); }
+
+/* ============ SLIM FOOTER ============ */
+.flow.av-flow .pfoot {
+  background: var(--p-footer);
+  color: rgba(244, 239, 230, 0.5);
+}
+.flow.av-flow .pfoot .mark {
+  font-family: var(--serif);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  padding-left: 0.24em;
+  color: var(--bg);
+}
+.flow.av-flow .pfoot .pay span { color: rgba(244, 239, 230, 0.5); }
+
+/* ============ MOTION — flatten the cool design's hover-lift ============ */
+.flow.av-flow .ctl-card:hover { transform: none; box-shadow: none; }
+@media (prefers-reduced-motion: reduce) {
+  .flow.av-flow * { transition: none !important; }
+}

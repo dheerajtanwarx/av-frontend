@@ -716,14 +716,22 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                     </div>
                   </div>
                 )}
-                {order.trackingNumber && (
+                {order.trackingNumber ? (
                   <dl style={{ margin: 0 }}>
                     <div className="order-tracking-row">
                       <dt>Tracking No.</dt>
                       <dd>{order.trackingNumber}</dd>
                     </div>
                   </dl>
-                )}
+                ) : ["PLACED", "CONFIRMED", "PROCESSING"].includes(order.status) ? (
+                  <p style={{ margin: 0, fontFamily: "var(--font-jost)", fontSize: 12, color: "var(--muted)" }}>
+                    You&apos;ll get a tracking number here once your order ships.
+                  </p>
+                ) : order.status === "SHIPPED" ? (
+                  <p style={{ margin: 0, fontFamily: "var(--font-jost)", fontSize: 12, color: "var(--muted)" }}>
+                    Your order is on its way — the tracking number will appear here shortly.
+                  </p>
+                ) : null}
                 <dl style={{ margin: 0 }}>
                   <div className="order-tracking-row">
                     <dt>Shipping</dt>

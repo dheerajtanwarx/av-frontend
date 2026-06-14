@@ -1,0 +1,325 @@
+/* Hallmark · macrostructure: Catalogue (browse grid + view-density control) · tone: luxury-editorial · anchor hue: rani 350°
+ * pre-emit critique: P5 H4 E5 S5 R5 V4
+ * redesign (Phase 4) · system-managed: shares the AV editorial DNA from Phases 1–3 (.av-lp, .av-pdp, .flow.av-flow)
+ * deliberate deviation · gate 38a: EB Garamond italic emphasis kept on headings — established house signature
+ */
+
+/* ============================================================
+   AV CREATION — CATEGORY PAGE REDESIGN (Phase 4)
+   ------------------------------------------------------------
+   The fourth sibling of the storefront redesign. The category
+   page lives under `.av` (the original landing CSS) and never
+   received the Phase-1 editorial card treatment — so this phase
+   brings the whole browse view into the system: a calm hero, a
+   restrained control bar, editorial product cards matching the
+   landing's `.lp-prod` recipe, and the handoff's signature
+   move — a one-tap VIEW-DENSITY control that retiles the grid
+   1-up (editorial) / 2-up (house default) / 3-up (dense scan),
+   the cards adapting purely in CSS.
+
+   Scoped to `.cat-page.av-cat`, layered over landing.css. The
+   shared ProductCard markup is untouched; density is driven by
+   the `data-density` attribute on the grid.
+   ============================================================ */
+
+.cat-page.av-cat {
+  /* grounds */
+  --p-bg: #f9f7f3;
+  --p-surface: #fffdf8;
+  --p-img: #e7ddcd;
+
+  /* ink */
+  --p-ink: #221b15;
+  --p-soft: #5a4d40;
+  --p-muted: #a2937f;
+  --p-muted-2: #8a7c6b;
+
+  /* the rani whisper */
+  --p-rani: #b23a66;
+
+  /* hairlines */
+  --p-line: rgba(34, 27, 21, 0.1);
+  --p-line-2: rgba(34, 27, 21, 0.16);
+  --p-line-3: rgba(34, 27, 21, 0.22);
+
+  /* type */
+  --serif-ed: var(--font-garamond), "EB Garamond", Georgia, serif;
+  --ui-ed: var(--font-hanken), "Hanken Grotesk", system-ui, sans-serif;
+
+  background: var(--p-bg);
+  font-family: var(--ui-ed);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============ CATEGORY HERO ============ */
+.av .cat-page.av-cat .cat-hero {
+  background: var(--p-bg);
+  border-bottom: 1px solid var(--p-line);
+  padding: 52px 0 40px;
+}
+.av .cat-page.av-cat .cat-breadcrumb {
+  font-family: var(--ui-ed);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--p-muted);
+}
+.av .cat-page.av-cat .cat-breadcrumb a:hover { color: var(--p-rani); }
+.av .cat-page.av-cat .cat-breadcrumb .sep { color: #cbbca8; }
+.av .cat-page.av-cat .cat-hero h1 {
+  font-family: var(--serif-ed);
+  font-weight: 500;
+  color: var(--p-ink);
+  letter-spacing: 0.005em;
+}
+.av .cat-page.av-cat .cat-hero h1 em { font-style: italic; color: var(--p-rani); }
+/* retire the gold subtitle → quiet rani eyebrow */
+.av .cat-page.av-cat .cat-subtitle {
+  font-family: var(--ui-ed);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--p-rani);
+  margin-top: 12px;
+}
+
+/* ============ CONTROL BAR ============ */
+.av .cat-page.av-cat .cat-bar {
+  border-bottom: 1px solid var(--p-line);
+}
+.av .cat-page.av-cat .cat-bar-count {
+  font-family: var(--ui-ed);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--p-muted);
+}
+.av .cat-page.av-cat .cat-bar-controls {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+/* ---- the view-density control (handoff signature) ---- */
+.av .cat-page.av-cat .cat-view {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--p-line-3);
+  border-radius: 9px;
+  overflow: hidden;
+}
+.av .cat-page.av-cat .cat-view-seg {
+  width: 42px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-right: 1px solid var(--p-line-2);
+  color: var(--p-soft);
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.av .cat-page.av-cat .cat-view-seg:last-child { border-right: none; }
+.av .cat-page.av-cat .cat-view-seg:hover { color: var(--p-ink); }
+.av .cat-page.av-cat .cat-view-seg.on { background: var(--p-ink); color: var(--p-bg); }
+.av .cat-page.av-cat .cat-view-seg:focus-visible {
+  outline: 2px solid var(--p-rani);
+  outline-offset: -2px;
+}
+
+/* ============ THE GRID — density-driven retiling ============
+   `minmax(0, 1fr)` on every track so portrait images never blow
+   the column out (responsive gate 50). */
+.av .cat-page.av-cat .cat-grid {
+  display: grid;
+  margin-bottom: 0;
+}
+.av .cat-page.av-cat .cat-grid[data-density="1"] {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 40px;
+  max-width: 520px;
+}
+.av .cat-page.av-cat .cat-grid[data-density="2"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 34px 18px;
+}
+.av .cat-page.av-cat .cat-grid[data-density="3"] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px 12px;
+}
+
+/* ============ PRODUCT CARD — editorial recipe (matches .lp-prod) ============ */
+.av .cat-page.av-cat .prod { display: flex; flex-direction: column; }
+.av .cat-page.av-cat .prod .imgwrap {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: var(--p-img);
+  overflow: hidden;
+  border-radius: 0;
+  box-shadow: none;
+}
+.av .cat-page.av-cat .prod .imgwrap .ph { display: block; width: 100%; height: 100%; }
+.av .cat-page.av-cat .prod .imgwrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s var(--ease-out, ease), opacity 0.5s ease;
+}
+.av .cat-page.av-cat .prod .imgwrap:hover img.main { transform: scale(1.04); }
+
+/* wishlist heart — white over the image, rani when on */
+.av .cat-page.av-cat .prod .wish {
+  position: absolute;
+  top: 10px;
+  right: 6px;
+  width: 46px;
+  height: 46px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #fff;
+  cursor: pointer;
+}
+.av .cat-page.av-cat .prod .wish svg { filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35)); }
+.av .cat-page.av-cat .prod .wish.on svg { fill: var(--p-rani); stroke: var(--p-rani); }
+
+/* flag — editorial tag, retire the old sale styling */
+.av .cat-page.av-cat .prod .flag {
+  top: 12px;
+  left: 12px;
+  font-family: var(--ui-ed);
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(34, 27, 21, 0.78);
+  border-radius: 0;
+}
+.av .cat-page.av-cat .prod .flag.soldout { background: rgba(34, 27, 21, 0.9); }
+
+/* quick add — a single quiet outline action revealed on the image,
+   matching the handoff's "Add to bag". Buy-now steps back here. */
+.av .cat-page.av-cat .prod .card-btns {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.25s var(--ease-out, ease), transform 0.25s var(--ease-out, ease);
+}
+.av .cat-page.av-cat .prod .imgwrap:hover .card-btns,
+.av .cat-page.av-cat .prod .imgwrap:focus-within .card-btns { opacity: 1; transform: none; }
+.av .cat-page.av-cat .prod .card-btns .buynow { display: none; }
+.av .cat-page.av-cat .prod .card-btns .addcart {
+  width: 100%;
+  height: 44px;
+  background: rgba(249, 247, 243, 0.95);
+  border: 1px solid var(--p-ink);
+  color: var(--p-ink);
+  font-family: var(--ui-ed);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  border-radius: 6px;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.av .cat-page.av-cat .prod .card-btns .addcart:hover { background: var(--p-ink); color: var(--p-bg); }
+.av .cat-page.av-cat .prod .card-btns .addcart:disabled { opacity: 0.6; }
+/* touch devices have no hover — keep the action reachable */
+@media (hover: none) {
+  .av .cat-page.av-cat .prod .card-btns { opacity: 1; transform: none; }
+}
+
+/* card body */
+.av .cat-page.av-cat .prod .pname {
+  font-family: var(--serif-ed);
+  font-size: 16px;
+  line-height: 1.2;
+  color: var(--p-ink);
+  margin-top: 12px;
+}
+.av .cat-page.av-cat .prod .pname:hover { color: var(--p-rani); }
+.av .cat-page.av-cat .prod .ptype {
+  font-family: var(--ui-ed);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--p-muted);
+  margin-top: 5px;
+}
+.av .cat-page.av-cat .prod .pmeta {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin-top: 8px;
+}
+.av .cat-page.av-cat .prod .pmeta .price { font-family: var(--ui-ed); font-size: 13px; color: var(--p-ink); }
+.av .cat-page.av-cat .prod .pmeta .was {
+  font-family: var(--ui-ed);
+  font-size: 11px;
+  color: var(--p-muted);
+  text-decoration: line-through;
+}
+.av .cat-page.av-cat .prod .pmeta .stars {
+  margin-left: auto;
+  font-family: var(--ui-ed);
+  font-size: 10.5px;
+  color: var(--p-muted);
+}
+.av .cat-page.av-cat .prod .pmeta .stars .rstar { color: var(--p-muted); }
+.av .cat-page.av-cat .prod .pstock {
+  font-family: var(--ui-ed);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--p-rani);
+  margin-top: 6px;
+}
+
+/* ---- 1-up: the editorial piece — larger title ---- */
+.av .cat-page.av-cat .cat-grid[data-density="1"] .prod .pname { font-size: 22px; }
+.av .cat-page.av-cat .cat-grid[data-density="1"] .prod .pmeta .price { font-size: 15px; }
+
+/* ---- 3-up: dense scan — fabric line + quick-add step back ---- */
+.av .cat-page.av-cat .cat-grid[data-density="3"] .prod .ptype { display: none; }
+.av .cat-page.av-cat .cat-grid[data-density="3"] .prod .pname { font-size: 12.5px; margin-top: 9px; }
+.av .cat-page.av-cat .cat-grid[data-density="3"] .prod .pmeta { margin-top: 6px; }
+.av .cat-page.av-cat .cat-grid[data-density="3"] .prod .pmeta .price { font-size: 11.5px; }
+.av .cat-page.av-cat .cat-grid[data-density="3"] .prod .pmeta .was { font-size: 10px; }
+
+/* ============ END-OF-LIST NOTE ============ */
+.av .cat-page.av-cat .cat-endnote {
+  text-align: center;
+  font-family: var(--serif-ed);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--p-muted-2);
+  padding: 30px 0 8px;
+}
+
+/* ============ EMPTY STATE ============ */
+.av .cat-page.av-cat .cat-empty p {
+  font-family: var(--serif-ed);
+  font-size: 17px;
+  color: var(--p-soft);
+}
+
+/* ============ RESPONSIVE ============
+   Phone (the resolved 390px direction): 1-up and 2-up read well;
+   3-up stays a genuine dense scan. Cards keep min-width: 0 so long
+   names wrap inside the track instead of forcing overflow. */
+.av .cat-page.av-cat .prod { min-width: 0; }
+@media (max-width: 560px) {
+  .av .cat-page.av-cat .cat-grid[data-density="1"] { max-width: none; gap: 30px; }
+  .av .cat-page.av-cat .cat-grid[data-density="2"] { gap: 26px 12px; }
+  .av .cat-page.av-cat .cat-grid[data-density="3"] { gap: 18px 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .av .cat-page.av-cat .prod .imgwrap img,
+  .av .cat-page.av-cat .prod .card-btns { transition: none; }
+}

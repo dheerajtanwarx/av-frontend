@@ -1,0 +1,207 @@
+/* Hallmark · macrostructure: Account/Settings · tone: luxury-editorial · anchor hue: rani 350°
+ * pre-emit critique: P5 H4 E5 S4 R5 V4
+ * redesign (Phase 5b) · system-managed: shares the AV editorial DNA from Phases 1–4
+ * deliberate deviation · gate 38a: EB Garamond italic emphasis reserved for body; headings roman serif here
+ */
+
+/* ============================================================
+   AV CREATION — PROFILE PAGE REDESIGN (Phase 5b)
+   ------------------------------------------------------------
+   The handoff's profile is a calm account home — a generous
+   avatar, a serif greeting, hairline-divided rows. The existing
+   page is a richer, editable account (personal details, account
+   summary, address book) — all of which we KEEP. This is a pure
+   reskin: re-point the inherited tokens to parchment/ink/rani,
+   override the few hardcoded values (the gradient ground, gold
+   accents, heavy shadows), and lend the avatar + panels the
+   handoff's calm editorial voice.
+
+   Scoped to `.av .profile-page.av-profile`, layered over
+   profile.css. Markup and behaviour are untouched.
+   ============================================================ */
+
+.av .profile-page.av-profile {
+  /* re-point inherited tokens → editorial system */
+  --bg: #f9f7f3;
+  --bg-2: #efe7d8;
+  --surface: #fffdf8;
+  --ink: #221b15;
+  --ink-soft: #5a4d40;
+  --muted: #a2937f;
+  --line: rgba(34, 27, 21, 0.1);
+  --line-2: rgba(34, 27, 21, 0.16);
+  --rani: #b23a66;
+  --green-2: #1d5042;
+  --serif: var(--font-garamond), "EB Garamond", Georgia, serif;
+  --display: var(--font-garamond), "EB Garamond", Georgia, serif;
+  --sans: var(--font-hanken), "Hanken Grotesk", system-ui, sans-serif;
+
+  /* editorial extras */
+  --p-field: #faf6ee;
+  --p-img: #e7ddcd;
+  --p-line-3: rgba(34, 27, 21, 0.22);
+
+  /* override the inherited parchment-gradient ground → flat parchment */
+  background: var(--bg);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============ HERO — avatar + greeting ============ */
+.av .profile-page.av-profile .profile-hero {
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  box-shadow: none;
+}
+.av .profile-page.av-profile .profile-avatar {
+  background: var(--p-img);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-weight: 500;
+  box-shadow: none;
+}
+.av .profile-page.av-profile .profile-kicker {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--rani);
+}
+.av .profile-page.av-profile .profile-hero h1 {
+  font-family: var(--serif);
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: 0.005em;
+}
+.av .profile-page.av-profile .profile-hero p:last-of-type { color: var(--muted); }
+.av .profile-page.av-profile .profile-hero button {
+  background: none;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  border-radius: 7px;
+  font-family: var(--sans);
+  letter-spacing: 0.04em;
+  box-shadow: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.av .profile-page.av-profile .profile-hero button:hover { background: var(--ink); color: var(--bg); }
+
+/* ============ PANELS ============ */
+.av .profile-page.av-profile .profile-panel {
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  box-shadow: none;
+}
+.av .profile-page.av-profile .profile-panel-head { border-bottom: 1px solid var(--line); }
+.av .profile-page.av-profile .profile-panel-head span {
+  font-family: var(--serif);
+  font-weight: 500;
+  color: var(--ink);
+}
+.av .profile-page.av-profile .profile-edit-btn {
+  font-family: var(--sans);
+  color: var(--rani);
+  letter-spacing: 0.04em;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.av .profile-page.av-profile .profile-edit-btn:hover { color: var(--rani-deep, #8e2b52); }
+
+/* read-only detail list */
+.av .profile-page.av-profile .profile-details dt {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.av .profile-page.av-profile .profile-details dd { font-family: var(--serif); font-size: 17px; color: var(--ink); }
+
+/* ============ FORMS ============ */
+.av .profile-page.av-profile .profile-field span { font-family: var(--sans); color: var(--ink-soft); letter-spacing: 0.04em; }
+.av .profile-page.av-profile .profile-field input,
+.av .profile-page.av-profile .profile-field select,
+.av .profile-page.av-profile .profile-phone {
+  background: var(--p-field);
+  border: 1px solid var(--p-line-3);
+  border-radius: 7px;
+  font-family: var(--sans);
+  color: var(--ink);
+}
+.av .profile-page.av-profile .profile-field input:focus,
+.av .profile-page.av-profile .profile-field select:focus,
+.av .profile-page.av-profile .profile-phone:focus-within { border-color: var(--ink); box-shadow: none; outline: none; }
+.av .profile-page.av-profile .profile-field input:disabled { color: var(--muted); }
+.av .profile-page.av-profile .profile-cc { color: var(--ink-soft); font-family: var(--sans); }
+.av .profile-page.av-profile .profile-form-error { color: var(--rani); font-family: var(--sans); }
+
+.av .profile-page.av-profile .profile-save {
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  border-radius: 7px;
+  font-family: var(--sans);
+  letter-spacing: 0.04em;
+  box-shadow: none;
+  transition: background 0.2s ease;
+}
+.av .profile-page.av-profile .profile-save:hover { background: #100c08; }
+.av .profile-page.av-profile .profile-save:disabled { background: #cbbca8; }
+.av .profile-page.av-profile .profile-cancel {
+  background: none;
+  border: 1px solid var(--p-line-3);
+  color: var(--ink-soft);
+  border-radius: 7px;
+  font-family: var(--sans);
+}
+.av .profile-page.av-profile .profile-cancel:hover { border-color: var(--ink); color: var(--ink); }
+
+/* ============ ADDRESS BOOK ============ */
+.av .profile-page.av-profile .address-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  box-shadow: none;
+}
+.av .profile-page.av-profile .address-card.is-default { border-color: var(--ink); }
+.av .profile-page.av-profile .address-default-badge {
+  background: var(--ink);
+  color: var(--bg);
+  font-family: var(--sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.av .profile-page.av-profile .address-card-name { font-family: var(--serif); font-size: 17px; color: var(--ink); }
+.av .profile-page.av-profile .address-card-lines { font-family: var(--sans); color: var(--ink-soft); }
+.av .profile-page.av-profile .address-card-phone { font-family: var(--sans); color: var(--muted); }
+.av .profile-page.av-profile .address-actions button {
+  font-family: var(--sans);
+  color: var(--ink-soft);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.av .profile-page.av-profile .address-actions button:hover { color: var(--rani); }
+.av .profile-page.av-profile .address-actions .address-delete:hover { color: var(--rani); }
+.av .profile-page.av-profile .address-default-check span { font-family: var(--sans); color: var(--ink-soft); }
+.av .profile-page.av-profile .address-empty { font-family: var(--serif); font-style: italic; color: var(--muted); }
+
+/* ============ STATES ============ */
+.av .profile-page.av-profile .profile-loading { font-family: var(--serif); font-style: italic; color: var(--muted); }
+.av .profile-page.av-profile .profile-empty h1 { font-family: var(--serif); font-weight: 500; color: var(--ink); }
+.av .profile-page.av-profile .profile-empty p { font-family: var(--serif); color: var(--ink-soft); }
+.av .profile-page.av-profile .profile-empty a {
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 7px;
+  font-family: var(--sans);
+  letter-spacing: 0.04em;
+}
+.av .profile-page.av-profile .profile-empty a:hover { background: #100c08; }
+
+@media (prefers-reduced-motion: reduce) {
+  .av .profile-page.av-profile * { transition: none !important; }
+}

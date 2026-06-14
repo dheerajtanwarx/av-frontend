@@ -4,6 +4,8 @@ import { use, useEffect, useState } from "react";
 import {
   fetchAdminOrder,
   updateAdminOrderStatus,
+  updateAdminOrderTracking,
+  downloadAdminPackingSlip,
   ApiError,
   ADMIN_STATUS_FLOW,
   type AdminOrderDetail,
@@ -64,17 +66,23 @@ function StatusWorkflow({
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [tracking, setTracking] = useState("");
 
   const next = nextStatus(order.status);
   const currentRank = STATUS_RANK[order.status] ?? -1;
   const isTerminal = TERMINAL.includes(order.status);
+  // The move to SHIPPED is the dispatch step — offer to attach the courier
+  // tracking number in the same action (optional; it can be added later).
+  const isShipStep = next === "SHIPPED";
 
   async function advance() {
     if (!next) return;
     setBusy(true);
     setError("");
     try {
-      onUpdated(await updateAdminOrderStatus(order.id, next));
+      const tn = isShipStep && tracking.trim() ? tracking.trim() : undefined;
+      onUpdated(await updateAdminOrderStatus(order.id, next, tn));
+      setTracking("");
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Could not update status.");
     } finally {
@@ -112,6 +120,20 @@ function StatusWorkflow({
 
         {error && <p className="admin-error" style={{ marginTop: 12 }}>{error}</p>}
 
+        {isShipStep && (
+          <label className="admin-field" style={{ marginTop: 14, display: "block" }}>
+            <span className="admin-field-label">Courier tracking no. (optional)</span>
+            <input
+              className="admin-input"
+              type="text"
+              placeholder="Add now or later"
+              value={tracking}
+              onChange={(e) => setTracking(e.target.value)}
+              disabled={busy}
+            />
+          </label>
+        )}
+
         {next && (
           <button
             className="admin-btn approve admin-status-cta"
@@ -121,6 +143,125 @@ function StatusWorkflow({
             {busy ? "Updating…" : `Mark as ${next}`}
           </button>
         )}
+      </div>
+    </div>
+  );
+}
+
+/* Pack/dispatch QR + printable packing slip. The QR encodes only the order
+   number (AVC-xxxxxx) — scan it back in on the /admin/scan page to open this
+   order. It carries no token, so it grants no access on its own. */
+function QrPanel({ order }: { order: AdminOrderDetail }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  async function download() {
+    setBusy(true);
+    setError("");
+    try {
+      await downloadAdminPackingSlip(order.id, order.no);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Could not download the slip.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="admin-side-panel">
+      <div className="admin-side-head">Pack / dispatch QR</div>
+      <div className="admin-side-body" style={{ textAlign: "center" }}>
+        {order.qr ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={order.qr}
+            alt={`QR for ${order.no}`}
+            width={160}
+            height={160}
+            style={{ width: 160, height: 160, margin: "0 auto", display: "block" }}
+          />
+        ) : (
+          <p className="admin-cell-sub">QR unavailable.</p>
+        )}
+        <p className="admin-cell-sub" style={{ marginTop: 8 }}>
+          Encodes <strong>{order.no}</strong> · scan on the Scan page to open this order.
+        </p>
+        {error && <p className="admin-error" style={{ marginTop: 8 }}>{error}</p>}
+        <button
+          className="admin-btn admin-status-cta"
+          disabled={busy}
+          onClick={download}
+          style={{ marginTop: 12 }}
+        >
+          {busy ? "Preparing…" : "Print packing slip (PDF)"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* Standalone courier tracking editor — set / update / clear the tracking number
+   any time after dispatch (when the courier hands it over). */
+function TrackingPanel({
+  order,
+  onUpdated,
+}: {
+  order: AdminOrderDetail;
+  onUpdated: (o: AdminOrderDetail) => void;
+}) {
+  const [value, setValue] = useState(order.trackingNumber ?? "");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  const dirty = value.trim() !== (order.trackingNumber ?? "");
+
+  async function save() {
+    setBusy(true);
+    setError("");
+    setSaved(false);
+    try {
+      onUpdated(await updateAdminOrderTracking(order.id, value.trim()));
+      setSaved(true);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Could not save tracking number.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="admin-side-panel">
+      <div className="admin-side-head">Courier tracking</div>
+      <div className="admin-side-body">
+        <label className="admin-field" style={{ display: "block" }}>
+          <span className="admin-field-label">Tracking number</span>
+          <input
+            className="admin-input"
+            type="text"
+            placeholder="Add when the courier provides it"
+            value={value}
+            onChange={(e) => {
+              setValue(e.target.value);
+              setSaved(false);
+            }}
+            disabled={busy}
+          />
+        </label>
+        {error && <p className="admin-error" style={{ marginTop: 8 }}>{error}</p>}
+        {saved && !dirty && (
+          <p className="admin-cell-sub" style={{ marginTop: 8, color: "#2e7d52" }}>
+            Saved — the customer can now see it on their order.
+          </p>
+        )}
+        <button
+          className="admin-btn approve admin-status-cta"
+          disabled={busy || !dirty}
+          onClick={save}
+          style={{ marginTop: 12 }}
+        >
+          {busy ? "Saving…" : order.trackingNumber ? "Update tracking" : "Save tracking"}
+        </button>
       </div>
     </div>
   );
@@ -266,6 +407,10 @@ export default function AdminOrderDetailPage({
         {/* Right: status + customer + address + payment */}
         <aside className="admin-order-side">
           <StatusWorkflow order={order} onUpdated={setOrder} />
+
+          <QrPanel order={order} />
+
+          <TrackingPanel order={order} onUpdated={setOrder} />
 
           <div className="admin-side-panel">
             <div className="admin-side-head">Customer</div>

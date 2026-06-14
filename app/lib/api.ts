@@ -573,6 +573,8 @@ export type AdminOrderDetail = MyOrder & {
     email: string | null;
     phone: string | null;
   };
+  /** Pack/dispatch QR for the order as a PNG data URL (detail endpoint only). */
+  qr?: string;
 };
 
 export function fetchAdminOrders(params: {
@@ -596,11 +598,37 @@ export function fetchAdminOrder(id: number): Promise<AdminOrderDetail> {
 
 export function updateAdminOrderStatus(
   id: number,
-  status: OrderStatus
+  status: OrderStatus,
+  /** Optional courier tracking number to record alongside the transition
+      (typically supplied when marking an order SHIPPED). */
+  trackingNumber?: string
 ): Promise<AdminOrderDetail> {
   return apiSend<AdminOrderDetail>("PATCH", `/api/orders/admin/${id}/status`, {
     status,
+    ...(trackingNumber ? { trackingNumber } : {}),
   });
+}
+
+/** Set / update / clear the courier tracking number on an order. Pass an empty
+    string to clear it. Decoupled from status — the number usually arrives from
+    the courier after the order is already marked SHIPPED. */
+export function updateAdminOrderTracking(
+  id: number,
+  trackingNumber: string
+): Promise<AdminOrderDetail> {
+  return apiSend<AdminOrderDetail>("PATCH", `/api/orders/admin/${id}/tracking`, {
+    trackingNumber,
+  });
+}
+
+/** Resolve a scanned packing-slip QR (or a typed order number) to its order id,
+    so the admin scan page can jump straight to the order. */
+export function lookupAdminOrder(
+  code: string
+): Promise<{ id: number; no: string }> {
+  return apiGet<{ id: number; no: string }>(
+    `/api/orders/admin/lookup?code=${encodeURIComponent(code)}`
+  );
 }
 
 /** Append a timestamped internal note to an order (admin-facing only). */
@@ -1139,4 +1167,10 @@ export function downloadReportCsv(
 /** Download the PDF invoice for a delivered order. */
 export function downloadInvoice(id: number, orderNo: string): Promise<void> {
   return downloadFile(`/api/orders/${id}/invoice`, `Invoice-${orderNo}.pdf`);
+}
+
+/** Admin: download the order summary / packing slip (any status). The PDF
+    carries the pack/dispatch QR, so this is the slip you print and scan back in. */
+export function downloadAdminPackingSlip(id: number, orderNo: string): Promise<void> {
+  return downloadFile(`/api/orders/admin/${id}/invoice`, `PackingSlip-${orderNo}.pdf`);
 }

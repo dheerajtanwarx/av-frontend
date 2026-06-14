@@ -313,7 +313,7 @@ export default function CartView() {
   return (
     <div className="app av">
       <Header />
-      <div className="flow cartbody">
+      <div className="flow cartbody av-flow">
       <main className="wrap">
         <div className="page-head">
           <h1>

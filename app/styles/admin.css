@@ -594,6 +594,20 @@
   }
 }
 
+/* ---- Scan Order page ---- */
+.admin-scan-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .admin-scan-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 640px) {
   .admin-table thead {
     display: none;

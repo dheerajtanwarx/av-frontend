@@ -65,7 +65,7 @@ export default function ConfirmationView() {
   ];
 
   return (
-    <div className="app flow">
+    <div className="app flow av-flow">
       <CheckoutHeader backHref="/" backLabel="Back to Shop" />
       <main className="wrap confirm">
         <div className="hero">

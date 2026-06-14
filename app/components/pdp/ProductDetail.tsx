@@ -61,7 +61,8 @@ export default function ProductDetail({ product }: { product: PdpProduct }) {
 
   return (
     <PdpProvider>
-      <div className="pdp">
+      {/* `av-pdp` layers the Phase-2 editorial redesign over the base pdp.css. */}
+      <div className="pdp av-pdp">
         <MiniHeader hot={product.navHot} />
         <Breadcrumb product={product} />
         <div className="ptop editorial">
