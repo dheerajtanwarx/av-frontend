@@ -482,6 +482,17 @@
     padding: 8px 11px;
     font-size: 0.88rem;
   }
+  .admin-orders-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .admin-orders-toolbar > * {
+    width: 100%;
+  }
+  .admin-search {
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 /* ---- Table ---- */
@@ -901,20 +912,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Dashboard-style loading skeletons for the order list. */
-.admin-order-skeletons {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.admin-order-card.skeleton {
-  height: 150px;
-  border-style: dashed;
-  background: linear-gradient(90deg, var(--bg-2) 25%, var(--surface) 50%, var(--bg-2) 75%);
-  background-size: 400% 100%;
-  animation: admin-shimmer 1.3s ease-in-out infinite;
-}
+/* Order-list & dashboard loading skeletons now come from the shared system —
+   see app/styles/skeleton.css and app/components/skeletons/admin.tsx. */
 
 /* Swap the table for cards once the screen is too narrow for dense rows. */
 @media (max-width: 640px) {
@@ -1068,19 +1067,8 @@
 .admin-stat-card.accent-amber .admin-stat-icon { background: #fcefd6; color: #b45309; }
 .admin-stat-card.accent-green .admin-stat-icon { background: #ddf1e1; color: #15803d; }
 
-/* Loading skeletons */
-.admin-stat-card.skeleton {
-  height: 84px;
-  border-style: dashed;
-  background: linear-gradient(90deg, var(--bg-2) 25%, var(--surface) 50%, var(--bg-2) 75%);
-  background-size: 400% 100%;
-  animation: admin-shimmer 1.3s ease-in-out infinite;
-}
-
-@keyframes admin-shimmer {
-  0% { background-position: 100% 0; }
-  100% { background-position: 0 0; }
-}
+/* Stat-card loading skeletons moved to the shared system —
+   see app/components/skeletons/admin.tsx (AdminStatGridSkeleton). */
 
 .admin-dash-error {
   display: flex;

@@ -20,6 +20,7 @@ import {
   CustomersIcon,
   ProductsIcon,
 } from "../../components/admin/icons";
+import { AdminStatGridSkeleton, AdminChartsSkeleton } from "../../components/skeletons";
 
 function inr(amount: number): string {
   return new Intl.NumberFormat("en-IN", {
@@ -147,12 +148,8 @@ export default function AdminDashboardPage() {
 
       {loading ? (
         <div className="admin-dash-loading">
-          <div className="admin-stat-grid">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="admin-stat-card skeleton" />
-            ))}
-          </div>
-          <p className="admin-note">Loading dashboard…</p>
+          <AdminStatGridSkeleton count={6} />
+          <AdminChartsSkeleton />
         </div>
       ) : error ? (
         <div className="admin-dash-error">

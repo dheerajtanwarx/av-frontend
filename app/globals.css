@@ -38,6 +38,8 @@
 @import "./styles/admin.css";
 /* Mobile bottom navigation (thumb-zone nav bar) */
 @import "./styles/bottom-nav.css";
+/* Global reusable loading-skeleton system (shimmer primitives + composed) */
+@import "./styles/skeleton.css";
 
 @theme inline {
   --font-display: var(--font-display);

@@ -997,7 +997,6 @@
 }
 
 /* reviews */
-.pdp .rv-loading,
 .pdp .rv-empty {
   text-align: center;
   color: var(--muted);

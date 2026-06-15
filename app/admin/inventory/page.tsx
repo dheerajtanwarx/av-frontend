@@ -11,6 +11,7 @@ import {
   type InventoryRow,
 } from "../../lib/api";
 import { InventoryIcon } from "../../components/admin/icons";
+import { AdminTableRowsSkeleton } from "../../components/skeletons";
 
 const FILTERS: { key: InventoryFilter; label: string }[] = [
   { key: "all", label: "All" },
@@ -264,6 +265,9 @@ export default function AdminInventoryPage() {
             </tr>
           </thead>
           <tbody>
+            {loading && rows.length === 0 && (
+              <AdminTableRowsSkeleton rows={8} cols={7} />
+            )}
             {rows.map((r) => (
               <tr key={r.variantId}>
                 <td data-label="Product">
@@ -330,9 +334,7 @@ export default function AdminInventoryPage() {
           </tbody>
         </table>
 
-        {loading ? (
-          <p className="admin-note">Loading inventory…</p>
-        ) : rows.length === 0 ? (
+        {!loading && rows.length === 0 ? (
           <p className="admin-note">No variants match this view.</p>
         ) : null}
       </div>

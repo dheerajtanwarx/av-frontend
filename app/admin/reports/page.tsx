@@ -10,6 +10,7 @@ import {
 } from "../../lib/api";
 import { TrendBarChart } from "../../components/admin/DashboardCharts";
 import { StatCard } from "../../components/admin/StatCard";
+import { AdminStatGridSkeleton, AdminChartsSkeleton } from "../../components/skeletons";
 
 function inr(amount: number): string {
   return new Intl.NumberFormat("en-IN", {
@@ -133,7 +134,10 @@ export default function AdminReportsPage() {
       {exportError && <p className="admin-error">{exportError}</p>}
 
       {loading ? (
-        <p className="admin-note">Loading reports…</p>
+        <div className="admin-dash-loading">
+          <AdminStatGridSkeleton count={4} />
+          <AdminChartsSkeleton />
+        </div>
       ) : error ? (
         <div className="admin-dash-error">
           <p className="admin-error">{error}</p>

@@ -2,6 +2,7 @@
 
 import { memo } from "react";
 import type { AdminProductListItem } from "../../lib/api";
+import { AdminTableRowsSkeleton } from "../skeletons";
 
 function inr(amount: number): string {
   return new Intl.NumberFormat("en-IN", {
@@ -40,6 +41,9 @@ function ProductList({
           </tr>
         </thead>
         <tbody>
+          {loading && products.length === 0 && (
+            <AdminTableRowsSkeleton rows={8} cols={6} />
+          )}
           {products.map((p) => (
             <tr key={p.id}>
               <td>
@@ -92,9 +96,7 @@ function ProductList({
         </tbody>
       </table>
 
-      {loading ? (
-        <p className="admin-note">Loading products…</p>
-      ) : products.length === 0 ? (
+      {!loading && products.length === 0 ? (
         <p className="admin-note">{emptyLabel ?? "No products match this view."}</p>
       ) : null}
     </div>

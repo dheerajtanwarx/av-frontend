@@ -302,7 +302,18 @@ export default function NotificationBell() {
           }
           aria-expanded={open}
           title={connected ? "Live" : "Reconnecting…"}
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => {
+            // On phones the anchored dropdown is too cramped — send the user
+            // to the full Notification Center page instead of opening it.
+            if (
+              typeof window !== "undefined" &&
+              window.matchMedia("(max-width: 768px)").matches
+            ) {
+              window.location.assign("/admin/notifications");
+              return;
+            }
+            setOpen((v) => !v);
+          }}
         >
           {/* Re-keyed on each live arrival → bell wiggle + radiating ring. */}
           <motion.span

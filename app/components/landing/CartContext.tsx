@@ -39,6 +39,8 @@ export type CartToast = { name: string; variant: string; thumb: string };
 type CartContextValue = {
   /* state */
   items: CartItem[];
+  /** False until the cart has hydrated from storage — drives the cart skeleton. */
+  ready: boolean;
   promo: Promo | null;
   drawerOpen: boolean;
   lastOrder: Order | null;
@@ -82,6 +84,7 @@ const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [ready, setReady] = useState(false);
   const [promo, setPromo] = useState<Promo | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [lastOrder, setLastOrder] = useState<Order | null>(null);
@@ -116,6 +119,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       /* ignore corrupt storage */
     }
     hydrated.current = true;
+    // The local cart is now authoritative for first paint (guests + returning
+    // shoppers). Reveal it immediately; the server reconciliation below is a
+    // background update for signed-in users.
+    setReady(true);
 
     // If the user is signed in, merge any local guest cart into the server
     // cart and replace local state with the authoritative server cart.
@@ -371,6 +378,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const value: CartContextValue = {
     items,
+    ready,
     promo,
     drawerOpen,
     lastOrder,

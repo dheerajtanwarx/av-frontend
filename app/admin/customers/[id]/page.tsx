@@ -1,12 +1,14 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
+import Link from "next/link";
 import {
   fetchAdminCustomer,
   ApiError,
   type AdminCustomerDetail,
 } from "../../../lib/api";
 import OrderCard from "../../../components/admin/OrderCard";
+import { AdminPageSkeleton } from "../../../components/skeletons";
 
 const PAYMENT_LABEL: Record<string, string> = {
   UPI: "UPI",
@@ -77,11 +79,7 @@ export default function AdminCustomerDetailPage({
   }, [id]);
 
   if (loading) {
-    return (
-      <section className="admin-page">
-        <p className="admin-note">Loading customer…</p>
-      </section>
-    );
+    return <AdminPageSkeleton body="panel" />;
   }
 
   if (error || !customer) {
@@ -95,9 +93,9 @@ export default function AdminCustomerDetailPage({
               : "We couldn't load this customer. Please try again."}
           </p>
         </header>
-        <a className="admin-link" href="/admin/customers">
+        <Link className="admin-link" href="/admin/customers">
           ← Back to customers
-        </a>
+        </Link>
       </section>
     );
   }
@@ -112,9 +110,9 @@ export default function AdminCustomerDetailPage({
 
   return (
     <section className="admin-page admin-customer-detail">
-      <a className="admin-link admin-back" href="/admin/customers">
+      <Link className="admin-link admin-back" href="/admin/customers">
         ← Back to customers
-      </a>
+      </Link>
 
       <header className="admin-order-head">
         <div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { use } from "react";
 import { Star, Check, Download, ArrowLeft, ImageOff, Clock, ShieldCheck } from "lucide-react";
 import Header from "../../components/landing/Header";
+import { OrderDetailSkeleton } from "../../components/skeletons";
 import { fetchOrder, cancelOrder, returnOrder, advanceOrder, submitReview, downloadInvoice, ApiError, type MyOrder, type OrderShippingAddress } from "../../lib/api";
 import OrderProgress, { statusLabel } from "../../components/OrderProgress";
 
@@ -608,14 +609,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   }, [id]);
 
   if (loading) {
-    return (
-      <main className="av order-detail-page">
-        <Header />
-        <section className="order-detail-shell">
-          <div className="order-loading">Loading order details…</div>
-        </section>
-      </main>
-    );
+    return <OrderDetailSkeleton />;
   }
 
   if (notFound || !order) {

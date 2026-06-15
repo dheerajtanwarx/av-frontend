@@ -18,6 +18,7 @@ import {
   type NotificationPriority,
 } from "../../lib/api";
 import type { LiveNotification, StateSyncEvent } from "../../lib/admin-realtime";
+import { Skeleton } from "../skeletons";
 
 const PAGE_SIZE = 15;
 
@@ -194,7 +195,7 @@ export default function NotificationDropdown({
         setItems((prev) => prev.map((x) => (x.id === n.id ? { ...x, read: false } : x)));
       });
     }
-    if (n.orderId) window.location.href = `/admin/orders/${n.orderId}`;
+    if (n.orderId) window.location.assign(`/admin/orders/${n.orderId}`);
   };
 
   const handleArchive = (n: AdminNotification) => {
@@ -299,7 +300,11 @@ export default function NotificationDropdown({
                     </motion.div>
                   ))}
                 </AnimatePresence>
-                {loadingMore && <div className="admin-notif-more">Loading…</div>}
+                {loadingMore && (
+                  <div className="admin-notif-more" aria-busy="true">
+                    <Skeleton variant="line" height={12} width={120} style={{ margin: "0 auto" }} />
+                  </div>
+                )}
                 {!list.hasMore && items.length > PAGE_SIZE && (
                   <div className="admin-notif-more">That’s everything</div>
                 )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { logout, type SessionUser } from "../../lib/api";
 import { ChevronIcon, LogoutIcon } from "./icons";
 
@@ -65,9 +66,9 @@ export default function AdminProfileMenu({ user }: { user: SessionUser }) {
             )}
             <span className="admin-role-badge">Administrator</span>
           </div>
-          <a className="admin-profile-item" href="/" role="menuitem">
+          <Link className="admin-profile-item" href="/" role="menuitem">
             View storefront
-          </a>
+          </Link>
           <button
             className="admin-profile-item admin-logout"
             onClick={handleLogout}

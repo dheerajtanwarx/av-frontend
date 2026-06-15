@@ -13,14 +13,26 @@ import type { OrderAddress } from "./cart-data";
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
-type FetchOpts = { cache?: RequestCache; signal?: AbortSignal };
+type FetchOpts = {
+  cache?: RequestCache;
+  signal?: AbortSignal;
+  /* Server-side only: cache this response in Next's data cache for N seconds
+     instead of fetching on every request. Mutually exclusive with `no-store`,
+     so when set we omit the `cache` option entirely. */
+  revalidate?: number;
+};
 
 async function apiGet<T>(path: string, opts: FetchOpts = {}): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
+  const init: RequestInit & { next?: { revalidate: number } } = {
     credentials: "include",
-    cache: opts.cache ?? "no-store",
     signal: opts.signal,
-  });
+  };
+  if (typeof opts.revalidate === "number") {
+    init.next = { revalidate: opts.revalidate };
+  } else {
+    init.cache = opts.cache ?? "no-store";
+  }
+  const res = await fetch(`${API_URL}${path}`, init);
   if (!res.ok) {
     throw new ApiError(res.status, await safeError(res));
   }

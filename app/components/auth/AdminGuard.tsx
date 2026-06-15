@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSession, type SessionUser } from "../../lib/api";
+import { Skeleton, AdminCardListSkeleton } from "../skeletons";
 
 /* ============================================================
    AdminGuard — client-side gate for the /admin area.
@@ -65,7 +66,11 @@ export default function AdminGuard({ children }: AdminGuardProps) {
     return (
       <main className="admin" aria-busy="true">
         <div className="admin-wrap">
-          <p className="admin-note">Checking access…</p>
+          <Skeleton variant="line" height={32} width={240} radius={4} />
+          <div style={{ height: 10 }} />
+          <Skeleton variant="line" height={14} width={360} />
+          <div style={{ height: 28 }} />
+          <AdminCardListSkeleton count={5} />
         </div>
       </main>
     );

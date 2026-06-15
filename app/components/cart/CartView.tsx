@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Header from "../landing/Header";
+import { CartSkeleton } from "../skeletons";
 import { useCart } from "../landing/CartContext";
 import { ensureAuthenticated } from "../../lib/auth-guard";
 import { SlimFooter } from "./CheckoutChrome";
@@ -280,7 +281,7 @@ function EmptyCart() {
 
 /* ---------- page ---------- */
 export default function CartView() {
-  const { items, count, refreshStock } = useCart();
+  const { items, count, ready, refreshStock } = useCart();
 
   /* Revalidate live stock when the cart page loads so sold-out / reduced-stock
      items are flagged before the shopper reaches checkout. */
@@ -309,6 +310,12 @@ export default function CartView() {
       sessionStorage.removeItem("cart-css-reload");
     }
   }, []);
+
+  /* Until the cart hydrates from storage, show the skeleton rather than a
+     flash of the empty-bag state. */
+  if (!ready) {
+    return <CartSkeleton />;
+  }
 
   return (
     <div className="app av">

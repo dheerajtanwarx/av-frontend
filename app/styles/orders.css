@@ -597,8 +597,7 @@
     @apply flex items-center gap-1.5 font-[var(--font-jost)] text-[12px] font-medium text-[var(--green)];
   }
 
-  /* loading / error */
-  .order-loading,
+  /* error */
   .order-error {
     @apply border border-[var(--line)] bg-[var(--surface)] p-9 font-[var(--font-jost)] text-[var(--ink-soft)];
   }

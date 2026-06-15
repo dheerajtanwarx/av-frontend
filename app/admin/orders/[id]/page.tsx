@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
+import Link from "next/link";
 import {
   fetchAdminOrder,
   updateAdminOrderStatus,
@@ -12,6 +13,7 @@ import {
   type AdminOrderDetail,
   type OrderStatus,
 } from "../../../lib/api";
+import { AdminPageSkeleton } from "../../../components/skeletons";
 
 const PAYMENT_LABEL: Record<string, string> = {
   UPI: "UPI",
@@ -372,11 +374,7 @@ export default function AdminOrderDetailPage({
   }, [id]);
 
   if (loading) {
-    return (
-      <section className="admin-page">
-        <p className="admin-note">Loading order…</p>
-      </section>
-    );
+    return <AdminPageSkeleton body="panel" />;
   }
 
   if (notFound || !order) {
@@ -386,9 +384,9 @@ export default function AdminOrderDetailPage({
           <h2>Order not found</h2>
           <p>We couldn&apos;t find this order.</p>
         </header>
-        <a className="admin-link" href="/admin/orders">
+        <Link className="admin-link" href="/admin/orders">
           ← Back to orders
-        </a>
+        </Link>
       </section>
     );
   }
@@ -400,9 +398,9 @@ export default function AdminOrderDetailPage({
 
   return (
     <section className="admin-page admin-order-detail">
-      <a className="admin-link admin-back" href="/admin/orders">
+      <Link className="admin-link admin-back" href="/admin/orders">
         ← Back to orders
-      </a>
+      </Link>
 
       <header className="admin-order-head">
         <div>

@@ -9,6 +9,7 @@ import {
   type AdminProductDetail,
 } from "../../../../lib/api";
 import ProductForm from "../../../../components/admin/ProductForm";
+import { AdminPanelSkeleton } from "../../../../components/skeletons";
 
 export default function EditProductPage({
   params,
@@ -55,7 +56,7 @@ export default function EditProductPage({
       </header>
 
       {loading ? (
-        <p className="admin-note">Loading…</p>
+        <AdminPanelSkeleton rows={6} />
       ) : error ? (
         <p className="admin-error">{error}</p>
       ) : categories && product ? (

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import Header from "../components/landing/Header";
+import { ProductGridSkeleton } from "../components/skeletons";
 import { useWishlist, type WishItem } from "../components/landing/WishlistContext";
 import { useCart } from "../components/landing/CartContext";
 import { parseINR } from "../lib/cart-data";
@@ -76,23 +77,6 @@ function WishlistCard({ item }: { item: WishItem }) {
   );
 }
 
-function Skeletons() {
-  return (
-    <div className="wl-grid">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="wl-card wl-skel">
-          <div className="wl-thumb wl-skel-box" />
-          <div className="wl-body">
-            <div className="wl-skel-line" style={{ width: "70%" }} />
-            <div className="wl-skel-line" style={{ width: "45%" }} />
-            <div className="wl-skel-line" style={{ width: "30%" }} />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default function WishlistPage() {
   const { items, loading, count } = useWishlist();
 
@@ -112,7 +96,7 @@ export default function WishlistPage() {
         </div>
 
         {loading ? (
-          <Skeletons />
+          <ProductGridSkeleton count={6} className="wl-grid" />
         ) : items.length === 0 ? (
           <div className="wl-empty">
             <Heart strokeWidth={1.4} aria-hidden="true" />

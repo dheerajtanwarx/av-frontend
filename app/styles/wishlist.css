@@ -269,30 +269,9 @@
   background: var(--rani);
 }
 
-/* --- Loading skeletons --- */
-@keyframes wl-shimmer {
-  0%   { opacity: 0.55; }
-  50%  { opacity: 1; }
-  100% { opacity: 0.55; }
-}
-.wl-skel .wl-skel-box,
-.wl-skel .wl-skel-line {
-  background: var(--bg-3);
-  animation: wl-shimmer 1.2s ease-in-out infinite;
-  border-radius: 6px;
-}
-.wl-skel .wl-skel-box {
-  aspect-ratio: 3 / 4;
-  border-radius: 0;
-}
-.wl-skel .wl-skel-line {
-  height: 13px;
-  margin-top: 8px;
-}
-.wl-skel:hover {
-  transform: none;
-  box-shadow: none;
-}
+/* Loading skeletons now come from the shared system — see
+   app/styles/skeleton.css and app/components/skeletons/. The wishlist
+   grid renders <ProductGridSkeleton className="wl-grid" />. */
 
 /* --- Responsive --- */
 @media (max-width: 600px) {

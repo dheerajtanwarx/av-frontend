@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { img } from "../../lib/landing-data";
 import { SearchIcon } from "../landing/Icons";
+import { Skeleton } from "../skeletons";
 import { useSearchSuggest } from "./useSearchSuggest";
 
 /**
@@ -79,11 +80,26 @@ export default function SearchSuggestions({
         </div>
       )}
 
-      {!hasResults && (
-        <div className="srch-sug-empty">
-          {loading ? "Searching…" : `No matches for “${q}”`}
-        </div>
-      )}
+      {!hasResults &&
+        (loading ? (
+          <div className="srch-sug-group" aria-busy="true">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="srch-sug-prod"
+                style={{ display: "flex", alignItems: "center", gap: 12, pointerEvents: "none" }}
+              >
+                <Skeleton variant="box" width={40} height={48} radius={4} />
+                <span style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+                  <Skeleton variant="line" height={12} width="60%" />
+                  <Skeleton variant="line" height={10} width="35%" />
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="srch-sug-empty">{`No matches for “${q}”`}</div>
+        ))}
 
       <Link
         href={`/search?q=${encodeURIComponent(q)}`}

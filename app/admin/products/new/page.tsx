@@ -8,6 +8,7 @@ import {
   type AdminCategory,
 } from "../../../lib/api";
 import ProductForm from "../../../components/admin/ProductForm";
+import { AdminPageSkeleton, AdminPanelSkeleton } from "../../../components/skeletons";
 
 function NewProductView() {
   const searchParams = useSearchParams();
@@ -49,7 +50,7 @@ function NewProductView() {
       ) : categories ? (
         <ProductForm mode="create" categories={categories} initialCategoryId={initialCategoryId} />
       ) : (
-        <p className="admin-note">Loading…</p>
+        <AdminPanelSkeleton rows={6} />
       )}
     </section>
   );
@@ -57,7 +58,7 @@ function NewProductView() {
 
 export default function NewProductPage() {
   return (
-    <Suspense fallback={<p className="admin-note">Loading…</p>}>
+    <Suspense fallback={<AdminPageSkeleton body="form" />}>
       <NewProductView />
     </Suspense>
   );

@@ -10,6 +10,7 @@ import { useWishlist } from "../landing/WishlistContext";
 import { HeartIcon } from "../landing/Icons";
 import { parseINR } from "../../lib/cart-data";
 import { fetchReviews } from "../../lib/api";
+import { Skeleton, SkeletonText } from "../skeletons";
 
 const LOOK_COLOR = { name: "Rani Pink", hex: "#bd3c6e" };
 
@@ -99,7 +100,21 @@ export function ReviewsSection({ product }: { product: PdpProduct }) {
         </div>
       </div>
       {live === null ? (
-        <div className="rv-loading">Loading reviews…</div>
+        <div className="rv-top" aria-busy="true">
+          <div className="rv-score" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <Skeleton variant="line" height={44} width={70} radius={4} />
+            <Skeleton variant="line" height={12} width={60} />
+            <Skeleton variant="line" height={12} width={120} />
+          </div>
+          <div className="rv-bars" style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} variant="line" height={12} width="100%" />
+            ))}
+            <div style={{ marginTop: 8 }}>
+              <SkeletonText lines={2} lastWidth="55%" />
+            </div>
+          </div>
+        </div>
       ) : count === 0 ? (
         <div className="rv-empty">
           {Ic.verify} No reviews yet — be the first to review this piece.

@@ -29,6 +29,26 @@ const img = (id: string, w: number) => {
   return `https://images.unsplash.com/${safe}?w=${w}&q=78&auto=format&fit=crop`;
 };
 
+/* Cap an admin-uploaded hero image to a sane delivery size. Cloudinary serves
+   whatever was stored — which for "Original" fit can be a multi-MB raw file —
+   so for the full-bleed hero we force auto format/quality and a width ceiling.
+   Non-Cloudinary URLs (and images already carrying a managed transform) are
+   left structurally intact; we only step the stored width down. */
+export function heroImageUrl(url: string, w = 1600): string {
+  if (!url || !/res\.cloudinary\.com\/.+\/upload\//.test(url)) return url;
+  const m = url.match(/(\/upload\/)(.+)$/);
+  if (!m) return url;
+  const firstSeg = m[2].split("/")[0];
+  const hasManagedTransform =
+    /(^|,)(c_(fill|pad|fit)|ar_|g_|w_\d|q_auto|f_auto)/.test(firstSeg);
+  if (hasManagedTransform) {
+    // Already optimised by the uploader — just lower any oversized width.
+    return url.replace(/(^|,)w_\d+/, (_full, p1: string) => `${p1}w_${w}`);
+  }
+  // Raw original: inject a capped, auto-optimised delivery transform.
+  return url.replace(/(\/upload\/)(.+)$/, (_f, up: string, rest: string) => `${up}f_auto,q_auto,c_limit,w_${w}/${rest}`);
+}
+
 export type NavLink = { label: string; href: string; hot?: boolean };
 
 export const nav: NavLink[] = [

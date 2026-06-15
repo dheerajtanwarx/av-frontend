@@ -70,7 +70,12 @@ const SEEN_MAX = 1_000;
     callers may pass fresh closures every render without resubscribing. */
 export function useAdminRealtime(handlers: RealtimeHandlers): boolean {
   const h = useRef(handlers);
-  h.current = handlers;
+  // Keep the handler ref current without re-subscribing. Updating it in an
+  // effect (rather than during render) keeps React's ref rules happy; the
+  // stream callbacks only read h.current after mount, so latest-wins holds.
+  useEffect(() => {
+    h.current = handlers;
+  });
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {

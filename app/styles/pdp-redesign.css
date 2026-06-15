@@ -659,8 +659,7 @@
 .pdp.av-pdp .sec-title h2 em { font-style: italic; color: var(--p-ink); }
 
 /* ============ REVIEWS ============ */
-.pdp.av-pdp .rv-empty,
-.pdp.av-pdp .rv-loading {
+.pdp.av-pdp .rv-empty {
   font-family: var(--ui);
   font-size: 13px;
   color: var(--p-muted);

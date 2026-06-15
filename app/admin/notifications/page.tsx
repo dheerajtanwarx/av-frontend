@@ -18,6 +18,7 @@ import {
 } from "../../lib/api";
 import { useAdminRealtime } from "../../lib/admin-realtime";
 import { relativeTime } from "../../components/admin/NotificationDropdown";
+import { AdminTableRowsSkeleton } from "../../components/skeletons";
 
 /* Notification Center — full history with search, filters, sorting and bulk
    actions. Server-side everything (the bell dropdown is the lightweight
@@ -300,11 +301,7 @@ export default function AdminNotificationsPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan={6} className="admin-notifpage-state">
-                  Loading notifications…
-                </td>
-              </tr>
+              <AdminTableRowsSkeleton rows={8} cols={6} />
             ) : rows.length === 0 ? (
               <tr>
                 <td colSpan={6} className="admin-notifpage-state">

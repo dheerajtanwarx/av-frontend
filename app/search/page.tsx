@@ -4,6 +4,7 @@ import Header from "../components/landing/Header";
 import Footer from "../components/landing/Footer";
 import ScrollReveal from "../components/landing/ScrollReveal";
 import SearchView from "../components/search/SearchView";
+import { SearchPageSkeleton } from "../components/skeletons";
 
 export const metadata: Metadata = {
   title: "Search — AV Creation",
@@ -16,7 +17,7 @@ export default function SearchPage() {
     <div className="av">
       <ScrollReveal />
       <Header />
-      <Suspense fallback={null}>
+      <Suspense fallback={<SearchPageSkeleton withHeader={false} />}>
         <SearchView />
       </Suspense>
       <Footer />

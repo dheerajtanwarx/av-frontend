@@ -1,0 +1,370 @@
+/* ============================================================
+   AV CREATION — GLOBAL SKELETON SYSTEM
+   ------------------------------------------------------------
+   One shared, DRY loading language for the whole storefront.
+   Every loading state — route-level (loading.tsx), Suspense
+   fallbacks and client-side fetches — renders the primitives
+   and composed skeletons defined here, so the experience is
+   consistent and there are never blank screens or text loaders.
+
+   Primitive:  .av-skel              (+ --line / --box / --circle / --btn / --pill)
+   Composed:   .av-skel-card, .av-skel-* (reuse real layout classes for the grids)
+
+   Aesthetic: a calm parchment placeholder (var(--bg-3)) with a
+   slow luxury sheen sweeping across — never a harsh grey pulse.
+   Honors prefers-reduced-motion (sheen → gentle opacity breathe).
+   ============================================================ */
+
+/* The sheen sweep — a soft light band travelling left→right. */
+@keyframes av-skel-sheen {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Reduced-motion fallback — a barely-there breathe, no movement. */
+@keyframes av-skel-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* ── Primitive ──────────────────────────────────────────────
+   A single placeholder block. Size it with width/height (inline
+   style or a wrapper class); pick a shape with a modifier. */
+.av-skel {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--bg-3);
+  border-radius: var(--r-sm);
+  /* Keep it from ever collapsing to nothing if unsized. */
+  min-height: 8px;
+  /* Sits calmly under real content; never interactive. */
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.av-skel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--surface) 70%, transparent) 50%,
+    transparent 100%
+  );
+  animation: av-skel-sheen 1.6s var(--ease-in-out, ease-in-out) infinite;
+}
+
+/* ── Shape modifiers ──────────────────────────────────────── */
+.av-skel--line {
+  height: 12px;
+  border-radius: var(--r-xs);
+}
+.av-skel--box {
+  border-radius: 0; /* product imagery is square-cornered in this design */
+}
+.av-skel--circle {
+  border-radius: 999px;
+}
+.av-skel--pill {
+  border-radius: 999px;
+  height: 30px;
+}
+.av-skel--btn {
+  height: var(--tap, 48px);
+  border-radius: var(--r-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .av-skel::after {
+    animation: none;
+  }
+  .av-skel {
+    animation: av-skel-breathe 1.8s ease-in-out infinite;
+  }
+}
+
+/* ============================================================
+   COMPOSED — Product card
+   Matches the storefront product card: 3:4 image, name, craft
+   caption, price line and a 48px outline action. Fills whatever
+   grid column it is dropped into so it reuses the real grids
+   (.lp-products, .prods.cat-grid, .wl-grid) for spacing.
+   ============================================================ */
+.av-skel-card {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.av-skel-card__img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+}
+.av-skel-card__lines {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.av-skel-card__btn {
+  margin-top: 4px;
+}
+
+/* ============================================================
+   COMPOSED — Page header / hero band
+   A kicker + title + subtitle stack used by collection, search,
+   orders and account screens so heads never pop in blank.
+   ============================================================ */
+.av-skel-head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.av-skel-head--center {
+  align-items: center;
+}
+
+/* ============================================================
+   COMPOSED — Generic stacked rows (account nav, summary lists)
+   ============================================================ */
+.av-skel-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.av-skel-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-md);
+}
+.av-skel-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ============================================================
+   COMPOSED — Generic panel (forms, detail dl, settings)
+   ============================================================ */
+.av-skel-panel {
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-md);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.av-skel-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ============================================================
+   COMPOSED — Hero (home / landing)
+   A tall image band with a centred copy stack, matching the
+   landing carousel's footprint so the fold doesn't jump.
+   ============================================================ */
+.av-skel-hero {
+  width: 100%;
+  height: clamp(420px, 64vh, 760px);
+}
+
+/* ============================================================
+   COMPOSED — Product detail (PDP) two-column top
+   Mirrors `.ptop.editorial`: gallery on the left, buy box right;
+   collapses to a single column on mobile.
+   ============================================================ */
+.av-skel-pdp {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 48px;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 28px 24px 0;
+}
+.av-skel-pdp__gallery {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+}
+.av-skel-pdp__buy {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 8px;
+}
+.av-skel-pdp__swatches {
+  display: flex;
+  gap: 10px;
+}
+.av-skel-pdp__sizes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 860px) {
+  .av-skel-pdp {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 16px 16px 0;
+  }
+}
+
+/* ============================================================
+   COMPOSED — Cart two-column (list + summary)
+   Mirrors `.cart-grid`: line items left, sticky summary right.
+   ============================================================ */
+.av-skel-cart-line {
+  display: grid;
+  grid-template-columns: 96px 1fr auto;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line-2);
+}
+.av-skel-cart-line__pic {
+  aspect-ratio: 3 / 4;
+}
+.av-skel-cart-line__mid {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+/* ============================================================
+   COMPOSED — Order card (My Orders list)
+   Mirrors `.order-card`: thumb, body (two rows), chevron.
+   ============================================================ */
+.av-skel-order {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-md);
+}
+.av-skel-order__thumb {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--r-sm);
+}
+.av-skel-order__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.av-skel-order__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .av-skel-cart-line {
+    grid-template-columns: 76px 1fr;
+  }
+  .av-skel-cart-line__right {
+    display: none;
+  }
+}
+
+/* ============================================================
+   COMPOSED — Admin panel skeletons
+   The admin shares the storefront theme tokens, so these reuse
+   the same .av-skel primitive. They mirror the admin layouts:
+   tables, stacked cards, the stat-card grid and chart cards.
+   ============================================================ */
+
+/* Table rows dropped straight into a real admin <tbody>. */
+.av-skel-trow > td {
+  padding: 14px 16px;
+}
+
+/* Stacked card list (orders, reviews). */
+.av-skel-admin-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.av-skel-admin-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-md);
+}
+.av-skel-admin-card__main {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Stat-card grid (dashboard). Mirrors .admin-stat-grid cells. */
+.av-skel-admin-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-md);
+  min-height: 84px;
+}
+
+/* Chart card placeholders. */
+.av-skel-admin-charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.av-skel-admin-chart {
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.av-skel-admin-chart--wide {
+  grid-column: 1 / -1;
+}
+
+/* Generic admin panel / detail / form. */
+.av-skel-admin-panel {
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-md);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+@media (max-width: 640px) {
+  .av-skel-admin-charts {
+    grid-template-columns: 1fr;
+  }
+}

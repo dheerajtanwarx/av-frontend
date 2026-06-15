@@ -15,6 +15,7 @@ import HeroImageManager from "../../components/admin/HeroImageManager";
 import CategoryFilterBar, { type CategoryChip } from "../../components/admin/CategoryFilterBar";
 import CategorySummaryCards from "../../components/admin/CategorySummaryCards";
 import ProductList from "../../components/admin/ProductList";
+import { AdminPageSkeleton } from "../../components/skeletons";
 
 const FILTERS: { key: AdminProductsFilter; label: string }[] = [
   { key: "all", label: "All" },
@@ -258,7 +259,7 @@ function AdminProductsView() {
 
 export default function AdminProductsPage() {
   return (
-    <Suspense fallback={<p className="admin-note">Loading products…</p>}>
+    <Suspense fallback={<AdminPageSkeleton body="table" />}>
       <AdminProductsView />
     </Suspense>
   );

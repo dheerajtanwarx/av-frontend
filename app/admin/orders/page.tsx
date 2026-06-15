@@ -11,6 +11,7 @@ import {
 } from "../../lib/api";
 import { useAdminRealtime } from "../../lib/admin-realtime";
 import OrderCard from "../../components/admin/OrderCard";
+import { AdminCardListSkeleton, AdminPageSkeleton } from "../../components/skeletons";
 
 const FILTERS: { key: AdminOrderStatusFilter; label: string }[] = [
   { key: "all", label: "All" },
@@ -177,13 +178,8 @@ function AdminOrdersView() {
       {error && <p className="admin-error">{error}</p>}
 
       {loading && !data ? (
-        /* Initial load — dashboard-style shimmer placeholders. */
-        <div className="admin-order-skeletons">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="admin-order-card skeleton" />
-          ))}
-          <p className="admin-note">Loading orders…</p>
-        </div>
+        /* Initial load — shared skeleton card list. */
+        <AdminCardListSkeleton count={6} />
       ) : (
         <>
           {/* Desktop: dense table. */}
@@ -276,7 +272,7 @@ function AdminOrdersView() {
 
 export default function AdminOrdersPage() {
   return (
-    <Suspense fallback={<p className="admin-note">Loading orders…</p>}>
+    <Suspense fallback={<AdminPageSkeleton body="cards" />}>
       <AdminOrdersView />
     </Suspense>
   );

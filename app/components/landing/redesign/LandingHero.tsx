@@ -1,18 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { img, slides } from "../../../lib/landing-data";
 import { fetchHeroSettings } from "../../../lib/api";
+import { heroImageUrl } from "../../../lib/landing-data";
 
 const DURATION = 5000;
 
-/* The hero: four editorial images that auto-cross-fade behind one steady
-   headline. Restraint is kept — the copy never moves, only the imagery breathes
-   underneath, with small pips to step through manually. Autoplay pauses for
-   reduced-motion users and while the tab is hidden. */
-export default function LandingHero() {
+/* The hero: the admin-uploaded editorial images auto-cross-fade behind one
+   steady headline. Restraint is kept — the copy never moves, only the imagery
+   breathes underneath, with small pips to step through manually. Autoplay
+   pauses for reduced-motion users and while the tab is hidden.
+
+   Images are fetched on the server and passed in via `images`, so they are
+   already in the HTML on first paint — no client round-trip, no flash of stock
+   artwork. The client fetch below only runs as a fallback if the server call
+   came back empty (e.g. the API was briefly unreachable at render time). */
+export default function LandingHero({ images: initial = [] }: { images?: string[] }) {
   const [active, setActive] = useState(0);
-  const [overrides, setOverrides] = useState<(string | null)[]>([]);
+  const [images, setImages] = useState<string[]>(initial);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reduced = useRef(false);
 
@@ -23,24 +28,25 @@ export default function LandingHero() {
   }, []);
 
   useEffect(() => {
+    if (initial.length) return; // server already provided images — nothing to do
     let alive = true;
     fetchHeroSettings()
       .then((d) => {
-        if (alive) setOverrides(d.images);
+        if (alive) setImages(d.images.filter((u): u is string => !!u).map((u) => heroImageUrl(u)));
       })
       .catch(() => {
-        /* keep built-in defaults if the settings call fails */
+        /* no uploaded images available — leave the hero imagery empty */
       });
     return () => {
       alive = false;
     };
-  }, []);
+  }, [initial.length]);
 
   const schedule = useCallback(() => {
     if (timer.current) clearTimeout(timer.current);
-    if (reduced.current) return;
-    timer.current = setTimeout(() => setActive((i) => (i + 1) % slides.length), DURATION);
-  }, []);
+    if (reduced.current || images.length < 2) return;
+    timer.current = setTimeout(() => setActive((i) => (i + 1) % images.length), DURATION);
+  }, [images.length]);
 
   useEffect(() => {
     schedule();
@@ -64,10 +70,18 @@ export default function LandingHero() {
 
   return (
     <section className="lp-hero" aria-label="The Maharani Collection" aria-roledescription="carousel">
-      {slides.map((s, i) => (
+      {images.map((src, i) => (
         <div className={`lp-hero-slide${i === active ? " on" : ""}`} key={i} aria-hidden={i !== active}>
+          {/* First slide is above the fold — load it eagerly at high priority;
+              the rest can wait until the carousel needs them. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={overrides[i] ?? img(s.image, 1600)} alt="" />
+          <img
+            src={src}
+            alt=""
+            loading={i === 0 ? "eager" : "lazy"}
+            fetchPriority={i === 0 ? "high" : "low"}
+            decoding="async"
+          />
         </div>
       ))}
       <div className="lp-hero-scrim" />
@@ -83,7 +97,7 @@ export default function LandingHero() {
           Discover the collection
         </a>
         <div className="lp-hero-pips" role="tablist" aria-label="Hero slides">
-          {slides.map((_, i) => (
+          {images.length > 1 && images.map((_, i) => (
             <button
               key={i}
               type="button"

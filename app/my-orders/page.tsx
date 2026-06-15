@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ImageOff, ChevronRight, User, ClipboardList } from "lucide-react";
 import Header from "../components/landing/Header";
+import { OrdersSkeleton } from "../components/skeletons";
 import { fetchMyOrders, getSession, type MyOrder } from "../lib/api";
 
 type Tab = "all" | "delivered" | "cancelled";
@@ -168,14 +169,7 @@ export default function MyOrdersPage() {
   };
 
   if (loading) {
-    return (
-      <main className="av orders-page">
-        <Header />
-        <section className="orders-shell">
-          <div className="order-loading">Loading your orders…</div>
-        </section>
-      </main>
-    );
+    return <OrdersSkeleton />;
   }
 
   if (!loggedIn) {

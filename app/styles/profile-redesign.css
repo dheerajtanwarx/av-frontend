@@ -16,11 +16,11 @@
    accents, heavy shadows), and lend the avatar + panels the
    handoff's calm editorial voice.
 
-   Scoped to `.av .profile-page.av-profile`, layered over
+   Scoped to `.profile-page.av-profile`, layered over
    profile.css. Markup and behaviour are untouched.
    ============================================================ */
 
-.av .profile-page.av-profile {
+.profile-page.av-profile {
   /* re-point inherited tokens → editorial system */
   --bg: #f9f7f3;
   --bg-2: #efe7d8;
@@ -48,28 +48,28 @@
 }
 
 /* ============ HEAD — plain greeting (no card) ============ */
-.av .profile-page.av-profile .profile-hero {
+.profile-page.av-profile .profile-hero {
   background: none;
   border: none;
   border-radius: 0;
   box-shadow: none;
   padding: 0;
 }
-.av .profile-page.av-profile .profile-kicker {
+.profile-page.av-profile .profile-kicker {
   font-family: var(--sans);
   font-size: 10px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--rani);
 }
-.av .profile-page.av-profile .profile-hero h1 {
+.profile-page.av-profile .profile-hero h1 {
   font-family: var(--serif);
   font-weight: 500;
   color: var(--ink);
   letter-spacing: 0.005em;
 }
-.av .profile-page.av-profile .profile-hero p:last-of-type { color: var(--muted); }
-.av .profile-page.av-profile .profile-hero button {
+.profile-page.av-profile .profile-hero p:last-of-type { color: var(--muted); }
+.profile-page.av-profile .profile-hero button {
   background: none;
   border: 1px solid var(--ink);
   color: var(--ink);
@@ -79,22 +79,22 @@
   box-shadow: none;
   transition: background 0.2s ease, color 0.2s ease;
 }
-.av .profile-page.av-profile .profile-hero button:hover { background: var(--ink); color: var(--bg); }
+.profile-page.av-profile .profile-hero button:hover { background: var(--ink); color: var(--bg); }
 
 /* ============ PANELS ============ */
-.av .profile-page.av-profile .profile-panel {
+.profile-page.av-profile .profile-panel {
   background: var(--surface);
   border: 1px solid var(--line-2);
   border-radius: 14px;
   box-shadow: none;
 }
-.av .profile-page.av-profile .profile-panel-head { border-bottom: 1px solid var(--line); }
-.av .profile-page.av-profile .profile-panel-head span {
+.profile-page.av-profile .profile-panel-head { border-bottom: 1px solid var(--line); }
+.profile-page.av-profile .profile-panel-head span {
   font-family: var(--serif);
   font-weight: 500;
   color: var(--ink);
 }
-.av .profile-page.av-profile .profile-edit-btn {
+.profile-page.av-profile .profile-edit-btn {
   font-family: var(--sans);
   color: var(--rani);
   letter-spacing: 0.04em;
@@ -102,37 +102,37 @@
   border: none;
   cursor: pointer;
 }
-.av .profile-page.av-profile .profile-edit-btn:hover { color: var(--rani-deep, #8e2b52); }
+.profile-page.av-profile .profile-edit-btn:hover { color: var(--rani-deep, #8e2b52); }
 
 /* read-only detail list */
-.av .profile-page.av-profile .profile-details dt {
+.profile-page.av-profile .profile-details dt {
   font-family: var(--sans);
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
 }
-.av .profile-page.av-profile .profile-details dd { font-family: var(--serif); font-size: 17px; color: var(--ink); }
+.profile-page.av-profile .profile-details dd { font-family: var(--serif); font-size: 17px; color: var(--ink); }
 
 /* ============ FORMS ============ */
-.av .profile-page.av-profile .profile-field span { font-family: var(--sans); color: var(--ink-soft); letter-spacing: 0.04em; }
-.av .profile-page.av-profile .profile-field input,
-.av .profile-page.av-profile .profile-field select,
-.av .profile-page.av-profile .profile-phone {
+.profile-page.av-profile .profile-field span { font-family: var(--sans); color: var(--ink-soft); letter-spacing: 0.04em; }
+.profile-page.av-profile .profile-field input,
+.profile-page.av-profile .profile-field select,
+.profile-page.av-profile .profile-phone {
   background: var(--p-field);
   border: 1px solid var(--p-line-3);
   border-radius: 7px;
   font-family: var(--sans);
   color: var(--ink);
 }
-.av .profile-page.av-profile .profile-field input:focus,
-.av .profile-page.av-profile .profile-field select:focus,
-.av .profile-page.av-profile .profile-phone:focus-within { border-color: var(--ink); box-shadow: none; outline: none; }
-.av .profile-page.av-profile .profile-field input:disabled { color: var(--muted); }
-.av .profile-page.av-profile .profile-cc { color: var(--ink-soft); font-family: var(--sans); }
-.av .profile-page.av-profile .profile-form-error { color: var(--rani); font-family: var(--sans); }
+.profile-page.av-profile .profile-field input:focus,
+.profile-page.av-profile .profile-field select:focus,
+.profile-page.av-profile .profile-phone:focus-within { border-color: var(--ink); box-shadow: none; outline: none; }
+.profile-page.av-profile .profile-field input:disabled { color: var(--muted); }
+.profile-page.av-profile .profile-cc { color: var(--ink-soft); font-family: var(--sans); }
+.profile-page.av-profile .profile-form-error { color: var(--rani); font-family: var(--sans); }
 
-.av .profile-page.av-profile .profile-save {
+.profile-page.av-profile .profile-save {
   background: var(--ink);
   color: var(--bg);
   border: none;
@@ -142,60 +142,312 @@
   box-shadow: none;
   transition: background 0.2s ease;
 }
-.av .profile-page.av-profile .profile-save:hover { background: #100c08; }
-.av .profile-page.av-profile .profile-save:disabled { background: #cbbca8; }
-.av .profile-page.av-profile .profile-cancel {
+.profile-page.av-profile .profile-save:hover { background: #100c08; }
+.profile-page.av-profile .profile-save:disabled { background: #cbbca8; }
+.profile-page.av-profile .profile-cancel {
   background: none;
   border: 1px solid var(--p-line-3);
   color: var(--ink-soft);
   border-radius: 7px;
   font-family: var(--sans);
 }
-.av .profile-page.av-profile .profile-cancel:hover { border-color: var(--ink); color: var(--ink); }
+.profile-page.av-profile .profile-cancel:hover { border-color: var(--ink); color: var(--ink); }
 
 /* ============ ADDRESS BOOK ============ */
-.av .profile-page.av-profile .address-card {
+.profile-page.av-profile .address-card {
   background: var(--bg-2);
   border: 1px solid var(--line-2);
   border-radius: 10px;
   box-shadow: none;
 }
-.av .profile-page.av-profile .address-card.is-default { border-color: var(--ink); }
-.av .profile-page.av-profile .address-default-badge {
+.profile-page.av-profile .address-card.is-default { border-color: var(--ink); }
+.profile-page.av-profile .address-default-badge {
   background: var(--ink);
   color: var(--bg);
   font-family: var(--sans);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
-.av .profile-page.av-profile .address-card-name { font-family: var(--serif); font-size: 17px; color: var(--ink); }
-.av .profile-page.av-profile .address-card-lines { font-family: var(--sans); color: var(--ink-soft); }
-.av .profile-page.av-profile .address-card-phone { font-family: var(--sans); color: var(--muted); }
-.av .profile-page.av-profile .address-actions button {
+.profile-page.av-profile .address-card-name { font-family: var(--serif); font-size: 17px; color: var(--ink); }
+.profile-page.av-profile .address-card-lines { font-family: var(--sans); color: var(--ink-soft); }
+.profile-page.av-profile .address-card-phone { font-family: var(--sans); color: var(--muted); }
+.profile-page.av-profile .address-actions button {
   font-family: var(--sans);
   color: var(--ink-soft);
   background: none;
   border: none;
   cursor: pointer;
 }
-.av .profile-page.av-profile .address-actions button:hover { color: var(--rani); }
-.av .profile-page.av-profile .address-actions .address-delete:hover { color: var(--rani); }
-.av .profile-page.av-profile .address-default-check span { font-family: var(--sans); color: var(--ink-soft); }
-.av .profile-page.av-profile .address-empty { font-family: var(--serif); font-style: italic; color: var(--muted); }
+.profile-page.av-profile .address-actions button:hover { color: var(--rani); }
+.profile-page.av-profile .address-actions .address-delete:hover { color: var(--rani); }
+.profile-page.av-profile .address-default-check span { font-family: var(--sans); color: var(--ink-soft); }
+.profile-page.av-profile .address-empty { font-family: var(--serif); font-style: italic; color: var(--muted); }
 
 /* ============ STATES ============ */
-.av .profile-page.av-profile .profile-loading { font-family: var(--serif); font-style: italic; color: var(--muted); }
-.av .profile-page.av-profile .profile-empty h1 { font-family: var(--serif); font-weight: 500; color: var(--ink); }
-.av .profile-page.av-profile .profile-empty p { font-family: var(--serif); color: var(--ink-soft); }
-.av .profile-page.av-profile .profile-empty a {
+.profile-page.av-profile .profile-empty h1 { font-family: var(--serif); font-weight: 500; color: var(--ink); }
+.profile-page.av-profile .profile-empty p { font-family: var(--serif); color: var(--ink-soft); }
+.profile-page.av-profile .profile-empty a {
   background: var(--ink);
   color: var(--bg);
   border-radius: 7px;
   font-family: var(--sans);
   letter-spacing: 0.04em;
 }
-.av .profile-page.av-profile .profile-empty a:hover { background: #100c08; }
+.profile-page.av-profile .profile-empty a:hover { background: #100c08; }
+
+/* ============================================================
+   ACCOUNT HOME + SUB-SCREENS (mobile-first)
+   ------------------------------------------------------------
+   The profile tab now lands on a dedicated, app-style account
+   home: an identity card, card-based navigation rows, and a
+   standalone logout. Edit / Addresses / Settings live on their
+   own routes. Modelled on Amazon / Nykaa / Ajio mobile accounts.
+   ============================================================ */
+
+/* The account home (`.av-account`) is also `.av-profile`, so it inherits the
+   editorial token set (EB Garamond serif, Hanken sans, parchment/ink/rani)
+   from the reskin block above — keeping all four account screens on one type
+   and colour system. No local overrides needed here. */
+
+/* Narrower, app-like column for the account screens. */
+.profile-page.av-account .profile-shell {
+  width: min(620px, calc(100% - 32px));
+  padding-top: 26px;
+  padding-bottom: 56px;
+}
+
+/* ── Identity card ── */
+.profile-page.av-account .account-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "avatar id"
+    "edit edit";
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 16px;
+}
+.profile-page.av-account .account-avatar {
+  grid-area: avatar;
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  color: var(--rani);
+  font-family: var(--serif);
+  font-size: 23px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.profile-page.av-account .account-id {
+  grid-area: id;
+  min-width: 0;
+}
+.profile-page.av-account .account-id h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(20px, 5vw, 26px);
+  line-height: 1.15;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.profile-page.av-account .account-id p {
+  margin: 4px 0 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.profile-page.av-account .account-edit {
+  grid-area: edit;
+  justify-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: var(--tap);
+  padding: 0 18px;
+  border: 1px solid var(--ink);
+  border-radius: 9px;
+  background: none;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.profile-page.av-account .account-edit:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+@media (min-width: 600px) {
+  .profile-page.av-account .account-card {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: "avatar id edit";
+  }
+  .profile-page.av-account .account-edit {
+    justify-self: end;
+    min-height: 42px;
+    padding: 0 16px;
+  }
+}
+
+/* ── Card-based navigation rows ── */
+.profile-page.av-account .account-nav {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.profile-page.av-account .account-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 66px;
+  padding: 12px 16px;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s ease;
+}
+.profile-page.av-account .account-row:last-child {
+  border-bottom: none;
+}
+.profile-page.av-account .account-row:hover,
+.profile-page.av-account .account-row:active {
+  background: var(--bg-2);
+}
+.profile-page.av-account .account-row-ic {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--bg-2);
+  color: var(--ink-soft);
+  transition: color 0.15s ease;
+}
+.profile-page.av-account .account-row:hover .account-row-ic {
+  color: var(--rani);
+}
+.profile-page.av-account .account-row-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.profile-page.av-account .account-row-label {
+  font-family: var(--sans);
+  font-size: 15px;
+  color: var(--ink);
+}
+.profile-page.av-account .account-row-hint {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--muted);
+}
+.profile-page.av-account .account-row-chev {
+  flex: none;
+  color: var(--muted);
+}
+/* Admin row reads as distinct without shouting. */
+.profile-page.av-account .account-row.is-admin .account-row-ic {
+  background: color-mix(in srgb, var(--rani) 12%, transparent);
+  color: var(--rani);
+}
+
+/* ── Standalone logout ── */
+.profile-page.av-account .account-logout {
+  margin-top: 16px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: var(--tap);
+  padding: 0 18px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  color: var(--rani);
+  font-family: var(--sans);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease,
+    transform var(--t-press, 90ms) ease;
+}
+.profile-page.av-account .account-logout:hover {
+  background: var(--rani);
+  border-color: var(--rani);
+  color: #fff;
+}
+.profile-page.av-account .account-logout:active {
+  transform: scale(0.99);
+}
+
+/* ── Sub-screen header (Edit / Addresses / Settings) ── */
+.profile-page.av-account .account-subhead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.profile-page.av-account .account-back {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 0.18s ease;
+}
+.profile-page.av-account .account-back:hover {
+  border-color: var(--ink);
+}
+.profile-page.av-account .account-subhead h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(22px, 5vw, 30px);
+  line-height: 1.1;
+  color: var(--ink);
+}
+.profile-page.av-account .account-subhead p {
+  margin: 3px 0 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--muted);
+}
+/* On the sub-screens the single panel shouldn't sit in the 2-col grid. */
+.profile-page.av-account .profile-panel {
+  margin-top: 0;
+}
+/* The Settings "Edit profile" link carries an icon — keep it on the baseline. */
+.profile-page.av-account .profile-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .av .profile-page.av-profile * { transition: none !important; }
+  .profile-page.av-profile * { transition: none !important; }
 }

@@ -1,3 +1,4 @@
+import ReactDOM from "react-dom";
 import {
   categories as staticCategories,
   odhniEdit as staticOdhniEdit,
@@ -6,9 +7,10 @@ import {
   stores,
   mapDirectionsUrl,
   img,
+  heroImageUrl,
 } from "./lib/landing-data";
 import { Play } from "lucide-react";
-import { fetchProducts, fetchCategories } from "./lib/api";
+import { fetchProducts, fetchCategories, fetchHeroSettings } from "./lib/api";
 import RedesignHeader from "./components/landing/redesign/RedesignHeader";
 import RedesignProductCard from "./components/landing/redesign/RedesignProductCard";
 import LandingHero from "./components/landing/redesign/LandingHero";
@@ -59,22 +61,35 @@ function catHref(c: { slug?: string; href?: string }): string {
 }
 
 export default async function Home() {
-  const [odhniEdit, bestsellers, categories] = await Promise.all([
+  const [odhniEdit, bestsellers, categories, heroSettings] = await Promise.all([
     fetchProducts({ category: "jaipuri-odhni" }).catch(() => staticOdhniEdit),
     fetchProducts({ bestseller: true }).catch(() => staticBestsellers),
     fetchCategories().catch(() => staticCategories),
+    // Cached server-side: the URLs land in the HTML so the browser starts the
+    // image download immediately, with no client round-trip to the API.
+    fetchHeroSettings({ revalidate: 60 }).catch(() => ({ images: [] as (string | null)[] })),
   ]);
 
   const edit = (odhniEdit.length ? odhniEdit : staticOdhniEdit).slice(0, 4);
   const best = (bestsellers.length ? bestsellers : staticBestsellers).slice(0, 4);
   const cats = (categories.length ? categories : staticCategories).slice(0, 5);
 
+  const heroImages = heroSettings.images
+    .filter((u): u is string => !!u)
+    .map((u) => heroImageUrl(u));
+
+  // Preload the first (above-the-fold) hero image at high priority so the
+  // browser fetches it right away instead of treating it as a late discovery.
+  if (heroImages[0]) {
+    ReactDOM.preload(heroImages[0], { as: "image", fetchPriority: "high" });
+  }
+
   return (
     <div className="av-lp">
       <RedesignHeader />
 
-      {/* HERO — auto-sliding 4-image carousel under one steady headline */}
-      <LandingHero />
+      {/* HERO — auto-sliding image carousel under one steady headline */}
+      <LandingHero images={heroImages} />
 
       {/* QUIET TRUST LINE */}
       <div className="lp-trustline">

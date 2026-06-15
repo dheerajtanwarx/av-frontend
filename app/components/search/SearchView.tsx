@@ -6,6 +6,7 @@ import ProductCard from "../landing/ProductCard";
 import { SearchIcon } from "../landing/Icons";
 import SearchSuggestions from "./SearchSuggestions";
 import { usePriceSort, PriceSortBar } from "../product/PriceSortBar";
+import { Skeleton, ProductGridSkeleton } from "../skeletons";
 import { searchProducts } from "../../lib/api";
 import type { Product } from "../../lib/landing-data";
 
@@ -110,16 +111,20 @@ export default function SearchView() {
         <section className="search-results">
           <div className="cat-bar">
             <span className="cat-bar-count">
-              {loading
-                ? "Searching…"
-                : `${filtered.length} product${filtered.length !== 1 ? "s" : ""}`}
+              {loading ? (
+                <Skeleton variant="line" height={13} width={110} />
+              ) : (
+                `${filtered.length} product${filtered.length !== 1 ? "s" : ""}`
+              )}
             </span>
             {!loading && results.length > 0 && (
               <PriceSortBar state={ps} showSort={false} />
             )}
           </div>
 
-          {!loading && filtered.length === 0 ? (
+          {loading ? (
+            <ProductGridSkeleton count={8} className="prods cat-grid" />
+          ) : filtered.length === 0 ? (
             <div className="cat-empty">
               <p>
                 {results.length > 0
@@ -135,7 +140,7 @@ export default function SearchView() {
               )}
             </div>
           ) : (
-            <div className={`prods cat-grid${loading ? " is-loading" : ""}`}>
+            <div className="prods cat-grid">
               {filtered.map((p, i) => (
                 <ProductCard key={p.slug} product={p} index={i} reveal={false} />
               ))}

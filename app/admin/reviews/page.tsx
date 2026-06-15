@@ -9,6 +9,7 @@ import {
   type AdminReviewFilter,
   type AdminReviewsResponse,
 } from "../../lib/api";
+import { AdminCardListSkeleton } from "../../components/skeletons";
 
 const TABS: { key: AdminReviewFilter; label: string }[] = [
   { key: "all", label: "All" },
@@ -146,7 +147,7 @@ export default function AdminReviewsPage() {
         {error && <p className="admin-error">{error}</p>}
 
         {loading ? (
-          <p className="admin-note">Loading reviews…</p>
+          <AdminCardListSkeleton count={6} />
         ) : data && data.reviews.length > 0 ? (
           <div className="admin-review-list">
             {data.reviews.map((r) => (

@@ -7,6 +7,7 @@ import {
   ApiError,
   type AdminCustomersResponse,
 } from "../../lib/api";
+import { AdminTableRowsSkeleton } from "../../components/skeletons";
 
 function inr(amount: number): string {
   return new Intl.NumberFormat("en-IN", {
@@ -102,6 +103,9 @@ export default function AdminCustomersPage() {
             </tr>
           </thead>
           <tbody>
+            {loading && customers.length === 0 && (
+              <AdminTableRowsSkeleton rows={8} cols={5} />
+            )}
             {customers.map((c) => (
               <tr
                 key={c.id}
@@ -129,9 +133,7 @@ export default function AdminCustomersPage() {
           </tbody>
         </table>
 
-        {loading ? (
-          <p className="admin-note">Loading customers…</p>
-        ) : customers.length === 0 ? (
+        {!loading && customers.length === 0 ? (
           <p className="admin-note">No customers match this view.</p>
         ) : null}
       </div>

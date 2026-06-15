@@ -262,7 +262,12 @@
   position: relative;
   height: 566px;
   overflow: hidden;
-  background: var(--p-img);
+  /* Branded fallback shown before/without any uploaded imagery — the editorial
+     bridal palette (deep ink → plum → rani) lit by a soft gold glow. Uploaded
+     slides sit on top of this and cover it fully when present. */
+  background:
+    radial-gradient(120% 90% at 72% 18%, rgba(189, 143, 60, 0.22), transparent 58%),
+    linear-gradient(152deg, #2b2018 0%, #5a2238 46%, #8e2b52 100%);
 }
 /* crossfading carousel slides — only the active one is visible */
 .av-lp .lp-hero-slide {

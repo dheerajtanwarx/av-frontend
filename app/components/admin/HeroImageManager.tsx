@@ -7,6 +7,7 @@ import {
   ApiError,
 } from "../../lib/api";
 import ImageUploader from "./ImageUploader";
+import { AdminPanelSkeleton } from "../skeletons";
 
 /* The storefront hero slides, in order. Labels mirror app/lib/landing-data.ts
    so an admin can tell which slide they're replacing the background for. */
@@ -87,7 +88,7 @@ export default function HeroImageManager() {
       {open && (
         <div className="admin-hero-body">
           {loading ? (
-            <p className="admin-note">Loading hero settings…</p>
+            <AdminPanelSkeleton rows={3} withTitle={false} />
           ) : (
             <>
               <p className="admin-cell-sub admin-hero-note">

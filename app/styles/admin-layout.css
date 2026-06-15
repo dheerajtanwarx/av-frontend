@@ -988,3 +988,55 @@ a.admin-notifpage-title:hover {
   text-align: center;
   color: var(--ink-soft);
 }
+
+/* Desktop: pin the column widths so the variable-length notification body
+   (nowrap + ellipsis) can't blow the table past its wrap and clip the trailing
+   Actions column. Fixed layout gives the body cell the leftover space and keeps
+   Mark read / Archive fully visible. Scoped above the mobile block breakpoint. */
+@media (min-width: 641px) {
+  .admin-notifpage-table {
+    table-layout: fixed;
+    width: 100%;
+  }
+  .admin-notifpage-table th:nth-child(1),
+  .admin-notifpage-table td:nth-child(1) {
+    width: 46px;
+  }
+  .admin-notifpage-table th:nth-child(2),
+  .admin-notifpage-table td:nth-child(2) {
+    width: 180px;
+  }
+  /* 3rd column (Notification body) takes the remaining space. */
+  .admin-notifpage-table .admin-notifpage-main {
+    max-width: none;
+  }
+  .admin-notifpage-table th:nth-child(4),
+  .admin-notifpage-table td:nth-child(4) {
+    width: 90px;
+  }
+  .admin-notifpage-table th:nth-child(5),
+  .admin-notifpage-table td:nth-child(5) {
+    width: 104px;
+  }
+  .admin-notifpage-table th:nth-child(6),
+  .admin-notifpage-table td:nth-child(6) {
+    width: 212px;
+  }
+}
+
+/* Mobile: the generic table→block rule (admin.css) leaves rows touching with
+   only a hairline between them. Give each notification its own spaced card,
+   matching the order-card treatment elsewhere. */
+@media (max-width: 640px) {
+  .admin-notifpage .admin-notifpage-table tr {
+    border: 1px solid var(--line-2);
+    border-radius: 14px;
+    margin-bottom: 14px;
+    padding: 8px 4px;
+    background: var(--surface);
+    box-shadow: 0 1px 2px rgba(43, 32, 24, 0.05);
+  }
+  .admin-notifpage .admin-notifpage-table tr.admin-notifpage-unread {
+    background: var(--rani-wash);
+  }
+}
