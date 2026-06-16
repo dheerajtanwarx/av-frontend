@@ -134,8 +134,20 @@
   aspect-ratio: 3 / 4;
   background: var(--bg-3);
   overflow: hidden;
-  border-radius: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
   box-shadow: none;
+  transition:
+    border-color 0.45s ease,
+    box-shadow 0.45s ease,
+    transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.av .search-page.av-search .prod:hover .imgwrap {
+  border-color: color-mix(in srgb, var(--rani) 40%, var(--line-2));
+  box-shadow:
+    0 22px 44px -26px rgba(34, 27, 21, 0.5),
+    0 6px 16px -12px rgba(34, 27, 21, 0.32);
+  transform: translateY(-5px);
 }
 .av .search-page.av-search .prod .imgwrap .ph { display: block; width: 100%; height: 100%; }
 .av .search-page.av-search .prod .imgwrap img {
@@ -167,9 +179,13 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #fff;
-  background: rgba(34, 27, 21, 0.78);
-  border-radius: 0;
+  background: rgba(34, 27, 21, 0.82);
+  border-radius: 999px;
+  padding: 6px 11px;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
 }
+.av .search-page.av-search .prod .flag.sale { background: var(--rani); }
 .av .search-page.av-search .prod .card-btns {
   position: absolute;
   left: 12px;
@@ -205,6 +221,7 @@
 .av .search-page.av-search .prod .pname {
   font-family: var(--serif);
   font-size: 16px;
+  font-weight: 600;
   line-height: 1.2;
   color: var(--ink);
   margin-top: 12px;
@@ -219,7 +236,7 @@
   margin-top: 5px;
 }
 .av .search-page.av-search .prod .pmeta { display: flex; align-items: baseline; gap: 7px; margin-top: 8px; }
-.av .search-page.av-search .prod .pmeta .price { font-family: var(--sans); font-size: 13px; color: var(--ink); }
+.av .search-page.av-search .prod .pmeta .price { font-family: var(--sans); font-size: 14px; font-weight: 700; color: var(--ink); }
 .av .search-page.av-search .prod .pmeta .was {
   font-family: var(--sans);
   font-size: 11px;
@@ -228,11 +245,19 @@
 }
 .av .search-page.av-search .prod .pmeta .stars {
   margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
   font-family: var(--sans);
-  font-size: 10.5px;
-  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--rani) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rani) 22%, transparent);
+  padding: 2px 8px;
+  border-radius: 999px;
 }
-.av .search-page.av-search .prod .pmeta .stars .rstar { color: var(--muted); }
+.av .search-page.av-search .prod .pmeta .stars .rstar { color: var(--rani); font-size: 10px; }
 .av .search-page.av-search .prod .pstock { font-family: var(--sans); font-size: 10px; color: var(--rani); margin-top: 6px; }
 
 /* ============ RESPONSIVE ============ */

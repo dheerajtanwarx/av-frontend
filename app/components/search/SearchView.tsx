@@ -16,7 +16,7 @@ export default function SearchView() {
 
   const [q, setQ] = useState(() => params.get("q") ?? "");
   const [results, setResults] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => (params.get("q") ?? "").trim() !== "");
   const [suggestOpen, setSuggestOpen] = useState(false);
 
   // Sort + price filter applied client-side over the current result set.
@@ -35,6 +35,13 @@ export default function SearchView() {
   // backend `q` matches across a product's name, type/tags and description, so
   // a plain text search covers names, alphabetic terms and tags.
   useEffect(() => {
+    syncUrl();
+    // Only fetch once the user has typed something — no pre-fetched catalog.
+    if (q.trim() === "") {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
     const ctrl = new AbortController();
     setLoading(true);
     const t = setTimeout(async () => {
@@ -46,7 +53,6 @@ export default function SearchView() {
         if (!ctrl.signal.aborted) setLoading(false);
       }
     }, 280);
-    syncUrl();
     return () => {
       ctrl.abort();
       clearTimeout(t);
@@ -58,11 +64,6 @@ export default function SearchView() {
     <main className="search-page av-search">
       <div className="search-hero">
         <div className="wrap">
-          <nav className="cat-breadcrumb">
-            <a href="/">Home</a>
-            <span className="sep">/</span>
-            <span>Search</span>
-          </nav>
           <h1>
             Search the <em>Atelier</em>
           </h1>
@@ -109,18 +110,20 @@ export default function SearchView() {
 
       <div className="wrap">
         <section className="search-results">
-          <div className="cat-bar">
-            <span className="cat-bar-count">
-              {loading ? (
-                <Skeleton variant="line" height={13} width={110} />
-              ) : (
-                `${filtered.length} product${filtered.length !== 1 ? "s" : ""}`
+          {(loading || q.trim() !== "") && (
+            <div className="cat-bar">
+              <span className="cat-bar-count">
+                {loading ? (
+                  <Skeleton variant="line" height={13} width={110} />
+                ) : (
+                  `${filtered.length} product${filtered.length !== 1 ? "s" : ""}`
+                )}
+              </span>
+              {!loading && results.length > 0 && (
+                <PriceSortBar state={ps} showSort={false} />
               )}
-            </span>
-            {!loading && results.length > 0 && (
-              <PriceSortBar state={ps} showSort={false} />
-            )}
-          </div>
+            </div>
+          )}
 
           {loading ? (
             <ProductGridSkeleton count={8} className="prods cat-grid" />

@@ -127,17 +127,20 @@ function OrderSummary() {
         disabled={hasUnavailableItems}
         aria-disabled={hasUnavailableItems}
       >
-        {CartIc.lock} Proceed to checkout
+        {CartIc.lock} Request Order on WhatsApp
       </button>
+      <div className="sum-note">
+        Orders are confirmed only after admin approval and payment verification.
+      </div>
       <div className="sum-trust">
-        <span className="ti">{CartIc.shield} Secure payment</span>
+        <span className="ti">{CartIc.shield} Manual UPI · after approval</span>
         <span className="ti">{CartIc.scissor} Made to measure</span>
       </div>
       <div className="sum-pay">
         <span>UPI</span>
-        <span>Visa</span>
-        <span>Mastercard</span>
-        <span>COD</span>
+        <span>PhonePe</span>
+        <span>Google Pay</span>
+        <span>Paytm</span>
       </div>
     </div>
   );

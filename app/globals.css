@@ -16,6 +16,8 @@
 @import "./styles/cart-redesign.css";
 /* Login & signup pages (scoped to .auth) */
 @import "./styles/auth.css";
+/* Offline-first manual order requests (PDP notice, review, My Requests) */
+@import "./styles/requests.css";
 /* Account profile page */
 @import "./styles/profile.css";
 /* Static info / footer pages */
@@ -32,10 +34,11 @@
 @import "./styles/search-redesign.css";
 /* Phase-5b profile-page redesign — editorial reskin, scoped to .profile-page.av-profile */
 @import "./styles/profile-redesign.css";
-/* Admin panel shell — sidebar, topbar, profile menu, placeholders */
-@import "./styles/admin-layout.css";
-/* Admin review moderation page (scoped to .admin) */
-@import "./styles/admin.css";
+/* Admin panel CSS (admin-layout.css + admin.css) is intentionally NOT imported
+   here. It is route-scoped — imported in app/admin/layout.tsx — so the ~3k lines
+   of admin styling never ship to storefront shoppers. Both files use only plain
+   `var(--*)` tokens from theme.css (defined globally in :root) and no Tailwind
+   directives, so they work standalone. */
 /* Mobile bottom navigation (thumb-zone nav bar) */
 @import "./styles/bottom-nav.css";
 /* Global reusable loading-skeleton system (shimmer primitives + composed) */

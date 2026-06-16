@@ -157,8 +157,22 @@
   aspect-ratio: 3 / 4;
   background: var(--p-img);
   overflow: hidden;
-  border-radius: 0;
+  border: 1px solid var(--p-line);
+  border-radius: 12px;
   box-shadow: none;
+  transition:
+    border-color 0.45s ease,
+    box-shadow 0.45s ease,
+    transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+/* Lift the whole frame on hover — the border warms to rani and a soft shadow
+   floats the card off the parchment, turning the flat grid interactive. */
+.av .cat-page.av-cat .prod:hover .imgwrap {
+  border-color: color-mix(in srgb, var(--p-rani) 40%, var(--p-line-3));
+  box-shadow:
+    0 22px 44px -26px rgba(34, 27, 21, 0.5),
+    0 6px 16px -12px rgba(34, 27, 21, 0.32);
+  transform: translateY(-5px);
 }
 .av .cat-page.av-cat .prod .imgwrap .ph { display: block; width: 100%; height: 100%; }
 .av .cat-page.av-cat .prod .imgwrap img {
@@ -194,9 +208,14 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #fff;
-  background: rgba(34, 27, 21, 0.78);
-  border-radius: 0;
+  background: rgba(34, 27, 21, 0.82);
+  border-radius: 999px;
+  padding: 6px 11px;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
 }
+/* Discount tags pick up the brand rani so a deal reads at a glance. */
+.av .cat-page.av-cat .prod .flag.sale { background: var(--p-rani); }
 .av .cat-page.av-cat .prod .flag.soldout { background: rgba(34, 27, 21, 0.9); }
 
 /* quick add — a single quiet outline action revealed on the image,
@@ -240,6 +259,7 @@
 .av .cat-page.av-cat .prod .pname {
   font-family: var(--serif-ed);
   font-size: 16px;
+  font-weight: 600;
   line-height: 1.2;
   color: var(--p-ink);
   margin-top: 12px;
@@ -267,20 +287,34 @@
   gap: 7px;
   margin-top: 8px;
 }
-.av .cat-page.av-cat .prod .pmeta .price { font-family: var(--ui-ed); font-size: 13px; color: var(--p-ink); }
+.av .cat-page.av-cat .prod .pmeta .price {
+  font-family: var(--ui-ed);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--p-ink);
+}
 .av .cat-page.av-cat .prod .pmeta .was {
   font-family: var(--ui-ed);
   font-size: 11px;
   color: var(--p-muted);
   text-decoration: line-through;
 }
+/* Rating reads as a small rani-tinted chip rather than faint grey text. */
 .av .cat-page.av-cat .prod .pmeta .stars {
   margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
   font-family: var(--ui-ed);
-  font-size: 10.5px;
-  color: var(--p-muted);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--p-ink);
+  background: color-mix(in srgb, var(--p-rani) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--p-rani) 22%, transparent);
+  padding: 2px 8px;
+  border-radius: 999px;
 }
-.av .cat-page.av-cat .prod .pmeta .stars .rstar { color: var(--p-muted); }
+.av .cat-page.av-cat .prod .pmeta .stars .rstar { color: var(--p-rani); font-size: 10px; }
 .av .cat-page.av-cat .prod .pstock {
   font-family: var(--ui-ed);
   font-size: 10px;

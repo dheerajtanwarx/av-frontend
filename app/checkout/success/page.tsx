@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import ConfirmationView from "../../components/cart/ConfirmationView";
+import RequestSubmitted from "../../components/cart/RequestSubmitted";
 
 export const metadata: Metadata = {
-  title: "Order Confirmed — AV Creation",
-  description: "Thank you. Your made-to-order heirloom is reserved with our karigars.",
+  title: "Request Submitted — AV Creation",
+  description: "Your order request is pending approval. We’ll reply on WhatsApp shortly.",
 };
 
 export default function CheckoutSuccessPage() {
-  return <ConfirmationView />;
+  return <RequestSubmitted />;
 }

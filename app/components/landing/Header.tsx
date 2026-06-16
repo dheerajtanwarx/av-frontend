@@ -57,7 +57,7 @@ import { AccountIcon, CartIcon, HeartIcon, SearchIcon } from "./Icons";
 import SearchSuggestions from "../search/SearchSuggestions";
 import { useCart } from "./CartContext";
 import { useWishlist } from "./WishlistContext";
-import { getSession, logout, type SessionUser } from "../../lib/api";
+import { getSession, type SessionUser } from "../../lib/api";
 
 function firstName(user: SessionUser): string {
   return (user.name || user.email || "Account").trim().split(/\s+/)[0];
@@ -66,7 +66,6 @@ function firstName(user: SessionUser): string {
 export function AccountMenu() {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -82,25 +81,6 @@ export function AccountMenu() {
     };
   }, []);
 
-  // close the menu on outside click
-  useEffect(() => {
-    if (!open) return;
-    const onClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [open]);
-
-  async function handleLogout() {
-    try {
-      await logout();
-    } finally {
-      setUser(null);
-      setOpen(false);
-    }
-  }
-
   // Before the session resolves, render a neutral link to avoid a flash.
   if (!loaded || !user) {
     return (
@@ -112,32 +92,10 @@ export function AccountMenu() {
 
   return (
     <div className="acct" ref={ref}>
-      <button aria-label="Account" onClick={() => setOpen((o) => !o)}>
+      <a aria-label="Account" className="acct-link" href="/profile">
         <AccountIcon />
         <span className="acct-name">{firstName(user)}</span>
-      </button>
-      {open && (
-        <div className="acct-menu">
-          <span className="acct-hello">Hi, {firstName(user)}</span>
-          <a className="acct-profile" href="/profile">
-            View profile
-          </a>
-          <a className="acct-profile" href="/my-orders">
-            My orders
-          </a>
-          <a className="acct-profile" href="/wishlist">
-            My wishlist
-          </a>
-          {user.role === "ADMIN" && (
-            <a className="acct-profile acct-admin" href="/admin/dashboard">
-             Admin Dashboard
-            </a>
-          )}
-          <button className="acct-logout" onClick={handleLogout}>
-            Log out
-          </button>
-        </div>
-      )}
+      </a>
     </div>
   );
 }

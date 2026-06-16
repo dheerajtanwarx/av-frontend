@@ -43,6 +43,14 @@ export default function ProductDetail({ product }: { product: PdpProduct }) {
 
   const galleryImages = useMemo(() => colorImages(product, color), [product, color]);
 
+  // Navigating between two products hits the same /product/[slug] route, so the
+  // App Router keeps the previous scroll position. Reset to the top whenever the
+  // product changes so the fetched product is visible without manual scrolling.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.scrollTo(0, 0);
+  }, [product.slug]);
+
   // Warm the browser cache with every colour's images on mount so a later
   // switch is instant and flicker-free. Best-effort; skipped during SSR.
   useEffect(() => {

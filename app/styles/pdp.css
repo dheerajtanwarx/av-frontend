@@ -1332,8 +1332,8 @@
   border-color: var(--ink);
 }
 .pdp .reco-cat.on {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: var(--rani);
+  border-color: var(--rani);
   color: #fff;
 }
 .pdp .prod {

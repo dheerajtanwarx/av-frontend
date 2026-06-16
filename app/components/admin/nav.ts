@@ -21,6 +21,7 @@ export type AdminNavItem = {
 /* Single source of truth for the admin sidebar + topbar page title. */
 export const ADMIN_NAV: AdminNavItem[] = [
   { label: "Dashboard", href: "/admin/dashboard", icon: DashboardIcon },
+  { label: "Requests", href: "/admin/order-requests", icon: OrdersIcon },
   { label: "Orders", href: "/admin/orders", icon: OrdersIcon },
   { label: "Scan", href: "/admin/scan", icon: ScanIcon },
   { label: "Products", href: "/admin/products", icon: ProductsIcon },

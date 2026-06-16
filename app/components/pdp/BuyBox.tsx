@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { colorImages, type AccordionItem, type PdpColor, type PdpProduct } from "../../lib/pdp-data";
 import { Ic } from "./icons";
@@ -8,7 +8,13 @@ import { usePdp } from "./PdpContext";
 import { useCart } from "../landing/CartContext";
 import { useWishlist } from "../landing/WishlistContext";
 import { ensureAuthenticated } from "../../lib/auth-guard";
+import { fetchManualOrderConfig, type ManualOrderConfig } from "../../lib/api";
 import { parseINR, type CartItem } from "../../lib/cart-data";
+
+/** Fallback notice text shown until the live config loads (or if it fails). */
+const FALLBACK_NOTICE =
+  "This product is not automatically reserved. Our team will first verify availability. You will receive payment instructions only after approval.";
+const FALLBACK_WINDOW = "We respond within 2 hours, Mon–Sat 10am–7pm";
 
 /** Build a cart line item from the current PDP selections. */
 function makeItem(
@@ -158,6 +164,18 @@ export default function BuyBox({
   const router = useRouter();
   const wish = isWished(product.slug);
 
+  // Live manual-order copy (WhatsApp response window + "not reserved" notice).
+  const [cfg, setCfg] = useState<ManualOrderConfig | null>(null);
+  useEffect(() => {
+    let alive = true;
+    fetchManualOrderConfig()
+      .then((c) => alive && setCfg(c))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   const available = stockOf(color);
   const soldOut = available <= 0;
 
@@ -183,7 +201,10 @@ export default function BuyBox({
     setTimeout(() => setPop(false), 320);
   };
 
-  const buyNow = async () => {
+  // Offline-first: never an instant purchase. Add the piece to the request
+  // basket and send the shopper to the review page, where the request is
+  // submitted and a WhatsApp message is prepared. Stock is NOT reserved.
+  const requestOrder = async () => {
     if (soldOut) return;
     if (!(await ensureAuthenticated("/checkout"))) return;
     addItem(makeItem(product, color, size, qty));
@@ -301,9 +322,17 @@ export default function BuyBox({
           {Ic.heart}
         </button>
       </div>
-      <button className="buynow" onClick={buyNow} disabled={soldOut}>
-        {soldOut ? "Out of stock" : "Buy it now"}
+      <button className="buynow req-wa" onClick={requestOrder} disabled={soldOut}>
+        {soldOut ? "Out of stock" : "Request Order on WhatsApp"}
       </button>
+
+      <div className="req-notice">
+        <p className="req-notice-body">{cfg?.notice ?? FALLBACK_NOTICE}</p>
+        <p className="req-window">
+          <span className="dot" aria-hidden="true" />
+          {cfg?.responseWindow ?? FALLBACK_WINDOW}
+        </p>
+      </div>
 
       <div className="bb-trust">
         <div className="t">
@@ -318,8 +347,8 @@ export default function BuyBox({
         </div>
         <div className="t">
           {Ic.shield}
-          <div className="tt">Secure Checkout</div>
-          <div className="ts">UPI · Cards · COD</div>
+          <div className="tt">Manual UPI</div>
+          <div className="ts">Pay after approval</div>
         </div>
       </div>
 

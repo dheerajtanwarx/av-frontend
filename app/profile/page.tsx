@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ShoppingBag,
+  ClipboardList,
   MapPin,
   Settings,
   Heart,
@@ -42,6 +43,12 @@ const NAV: NavItem[] = [
     label: "My Orders",
     hint: "Track, return or buy again",
     icon: <ShoppingBag size={20} strokeWidth={1.7} aria-hidden="true" />,
+  },
+  {
+    href: "/my-requests",
+    label: "My Requests",
+    hint: "Approval & payment status",
+    icon: <ClipboardList size={20} strokeWidth={1.7} aria-hidden="true" />,
   },
   {
     href: "/profile/addresses",

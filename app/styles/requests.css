@@ -1,0 +1,423 @@
+/* ============================================================
+   Offline-first manual order requests — UI
+   PDP notice, request-review, confirmation, and My Requests.
+   Reuses existing tokens (--ink, --line, --rani, etc.).
+   ============================================================ */
+
+:root {
+  --wa: #1faa53;
+  --wa-deep: #168f44;
+}
+
+/* WhatsApp request CTA (shared: PDP, review, success) */
+.req-wa {
+  background: var(--wa) !important;
+  border-color: var(--wa) !important;
+  color: #fff !important;
+}
+.req-wa:hover:not(:disabled) {
+  background: var(--wa-deep) !important;
+  border-color: var(--wa-deep) !important;
+}
+.req-wa:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ---------- PDP notice ---------- */
+.req-notice {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-2);
+}
+.req-notice-body {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+.req-window {
+  margin: 10px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.req-window .dot,
+.req-callout-window .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--wa);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wa) 22%, transparent);
+  flex: 0 0 auto;
+}
+
+/* ---------- Request review (/checkout) ---------- */
+.req-callout {
+  display: flex;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--rani);
+  border-radius: 12px;
+  background: var(--bg-2);
+  margin-bottom: 18px;
+}
+.req-callout-icon {
+  color: var(--rani);
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+.req-callout-body {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.req-callout-window {
+  margin: 10px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.req-note {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--bg);
+  resize: vertical;
+}
+.req-note:focus {
+  outline: none;
+  border-color: var(--rani);
+}
+.req-addr-link {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rani);
+  text-decoration: none;
+}
+.req-summary-fine {
+  margin: 12px 0 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.sum-note {
+  margin: 12px 0 6px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+/* ---------- Confirmation (/checkout/success) ---------- */
+.req-done {
+  max-width: 560px;
+  margin: 32px auto;
+  text-align: center;
+}
+.req-done-mark {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--wa) 14%, transparent);
+  color: var(--wa);
+}
+.req-done h1 {
+  margin: 0 0 6px;
+  font-family: var(--display, var(--serif));
+}
+.req-done-no {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+}
+.req-done-lead {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 auto 22px;
+}
+.req-steps {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  text-align: left;
+  display: grid;
+  gap: 12px;
+}
+.req-steps li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.req-steps .n {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--rani);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+.req-done-actions {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.req-done-actions .req-wa {
+  display: inline-flex;
+  justify-content: center;
+  text-decoration: none;
+}
+.req-done-fine {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ---------- My Requests ---------- */
+.req-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+  background: var(--surface, var(--bg));
+}
+.req-card + .req-card {
+  margin-top: 14px;
+}
+.req-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.req-card-no {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+}
+.req-card-date {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.req-card-items {
+  display: grid;
+  gap: 8px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.req-card-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: baseline;
+  font-size: 13.5px;
+  color: var(--ink);
+}
+.req-card-item .ri-opt {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.req-card-item .ri-qty {
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.req-card-item .ri-price {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.req-card-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.req-card-total b {
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.req-state-note {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--bg-2);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.req-state-note.ok {
+  background: color-mix(in srgb, var(--wa) 12%, transparent);
+  color: var(--wa-deep);
+}
+.req-state-note.bad {
+  background: color-mix(in srgb, #d8443a 10%, transparent);
+  color: #b23b32;
+}
+.req-state-note a {
+  color: var(--rani);
+  font-weight: 600;
+}
+
+/* Payment instructions (APPROVED) */
+.req-pay {
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px dashed var(--rani);
+  border-radius: 12px;
+  background: var(--bg-2);
+}
+.req-pay-head {
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--rani);
+  margin-bottom: 12px;
+}
+.req-pay-rows {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.req-pay-rows > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13.5px;
+}
+.req-pay-rows span {
+  color: var(--muted);
+}
+.req-pay-rows b {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.req-pay-fine {
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.req-pay-form {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.req-pay-form input {
+  flex: 1 1 200px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 13.5px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.req-pay-form input:focus {
+  outline: none;
+  border-color: var(--rani);
+}
+.req-pay-form button {
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 9px;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 13.5px;
+  background: var(--wa);
+  color: #fff;
+  cursor: pointer;
+}
+.req-pay-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.req-cancel {
+  margin-top: 14px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px;
+  background: transparent;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.req-cancel:hover:not(:disabled) {
+  border-color: #d8443a;
+  color: #b23b32;
+}
+.req-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Admin request detail panel ---------- */
+.req-pay-inline {
+  padding: 12px 14px;
+  border: 1px dashed var(--rani, #b3357a);
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+.req-reject-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.req-reject-row .admin-input {
+  flex: 1 1 auto;
+  margin: 0;
+}
+.req-reject-row .admin-btn {
+  flex: 0 0 auto;
+}
+/* WhatsApp-green link styled as an admin button */
+a.admin-btn.req-wa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  background: var(--wa) !important;
+  border-color: var(--wa) !important;
+  color: #fff !important;
+}
+a.admin-btn.req-wa-btn:hover {
+  background: var(--wa-deep) !important;
+  border-color: var(--wa-deep) !important;
+}

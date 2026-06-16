@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import CheckoutView from "../components/cart/CheckoutView";
+import RequestReview from "../components/cart/RequestReview";
 
 export const metadata: Metadata = {
-  title: "Secure Checkout — AV Creation",
-  description: "Contact, delivery and payment — all on one secure page.",
+  title: "Request Order — AV Creation",
+  description:
+    "Review your selection and request your order on WhatsApp. We verify availability before any payment.",
 };
 
 export default function CheckoutPage() {
-  return <CheckoutView />;
+  return <RequestReview />;
 }

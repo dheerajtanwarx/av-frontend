@@ -779,32 +779,84 @@
   color: #fff;
   border-color: var(--p-ink);
 }
-.pdp.av-pdp .prods .prod .imgwrap,
+/* The card becomes a real surface: a paper panel that lifts off the parchment
+   ground, framed by a hairline that warms to rani on hover. */
+.pdp.av-pdp .prods .prod {
+  background: #fffdf8;
+  border: 1px solid var(--p-line);
+  border-radius: 14px;
+  padding: 9px 9px 16px;
+  transition:
+    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+    border-color 0.5s ease;
+}
+.pdp.av-pdp .prods .prod:hover {
+  transform: translateY(-6px);
+  border-color: color-mix(in srgb, var(--p-rani) 42%, var(--p-line-3));
+  box-shadow:
+    0 22px 44px -26px rgba(34, 27, 21, 0.5),
+    0 6px 16px -12px rgba(34, 27, 21, 0.32);
+}
+.pdp.av-pdp .prods .prod .imgwrap {
+  background: var(--p-img);
+  border: 1px solid var(--p-line);
+  border-radius: 9px;
+}
 .pdp.av-pdp .prods .prod .ph {
   background: var(--p-img);
   border-radius: 0;
 }
 .pdp.av-pdp .prods .prod .flag {
-  background: rgba(244, 239, 230, 0.92);
+  top: 12px;
+  left: 12px;
+  background: rgba(252, 250, 245, 0.92);
   color: var(--p-ink);
   font-family: var(--ui);
   font-size: 8.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  border-radius: 0;
+  border: 1px solid var(--p-line-2);
+  border-radius: 999px;
+  backdrop-filter: blur(3px);
+  box-shadow: 0 2px 8px -4px rgba(34, 27, 21, 0.3);
+}
+.pdp.av-pdp .prods .prod .wish {
+  top: 12px;
+  right: 12px;
+  border: 1px solid var(--p-line-2);
+  box-shadow: 0 2px 8px -4px rgba(34, 27, 21, 0.3);
 }
 .pdp.av-pdp .prods .prod .qa {
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
   font-family: var(--ui);
   font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  background: rgba(20, 14, 9, 0.55);
+  background: var(--p-ink);
   color: #fff;
+  border-radius: 999px;
 }
+.pdp.av-pdp .prods .prod .qa:hover {
+  background: var(--p-rani);
+}
+/* Name reveals a fine rani rule on hover — a quiet interactive cue. */
 .pdp.av-pdp .prods .prod .pname {
+  display: inline-block;
   font-family: var(--serif);
   font-size: 15px;
   color: var(--p-ink);
+  background-image: linear-gradient(var(--p-rani), var(--p-rani));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  padding-bottom: 1px;
+  transition: background-size 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.pdp.av-pdp .prods .prod:hover .pname {
+  background-size: 100% 1px;
 }
 .pdp.av-pdp .prods .prod .ptype {
   font-family: var(--ui);

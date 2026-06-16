@@ -317,6 +317,100 @@ export function submitReview(
   });
 }
 
+/* ---------- Offline-first manual order requests ---------- */
+
+/** Public config for the manual-approval flow (WhatsApp + UPI + notices). */
+export type ManualOrderConfig = {
+  whatsappNumber: string;
+  upiId: string;
+  upiName: string;
+  responseWindow: string;
+  notice: string;
+  confirmationNotice: string;
+};
+
+export function fetchManualOrderConfig(): Promise<ManualOrderConfig> {
+  return apiGet<ManualOrderConfig>(`/api/settings/manual-order`);
+}
+
+export type OrderRequestStatus =
+  | "PENDING_APPROVAL"
+  | "APPROVED"
+  | "PAYMENT_SUBMITTED"
+  | "PAID"
+  | "CONFIRMED"
+  | "REJECTED"
+  | "CANCELLED";
+
+export type OrderRequestItem = {
+  name: string;
+  color: string;
+  size: string | null;
+  qty: number;
+  unitPrice: number;
+  price: string;
+  lineTotal: number;
+  /** Live product (for admin thumbnail + deep-link); null if product is gone. */
+  productId: number | null;
+  slug: string | null;
+  image: string | null;
+};
+
+export type OrderRequest = {
+  no: string;
+  id: number;
+  status: OrderRequestStatus;
+  statusLabel: string;
+  total: number;
+  totalDisplay: string;
+  upiId: string | null;
+  paymentRef: string | null;
+  paymentProofUrl: string | null;
+  customerNote: string | null;
+  rejectionReason: string | null;
+  orderNo: string | null;
+  createdAt: string;
+  approvedAt: string | null;
+  paidAt: string | null;
+  confirmedAt: string | null;
+  address: OrderShippingAddress | null;
+  items: OrderRequestItem[];
+};
+
+export type CreateRequestInput = {
+  items: { slug: string; color: string; size: string; qty: number }[];
+  addressId?: number | null;
+  customerNote?: string | null;
+};
+
+export type CreateRequestResponse = {
+  request: OrderRequest;
+  whatsapp: { link: string; number: string; responseWindow: string };
+};
+
+export function createOrderRequest(input: CreateRequestInput): Promise<CreateRequestResponse> {
+  return apiSend<CreateRequestResponse>("POST", `/api/order-requests`, input);
+}
+
+export function fetchMyRequests(): Promise<OrderRequest[]> {
+  return apiGet<OrderRequest[]>(`/api/order-requests`);
+}
+
+export function fetchMyRequest(id: number): Promise<OrderRequest> {
+  return apiGet<OrderRequest>(`/api/order-requests/${id}`);
+}
+
+export function submitRequestPayment(
+  id: number,
+  input: { paymentRef?: string; paymentProofUrl?: string }
+): Promise<OrderRequest> {
+  return apiSend<OrderRequest>("POST", `/api/order-requests/${id}/payment`, input);
+}
+
+export function cancelRequest(id: number): Promise<OrderRequest> {
+  return apiSend<OrderRequest>("PATCH", `/api/order-requests/${id}/cancel`);
+}
+
 /* ---------- Auth (Google OAuth lives on the backend) ---------- */
 
 export type SessionUser = {
@@ -671,6 +765,66 @@ export function adminProcessRefund(
   id: number
 ): Promise<{ refunded: number; message: string; order: AdminOrderDetail | null }> {
   return apiSend("POST", `/api/orders/admin/${id}/refund`);
+}
+
+/* ---------- Admin: offline-first order requests ---------- */
+
+export type AdminOrderRequest = OrderRequest & {
+  adminNote: string | null;
+  customer: { id: number; name: string | null; email: string | null; phone: string | null } | null;
+};
+
+export type AdminOrderRequestsResponse = {
+  requests: AdminOrderRequest[];
+  counts: Record<string, number>;
+};
+
+/** WhatsApp payload returned by the approve action (link to message the buyer). */
+export type RequestWhatsapp = { link: string | null; number: string | null; message: string };
+
+export function fetchAdminOrderRequests(params: { status?: string; q?: string } = {}): Promise<AdminOrderRequestsResponse> {
+  const qs = new URLSearchParams();
+  if (params.status && params.status !== "all") qs.set("status", params.status);
+  if (params.q) qs.set("q", params.q);
+  const q = qs.toString();
+  return apiGet<AdminOrderRequestsResponse>(`/api/admin/order-requests${q ? `?${q}` : ""}`);
+}
+
+export function fetchAdminOrderRequest(id: number): Promise<AdminOrderRequest> {
+  return apiGet<AdminOrderRequest>(`/api/admin/order-requests/${id}`);
+}
+
+export function approveOrderRequest(
+  id: number,
+  adminNote?: string
+): Promise<{ request: AdminOrderRequest; whatsapp: RequestWhatsapp }> {
+  return apiSend("PATCH", `/api/admin/order-requests/${id}/approve`, adminNote ? { adminNote } : undefined);
+}
+
+export function rejectOrderRequest(id: number, reason?: string): Promise<{ request: AdminOrderRequest }> {
+  return apiSend("PATCH", `/api/admin/order-requests/${id}/reject`, reason ? { reason } : undefined);
+}
+
+export function markOrderRequestPaid(id: number): Promise<{ request: AdminOrderRequest }> {
+  return apiSend("PATCH", `/api/admin/order-requests/${id}/mark-paid`);
+}
+
+export function confirmOrderRequest(id: number): Promise<{ request: AdminOrderRequest }> {
+  return apiSend("PATCH", `/api/admin/order-requests/${id}/confirm`);
+}
+
+export function adminCancelOrderRequest(id: number): Promise<{ request: AdminOrderRequest }> {
+  return apiSend("PATCH", `/api/admin/order-requests/${id}/cancel`);
+}
+
+/* ---------- Admin: manual-order (offline-first) settings ---------- */
+
+export function fetchAdminManualOrderConfig(): Promise<ManualOrderConfig> {
+  return apiGet<ManualOrderConfig>(`/api/admin/settings/manual-order`);
+}
+
+export function updateManualOrderConfig(cfg: ManualOrderConfig): Promise<ManualOrderConfig> {
+  return apiSend<ManualOrderConfig>("PUT", `/api/admin/settings/manual-order`, cfg);
 }
 
 /** Mark one notification read for the signed-in admin. */
