@@ -1,0 +1,124 @@
+/* ─────────────────────────────────────────────────────────────────────
+   /links — isolated stylesheet for the QR landing page.
+
+   This route lives in its own root layout (app/(links)/layout.tsx) and never
+   loads the storefront's globals.css. To keep the bundle tiny, Tailwind's
+   automatic source detection is turned off and we scan only the files this
+   page actually uses, so the generated CSS contains just the utilities the
+   link hub needs — nothing from the e-commerce app ships here.
+
+   The design tokens below are a faithful port of the original AV-Links
+   tailwind.config.ts (Tailwind v3) to Tailwind v4's CSS-first `@theme`.
+   Editing these values re-skins the page, exactly as before.
+   ───────────────────────────────────────────────────────────────────── */
+
+@import "tailwindcss" source(none);
+@source "./components";
+@source "./lib";
+@source "./social-links";
+
+@theme {
+  /* Brand palette — derived from the AV logo (coral / rose / terracotta)
+     paired with royal maroon and soft gold over a warm cream canvas. */
+  --color-cream: #fbf6ee;
+  --color-ivory: #fffdf8;
+  --color-sand: #f3e7d6;
+
+  --color-maroon: #6e1226;
+  --color-maroon-deep: #4e0c1b;
+  --color-maroon-soft: #8a2638;
+
+  --color-coral: #e2735c;
+  --color-coral-light: #efa290;
+  --color-coral-deep: #cf5a44;
+
+  --color-rose: #e89a8c;
+  --color-terracotta: #c46b4f;
+
+  --color-gold: #c29a45;
+  --color-gold-soft: #d8b96a;
+  --color-gold-deep: #a87e2c;
+
+  /* Soft, warm elevation. */
+  --shadow-soft: 0 10px 40px -12px rgba(110, 18, 38, 0.18);
+  --shadow-card: 0 8px 30px -10px rgba(110, 18, 38, 0.15);
+  --shadow-glow: 0 0 0 1px rgba(216, 185, 106, 0.35),
+    0 12px 32px -14px rgba(207, 90, 68, 0.45);
+
+  /* Slightly rounder cards than Tailwind's defaults (matches AV-Links). */
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.75rem;
+
+  /* Type system — fonts are loaded in layout.tsx via next/font and exposed
+     as --font-pd / --font-inter / --font-ds, mapped to Tailwind's families
+     here so `font-serif`, `font-sans` and `font-script` resolve. */
+  --font-serif: var(--font-pd), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-script: var(--font-ds), cursive;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream font-sans text-maroon antialiased;
+    min-height: 100dvh;
+  }
+
+  /* Warm ambient glow + subtle Jaipuri jaali pattern behind everything.
+     Kept on a fixed, pointer-inert layer so it never affects layout/LCP. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: radial-gradient(
+        60% 50% at 50% 0%,
+        rgba(226, 115, 92, 0.16),
+        transparent 70%
+      ),
+      radial-gradient(
+        50% 40% at 100% 100%,
+        rgba(194, 154, 69, 0.14),
+        transparent 70%
+      );
+    background-repeat: no-repeat, no-repeat;
+  }
+
+  /* Fade the repeating pattern without washing out the gradients. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: url("/pattern.svg") repeat;
+    background-size: 80px 80px;
+    opacity: 0.035;
+  }
+}
+
+@layer utilities {
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

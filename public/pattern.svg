@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <g fill="none" stroke="#6E1226" stroke-width="1">
+    <!-- Jaipuri jaali: interlocking arches + central floret, tileable 80x80 -->
+    <circle cx="40" cy="40" r="5" />
+    <path d="M40 35c2.6 2 2.6 8 0 10-2.6-2-2.6-8 0-10z" />
+    <path d="M35 40c2-2.6 8-2.6 10 0-2 2.6-8 2.6-10 0z" />
+    <path d="M0 40c0-22 18-40 40-40" />
+    <path d="M80 40c0-22-18-40-40-40" />
+    <path d="M0 40c0 22 18 40 40 40" />
+    <path d="M80 40c0 22-18 40-40 40" />
+    <circle cx="0" cy="0" r="3" />
+    <circle cx="80" cy="0" r="3" />
+    <circle cx="0" cy="80" r="3" />
+    <circle cx="80" cy="80" r="3" />
+  </g>
+</svg>

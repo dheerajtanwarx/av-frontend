@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_API_URL:
       process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000",
   },
+  // Serve modern, smaller image formats. Benefits every <Image>, and in
+  // particular the /links QR-landing logo (its LCP element) on mobile.
+  images: {
+    formats: ["image/avif", "image/webp"],
+  },
 };
 
 export default nextConfig;
