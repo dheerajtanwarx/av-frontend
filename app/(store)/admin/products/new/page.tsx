@@ -1,14 +1,21 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import {
   fetchAdminCategories,
   ApiError,
   type AdminCategory,
 } from "../../../lib/api";
-import ProductForm from "../../../components/admin/ProductForm";
 import { AdminPageSkeleton, AdminPanelSkeleton } from "../../../components/skeletons";
+
+// The product editor is heavy (image uploaders, variant grids). Admin-only and
+// only used here, so load it on demand with a skeleton rather than up-front.
+const ProductForm = dynamic(
+  () => import("../../../components/admin/ProductForm"),
+  { ssr: false, loading: () => <AdminPanelSkeleton /> }
+);
 
 function NewProductView() {
   const searchParams = useSearchParams();

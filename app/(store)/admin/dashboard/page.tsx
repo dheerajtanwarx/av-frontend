@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { motion } from "motion/react";
 import { IndianRupee, Clock, Check, Calendar, CircleX, Undo2 } from "lucide-react";
 import {
@@ -9,12 +10,23 @@ import {
   type AdminDashboard,
 } from "../../lib/api";
 import { useAdminRealtime } from "../../lib/admin-realtime";
-import {
-  TrendLineChart,
-  TrendBarChart,
-  StatusBreakdown,
-} from "../../components/admin/DashboardCharts";
 import { StatCard } from "../../components/admin/StatCard";
+
+// Charts are admin-only and below the fold of the dashboard shell — load them
+// on demand so the stat cards paint without waiting on the chart code.
+const chartFallback = () => <div className="admin-chart-loading" style={{ minHeight: 220 }} aria-hidden />;
+const TrendLineChart = dynamic(
+  () => import("../../components/admin/DashboardCharts").then((m) => m.TrendLineChart),
+  { ssr: false, loading: chartFallback }
+);
+const TrendBarChart = dynamic(
+  () => import("../../components/admin/DashboardCharts").then((m) => m.TrendBarChart),
+  { ssr: false, loading: chartFallback }
+);
+const StatusBreakdown = dynamic(
+  () => import("../../components/admin/DashboardCharts").then((m) => m.StatusBreakdown),
+  { ssr: false, loading: chartFallback }
+);
 import {
   OrdersIcon,
   CustomersIcon,

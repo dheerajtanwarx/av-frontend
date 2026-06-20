@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import {
   fetchAdminCategories,
   fetchAdminProduct,
@@ -8,8 +9,13 @@ import {
   type AdminCategory,
   type AdminProductDetail,
 } from "../../../../lib/api";
-import ProductForm from "../../../../components/admin/ProductForm";
 import { AdminPanelSkeleton } from "../../../../components/skeletons";
+
+// Heavy admin-only editor — load on demand with a skeleton.
+const ProductForm = dynamic(
+  () => import("../../../../components/admin/ProductForm"),
+  { ssr: false, loading: () => <AdminPanelSkeleton /> }
+);
 
 export default function EditProductPage({
   params,

@@ -5,6 +5,8 @@ import Header from "../../components/landing/Header";
 import CategoryListing from "../../components/category/CategoryListing";
 import ScrollReveal from "../../components/landing/ScrollReveal";
 import Footer from "../../components/landing/Footer";
+import JsonLd from "../../components/JsonLd";
+import { breadcrumbLd } from "../../lib/seo";
 
 export async function generateMetadata({
   params,
@@ -15,9 +17,15 @@ export async function generateMetadata({
   const categories = await fetchCategories().catch(() => []);
   const cat = categories.find((c) => c.slug === slug);
   const name = cat?.name ?? slug.replace(/-/g, " ");
+  const title = `${name} — AV Creation`;
+  const description = `Shop the full ${name} collection — handcrafted in Jaipur, Rajasthan.`;
+  const path = `/category/${slug}`;
   return {
-    title: `${name} — AV Creation`,
-    description: `Shop the full ${name} collection — handcrafted in Jaipur, Rajasthan.`,
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: { type: "website", title, description, url: path },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
@@ -45,6 +53,12 @@ export default async function CategoryPage({
 
   return (
     <div className="av">
+      <JsonLd
+        data={breadcrumbLd([
+          { name: "Home", path: "/" },
+          { name: categoryName, path: `/category/${slug}` },
+        ])}
+      />
       <ScrollReveal />
       <Header />
       <CategoryListing
