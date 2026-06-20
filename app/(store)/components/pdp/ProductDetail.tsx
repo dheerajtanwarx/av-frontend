@@ -5,6 +5,7 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { colorImages, type PdpColor, type PdpProduct } from "../../lib/pdp-data";
+import { track } from "../../lib/analytics";
 import { PdpProvider } from "./PdpContext";
 import MiniHeader from "./MiniHeader";
 import Gallery from "./Gallery";
@@ -50,6 +51,12 @@ export default function ProductDetail({ product }: { product: PdpProduct }) {
     if (typeof window === "undefined") return;
     window.scrollTo(0, 0);
   }, [product.slug]);
+
+  // Product view event — slug is resolved to a numeric product id in the
+  // analytics rollup. Fires once per product shown.
+  useEffect(() => {
+    track("product_view", { slug: product.slug, name: product.name });
+  }, [product.slug, product.name]);
 
   // Warm the browser cache with every colour's images on mount so a later
   // switch is instant and flicker-free. Best-effort; skipped during SSR.

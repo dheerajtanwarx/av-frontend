@@ -39,7 +39,9 @@ export default function AdminProfileMenu({ user }: { user: SessionUser }) {
     try {
       await logout();
     } finally {
-      // Full reload so AdminGuard re-checks and redirects to /login.
+      // Full reload so AdminGuard re-checks and redirects to /login. Analytics
+      // identity needs no client reset — logout clears the auth cookie, so the
+      // server attributes subsequent events as anonymous.
       window.location.href = "/login";
     }
   }

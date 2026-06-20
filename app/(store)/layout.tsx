@@ -8,6 +8,7 @@ import CartToast from "./components/cart/CartToast";
 import WhatsAppButton from "./components/landing/WhatsAppButton";
 import BottomNav from "./components/landing/BottomNav";
 import BackButton from "./components/landing/BackButton";
+import AnalyticsProvider from "./components/AnalyticsProvider";
 
 // AJIO-referenced type system. AJIO's wordmark and headings use Twentieth
 // Century (Tw Cen MT), a geometric sans in the Futura lineage; Jost is its
@@ -62,6 +63,7 @@ export default function RootLayout({
       <body className="min-h-full">
         <CartProvider>
           <WishlistProvider>
+            <AnalyticsProvider />
             {children}
             <CartDrawer />
             <CartToast />

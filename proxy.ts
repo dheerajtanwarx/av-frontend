@@ -11,11 +11,21 @@ import type { NextRequest } from "next/server";
  * In Next.js 16 the old `middleware` convention was renamed to `proxy`
  * (see node_modules/next/dist/docs/.../file-conventions/proxy.md). The file
  * lives at the project root, alongside `app/`.
+ *
+ * GATE TOGGLE: the storefront is currently OPEN. Flip STOREFRONT_GATED back to
+ * true to re-funnel the whole site to /social-links (e.g. for another holding
+ * period). Nothing else needs to change.
  */
+const STOREFRONT_GATED = false;
 const TARGET = "/social-links";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Storefront is live — let every request through untouched.
+  if (!STOREFRONT_GATED) {
+    return NextResponse.next();
+  }
 
   // Don't redirect the destination itself (or its sub-paths / RSC requests),
   // otherwise we'd loop forever.

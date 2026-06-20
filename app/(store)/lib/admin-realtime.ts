@@ -53,6 +53,10 @@ export interface RealtimeHandlers {
   onStateSync?: (e: StateSyncEvent) => void;
   onActivity?: (row: unknown) => void;
   onDashboard?: (d: { reason: string }) => void;
+  /** Live analytics feed row (browsing/commerce events). */
+  onAnalyticsEvent?: (e: unknown) => void;
+  /** Periodic live metrics snapshot for the live dashboard. */
+  onAnalyticsMetrics?: (m: unknown) => void;
   onConnectionChange?: (connected: boolean) => void;
 }
 
@@ -135,6 +139,14 @@ export function useAdminRealtime(handlers: RealtimeHandlers): boolean {
 
       es.addEventListener("dashboard:update", (ev) => {
         h.current.onDashboard?.(JSON.parse((ev as MessageEvent).data));
+      });
+
+      es.addEventListener("analytics:event", (ev) => {
+        h.current.onAnalyticsEvent?.(JSON.parse((ev as MessageEvent).data));
+      });
+
+      es.addEventListener("analytics:metrics", (ev) => {
+        h.current.onAnalyticsMetrics?.(JSON.parse((ev as MessageEvent).data));
       });
 
       es.onerror = () => {

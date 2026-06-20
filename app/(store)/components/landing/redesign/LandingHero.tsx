@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchHeroSettings } from "../../../lib/api";
 import { heroImageUrl } from "../../../lib/landing-data";
+import { track } from "../../../lib/analytics";
 
 const DURATION = 5000;
 
@@ -93,7 +94,11 @@ export default function LandingHero({ images: initial = [] }: { images?: string[
         <p className="lp-hero-lead">
           Timeless techniques, shaped for the occasions you&apos;ll remember.
         </p>
-        <a href="#wardrobe" className="lp-underlink lp-hero-cta">
+        <a
+          href="#wardrobe"
+          className="lp-underlink lp-hero-cta"
+          onClick={() => track("banner_click", { banner: "hero", cta: "Discover the collection" })}
+        >
           Discover the collection
         </a>
         <div className="lp-hero-pips" role="tablist" aria-label="Hero slides">

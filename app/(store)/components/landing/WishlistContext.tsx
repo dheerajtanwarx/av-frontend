@@ -17,6 +17,7 @@ import {
   mergeWishlist,
   type ServerWishlistItem,
 } from "../../lib/api";
+import { track } from "../../lib/analytics";
 
 const LS_KEY = "av-wishlist-v1";
 
@@ -133,6 +134,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const add = useCallback((item: WishItem) => {
     if (itemsRef.current.some((i) => i.slug === item.slug)) return; // already saved
     if (inFlight.current.has(item.slug)) return; // dedupe concurrent clicks
+
+    track("wishlist_add", { slug: item.slug, name: item.name });
 
     // Optimistic insert at the top.
     setItems((b) => [item, ...b]);

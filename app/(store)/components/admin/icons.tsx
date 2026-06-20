@@ -15,6 +15,7 @@ import {
   Bell,
   LogOut,
   ScanLine,
+  Activity,
   type LucideProps,
 } from "lucide-react";
 
@@ -40,3 +41,4 @@ export const ChevronIcon = (p: IconProps) => <ChevronDown {...base} {...p} />;
 export const BellIcon = (p: IconProps) => <Bell {...base} {...p} />;
 export const LogoutIcon = (p: IconProps) => <LogOut {...base} {...p} />;
 export const ScanIcon = (p: IconProps) => <ScanLine {...base} {...p} />;
+export const AnalyticsIcon = (p: IconProps) => <Activity {...base} {...p} />;

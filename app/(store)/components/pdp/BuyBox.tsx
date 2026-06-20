@@ -10,6 +10,7 @@ import { useWishlist } from "../landing/WishlistContext";
 import { ensureAuthenticated } from "../../lib/auth-guard";
 import { fetchManualOrderConfig, type ManualOrderConfig } from "../../lib/api";
 import { parseINR, type CartItem } from "../../lib/cart-data";
+import { track } from "../../lib/analytics";
 
 /** Fallback notice text shown until the live config loads (or if it fails). */
 const FALLBACK_NOTICE =
@@ -188,6 +189,19 @@ export default function BuyBox({
     setQty((q) => Math.max(1, Math.min(q, stockOf(color))));
   }
 
+  // Variant pickers — fire variant_select only on an actual change so repeat
+  // clicks on the current colour/size don't spam the funnel.
+  const selectColor = (c: PdpColor) => {
+    if (c.name === color.name) return;
+    track("variant_select", { slug: product.slug, name: product.name, kind: "color", value: c.name });
+    onSelectColor(c);
+  };
+  const selectSize = (s: string) => {
+    if (s === size) return;
+    track("variant_select", { slug: product.slug, name: product.name, kind: "size", value: s });
+    setSize(s);
+  };
+
   const onWish = () => {
     toggle({
       slug: product.slug,
@@ -260,7 +274,7 @@ export default function BuyBox({
               title={stockOf(c) <= 0 ? `${c.name} — out of stock` : c.name}
               aria-label={stockOf(c) <= 0 ? `${c.name} (out of stock)` : c.name}
               aria-pressed={c.name === color.name}
-              onClick={() => onSelectColor(c)}
+              onClick={() => selectColor(c)}
             />
           ))}
         </div>
@@ -283,14 +297,14 @@ export default function BuyBox({
             <button
               key={s}
               className={`size${s === size ? " on" : ""}`}
-              onClick={() => setSize(s)}
+              onClick={() => selectSize(s)}
             >
               {s}
             </button>
           ))}
           <button
             className={`size custom${size === "Custom" ? " on" : ""}`}
-            onClick={() => setSize("Custom")}
+            onClick={() => selectSize("Custom")}
           >
             Custom
           </button>

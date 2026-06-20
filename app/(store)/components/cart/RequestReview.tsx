@@ -6,6 +6,7 @@ import { useCart } from "../landing/CartContext";
 import { CheckoutHeader, SlimFooter } from "./CheckoutChrome";
 import { CartIc } from "./icons";
 import { inr } from "../../lib/cart-data";
+import { track } from "../../lib/analytics";
 import {
   getSession,
   fetchAddresses,
@@ -39,6 +40,13 @@ export default function RequestReview() {
   useEffect(() => {
     if (items.length === 0 && !submitted) router.replace("/cart");
   }, [items.length, submitted, router]);
+
+  /* Funnel: reaching the request-review screen is "checkout started". */
+  useEffect(() => {
+    if (items.length > 0) track("checkout_started", { value: subtotal, items: items.length });
+    // Fire once on entry; subtotal/items changes don't re-fire.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /* Load the customer notice/response-window copy + saved addresses. */
   useEffect(() => {
@@ -81,6 +89,10 @@ export default function RequestReview() {
       } catch {
         /* ignore */
       }
+      // Funnel + live feed: submitting is the "request submitted" step (intent;
+      // no stock taken). The realized sale fires server-side as order_confirmed
+      // when an admin confirms the request.
+      track("request_submitted", { value: subtotal, items: items.length });
       setSubmitted(true);
       clear();
       router.push("/checkout/success");

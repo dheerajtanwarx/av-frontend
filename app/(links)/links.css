@@ -12,7 +12,7 @@
    Editing these values re-skins the page, exactly as before.
    ───────────────────────────────────────────────────────────────────── */
 
-@import "tailwindcss" source(none);
+@import "tailwindcss";
 @source "./components";
 @source "./lib";
 @source "./social-links";

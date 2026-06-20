@@ -423,13 +423,34 @@ export type SessionUser = {
   providers?: string[];
 };
 
-export async function getSession(): Promise<SessionUser | null> {
+// Short-TTL dedup so the burst of getSession() calls every component fires on
+// first paint (cart, wishlist, header, nav, analytics, guards…) collapses into
+// a single /api/auth/me request. The TTL is tiny so a fresh login/logout (which
+// full-page navigates and resets module state) never reads a stale session.
+let sessionInflight: Promise<SessionUser | null> | null = null;
+let sessionCached: SessionUser | null = null;
+let sessionCachedAt = 0;
+const SESSION_TTL_MS = 5_000;
+
+async function fetchSession(): Promise<SessionUser | null> {
   try {
     const { user } = await apiGet<{ user: SessionUser }>(`/api/auth/me`);
     return user;
   } catch {
     return null;
   }
+}
+
+export function getSession(): Promise<SessionUser | null> {
+  if (sessionInflight) return sessionInflight;
+  if (Date.now() - sessionCachedAt < SESSION_TTL_MS) return Promise.resolve(sessionCached);
+  sessionInflight = fetchSession().then((u) => {
+    sessionCached = u;
+    sessionCachedAt = Date.now();
+    sessionInflight = null;
+    return u;
+  });
+  return sessionInflight;
 }
 
 /** Full-page redirect into the backend Google OAuth flow. */

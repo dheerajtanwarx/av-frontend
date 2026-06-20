@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { motion, useReducedMotion, type Variants } from "motion/react";
 import { Header } from "./Header";
 import { LinkButton } from "./LinkButton";
@@ -8,10 +9,18 @@ import { QRCard } from "./QRCard";
 import { business } from "../lib/business";
 import { getPrimaryLinks } from "../lib/links";
 import { LINKS_URL } from "../lib/site";
+import { track, trackPageView } from "../../(store)/lib/analytics";
 
 export function LinkHub() {
   const reduce = useReducedMotion();
   const links = getPrimaryLinks();
+
+  // The link-in-bio page is the live entry point while the storefront is
+  // gated, so it's tracked here directly (the store-layout AnalyticsProvider
+  // doesn't cover this route group).
+  useEffect(() => {
+    trackPageView("/social-links");
+  }, []);
 
   const container: Variants = {
     hidden: {},
@@ -45,7 +54,17 @@ export function LinkHub() {
       {/* Primary links */}
       <nav aria-label="Our links" className="flex flex-col gap-3">
         {links.map((link) => (
-          <motion.div key={link.key} variants={item}>
+          <motion.div
+            key={link.key}
+            variants={item}
+            onClick={() =>
+              track("social_click", {
+                key: link.key,
+                label: link.label,
+                href: link.href ?? null,
+              })
+            }
+          >
             <LinkButton item={link} />
           </motion.div>
         ))}

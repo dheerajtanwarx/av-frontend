@@ -27,6 +27,7 @@ import {
   removeServerCartItem,
   checkCartStock,
 } from "../../lib/api";
+import { track } from "../../lib/analytics";
 
 const LS_KEY = "av-cart-v1";
 const ORDER_KEY = "av-last-order";
@@ -131,6 +132,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const user = await getSession();
         if (!user) return;
         userIdRef.current = user.id;
+        // Analytics identity is resolved server-side from the auth cookie, so
+        // no client-side stitching call is needed here.
 
         // Read the current local items we just hydrated (if any).
         const raw = localStorage.getItem(LS_KEY);
@@ -198,6 +201,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     stock === undefined ? qty : Math.min(qty, Math.max(1, stock));
 
   const addItem = useCallback((item: CartItem) => {
+    track("add_to_cart", {
+      slug: item.slug ?? null,
+      name: item.name,
+      color: item.color?.name ?? null,
+      qty: item.qty,
+      price: item.price,
+    });
     const existing = itemsRef.current.find((i) => i.id === item.id);
     const stock = existing?.stock ?? item.stock;
     const newQty = clampToStock(existing ? existing.qty + item.qty : item.qty, stock);
@@ -241,6 +251,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const remove = useCallback((id: string) => {
     const item = itemsRef.current.find((i) => i.id === id);
+    track("remove_from_cart", {
+      slug: item?.slug ?? null,
+      name: item?.name ?? null,
+      qty: item?.qty ?? null,
+    });
     if (item?.serverId && userIdRef.current) {
       removeServerCartItem(item.serverId).catch(() => {});
     }

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RectangleVertical, Columns2, Columns3 } from "lucide-react";
 import ProductCard from "../landing/ProductCard";
 import { usePriceSort, PriceSortBar } from "../product/PriceSortBar";
 import type { Product } from "../../lib/landing-data";
+import { track } from "../../lib/analytics";
 
 /* The handoff's signature control: retile the grid one tap apart — editorial
    one-up, the balanced two-up house standard, or a dense three-up scan. The
@@ -53,6 +54,11 @@ export default function CategoryListing({
   const ps = usePriceSort(products);
   const { filtered, isFiltered, reset } = ps;
   const [density, setDensity] = useState<Density>(2);
+
+  // Category view — fires once per category shown (count helps spot empty PLPs).
+  useEffect(() => {
+    track("category_view", { name: categoryName, products: products.length });
+  }, [categoryName, products.length]);
 
   return (
     <main className="cat-page av-cat">

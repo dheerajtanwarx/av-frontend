@@ -95,6 +95,8 @@ export default function ProfilePage() {
 
   async function handleLogout() {
     await logout().catch(() => null);
+    // No client-side analytics reset needed — logout clears the auth cookie, so
+    // the server attributes any subsequent events as anonymous.
     window.location.href = "/login";
   }
 

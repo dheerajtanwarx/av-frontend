@@ -5,6 +5,7 @@ import { Search, Heart, ShoppingBag } from "lucide-react";
 import { useCart } from "../CartContext";
 import { useWishlist } from "../WishlistContext";
 import { AccountMenu } from "../Header";
+import { track } from "../../../lib/analytics";
 
 /* Top-nav links for desktop. Mirrors the storefront nav but uses the short,
    editorial labels from the redesign ("Odhni", not "Jaipuri Odhni"). */
@@ -43,7 +44,12 @@ export default function RedesignHeader() {
       <nav className="lp-topnav" aria-label="Primary">
         <div className="lp-topnav-links">
           {links.map((l) => (
-            <Link key={l.label} href={l.href} className={l.hot ? "hot" : undefined}>
+            <Link
+              key={l.label}
+              href={l.href}
+              className={l.hot ? "hot" : undefined}
+              onClick={() => track("category_click", { name: l.label, href: l.href, placement: "topnav" })}
+            >
               {l.label}
             </Link>
           ))}

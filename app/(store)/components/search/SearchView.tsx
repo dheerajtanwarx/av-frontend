@@ -8,6 +8,7 @@ import SearchSuggestions from "./SearchSuggestions";
 import { usePriceSort, PriceSortBar } from "../product/PriceSortBar";
 import { Skeleton, ProductGridSkeleton } from "../skeletons";
 import { searchProducts } from "../../lib/api";
+import { track } from "../../lib/analytics";
 import type { Product } from "../../lib/landing-data";
 
 export default function SearchView() {
@@ -49,6 +50,9 @@ export default function SearchView() {
         const data = await searchProducts({ q }, { signal: ctrl.signal });
         setResults(data);
         setLoading(false);
+        // One settled search per query (debounced above). results=0 feeds the
+        // "searches with no results" report.
+        track("search", { term: q.trim(), results: data.length });
       } catch {
         if (!ctrl.signal.aborted) setLoading(false);
       }
