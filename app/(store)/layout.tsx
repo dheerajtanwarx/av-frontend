@@ -78,6 +78,17 @@ export const metadata: Metadata = {
     title: DEFAULT_TITLE,
     description: DEFAULT_DESC,
   },
+  // Storefront favicon. The bundled `app/(store)/favicon.ico` is NOT detected by
+  // Next: the favicon file convention is only honoured at the top level of
+  // `app/`, never inside a route group — so the storefront (incl. the homepage
+  // Google indexes) previously emitted no icon link and crawlers fell back to a
+  // generic glyph. Referencing the brand mark explicitly fixes that on every
+  // store route in one place.
+  icons: {
+    icon: "/av-favicon-logo.png",
+    shortcut: "/av-favicon-logo.png",
+    apple: "/av-favicon-logo.png",
+  },
 };
 
 export default function RootLayout({
