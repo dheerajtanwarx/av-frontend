@@ -56,9 +56,9 @@ const hankenFont = Hanken_Grotesk({
 });
 
 const SITE_NAME = "AV Creation";
-const DEFAULT_TITLE = "AV Creation — Jaipuri Atelier · Rajasthan";
+const DEFAULT_TITLE = "AV Creation — Jaipuri Odhani ";
 const DEFAULT_DESC =
-  "Heritage Rajasthani craft, reimagined for the modern woman. Hand-blocked lehengas, sarees, suits and the signature Jaipuri Odhni — finished by artisans across Jaipur, Sanganer and Bagru.";
+  "Heritage Rajasthani craft, reimagined for the modern woman. Hand-blocked lehengas, lugdi, odhani sarees, suits and the signature Jaipuri Odhni — finished by artisans across Jaipur, Sanganer and Bagru.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -84,11 +84,14 @@ export const metadata: Metadata = {
   // Google indexes) previously emitted no icon link and crawlers fell back to a
   // generic glyph. Referencing the brand mark explicitly fixes that on every
   // store route in one place.
-  icons: {
-    icon: "/av-favicon-logo.png",
-    shortcut: "/av-favicon-logo.png",
-    apple: "/av-favicon-logo.png",
-  },
+ icons: {
+  icon: [
+    { url: "/favicon.ico", sizes: "any" },
+    { url: "/icon.png", type: "image/png" },
+  ],
+  shortcut: "/favicon.ico",
+  apple: "/apple-icon.png",
+},
 };
 
 export default function RootLayout({

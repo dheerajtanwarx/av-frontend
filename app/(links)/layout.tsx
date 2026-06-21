@@ -60,9 +60,13 @@ export const metadata: Metadata = {
     description: business.description,
   },
   icons: {
-    icon: business.logo,
-    apple: business.logo,
-  },
+  icon: [
+    { url: "/favicon.ico", sizes: "any" },
+    { url: "/icon.png", type: "image/png" },
+  ],
+  apple: "/apple-icon.png",
+  shortcut: "/favicon.ico",
+},
   robots: { index: true, follow: true },
 };
 
