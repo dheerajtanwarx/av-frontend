@@ -10,9 +10,15 @@ import {
   heroImageUrl,
 } from "./lib/landing-data";
 import { Play } from "lucide-react";
-import { fetchProducts, fetchCategories, fetchHeroSettings } from "./lib/api";
+import {
+  fetchProducts,
+  fetchCategories,
+  fetchHeroSettings,
+  fetchFeaturedReviews,
+} from "./lib/api";
 import RedesignHeader from "./components/landing/redesign/RedesignHeader";
 import ProductRail from "./components/landing/redesign/ProductRail";
+import Testimonials from "./components/landing/redesign/Testimonials";
 import LandingHero from "./components/landing/redesign/LandingHero";
 
 /* ============================================================
@@ -61,17 +67,21 @@ function catHref(c: { slug?: string; href?: string }): string {
 }
 
 export default async function Home() {
-  const [odhniEdit, bestsellers, allProducts, categories, heroSettings] = await Promise.all([
-    fetchProducts({ category: "jaipuri-odhni" }).catch(() => staticOdhniEdit),
-    fetchProducts({ bestseller: true }).catch(() => staticBestsellers),
-    // Whole catalog — the Trending rail draws from here, minus whatever the
-    // Odhni/Bestseller rails already show, so the page never repeats a piece.
-    fetchProducts({}).catch(() => [...staticOdhniEdit, ...staticBestsellers]),
-    fetchCategories().catch(() => staticCategories),
-    // Cached server-side: the URLs land in the HTML so the browser starts the
-    // image download immediately, with no client round-trip to the API.
-    fetchHeroSettings({ revalidate: 60 }).catch(() => ({ images: [] as (string | null)[] })),
-  ]);
+  const [odhniEdit, bestsellers, allProducts, categories, heroSettings, featuredReviews] =
+    await Promise.all([
+      fetchProducts({ category: "jaipuri-odhni" }).catch(() => staticOdhniEdit),
+      fetchProducts({ bestseller: true }).catch(() => staticBestsellers),
+      // Whole catalog — the Trending rail draws from here, minus whatever the
+      // Odhni/Bestseller rails already show, so the page never repeats a piece.
+      fetchProducts({}).catch(() => [...staticOdhniEdit, ...staticBestsellers]),
+      fetchCategories().catch(() => staticCategories),
+      // Cached server-side: the URLs land in the HTML so the browser starts the
+      // image download immediately, with no client round-trip to the API.
+      fetchHeroSettings({ revalidate: 60 }).catch(() => ({ images: [] as (string | null)[] })),
+      // Real approved reviews for the testimonials carousel. NEVER faked — if
+      // the feed is empty (or the API is down) the section renders nothing.
+      fetchFeaturedReviews(12, { revalidate: 120 }).catch(() => ({ reviews: [] })),
+    ]);
 
   // Rails surface a wider edit than the old 4-up grid; the carousel keeps the
   // page height in check while giving the shopper more to discover.
@@ -234,6 +244,9 @@ export default async function Home() {
         viewAllHref="/search"
         align="row"
       />
+
+      {/* TESTIMONIALS — real approved reviews only; renders nothing if empty */}
+      <Testimonials reviews={featuredReviews.reviews} />
 
       {/* OFFLINE STORES — come say namaste */}
       <section className="lp-section" id="stores">

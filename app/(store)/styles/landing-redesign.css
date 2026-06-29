@@ -739,6 +739,92 @@
 .av-lp .lp-rail-arrow:disabled { opacity: 0.32; pointer-events: none; }
 
 /* ============================================================
+   TESTIMONIALS  ·  carousel of real, approved reviews
+   ------------------------------------------------------------
+   Reuses the rail scroll/arrow machinery; only the card is new.
+   Editorial quote card: the review is the hero in serif, the star
+   row and verified tag are quiet supporting marks.
+   ============================================================ */
+.av-lp .lp-tml-section { padding-bottom: 24px; }
+/* testimonial cards are text, so wider than product cards; centre the
+   arrows on the taller card */
+.av-lp .lp-tml .lp-rail-arrow { top: 50%; }
+.av-lp .lp-tml .lp-rail-track > .lp-tml-card {
+  flex: 0 0 auto;
+  /* ~1.15 cards on mobile so the next one peeks */
+  width: 84%;
+  scroll-snap-align: start;
+}
+
+.av-lp .lp-tml-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 30px 28px;
+  background: var(--p-surface);
+  border: 1px solid var(--p-line);
+  border-radius: var(--r-md, 8px);
+  /* entrance — house motion tokens */
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--t-base, 260ms) var(--ease-out, ease),
+    transform var(--t-base, 260ms) var(--ease-out, ease);
+}
+.av-lp .lp-tml-card.in { opacity: 1; transform: none; }
+
+.av-lp .lp-tml-stars {
+  display: inline-flex;
+  gap: 3px;
+  color: var(--p-rani);
+}
+.av-lp .lp-tml-stars .off { color: var(--p-line-2); }
+
+.av-lp .lp-tml-quote {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--p-soft-2);
+  /* clamp very long reviews so cards stay even */
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.av-lp .lp-tml-by {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: auto;
+}
+.av-lp .lp-tml-name {
+  font-family: var(--ui);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--p-ink);
+}
+.av-lp .lp-tml-prod {
+  font-family: var(--ui);
+  font-size: 12px;
+  color: var(--p-muted);
+  transition: color var(--t-quick, 200ms) var(--ease-out, ease);
+}
+.av-lp .lp-tml-prod:hover { color: var(--p-rani); }
+
+.av-lp .lp-tml-verified {
+  align-self: flex-start;
+  font-family: var(--ui);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--p-muted-2);
+  padding-top: 2px;
+}
+
+/* ============================================================
    REELS  ·  horizontally-scrolling social strip (#DrapedInAV)
    ============================================================ */
 .av-lp .lp-reels { padding: 50px 0 14px; background: var(--p-bg); }
@@ -1067,6 +1153,10 @@
   .av-lp .lp-rail-arrow { display: flex; }
   /* tighter type so names/prices stay legible in the narrower card */
   .av-lp .lp-rail .lp-prod-name { font-size: 14px; }
+
+  /* testimonials run 3-up on desktop */
+  .av-lp .lp-tml .lp-rail-track > .lp-tml-card { width: calc((100% - 32px) / 3); }
+  .av-lp .lp-tml-quote { font-size: 20px; }
 
   /* signature splits image | copy */
   .av-lp .lp-signature {

@@ -192,6 +192,27 @@ export function fetchReviews(slug: string, opts?: FetchOpts): Promise<ReviewsRes
   );
 }
 
+/* A cross-product feed of real, approved 4–5★ reviews (with a comment) for
+   the homepage testimonials carousel. First name only — no email. */
+export type FeaturedReview = {
+  id: number;
+  rating: number;
+  comment: string;
+  author: string;
+  createdAt: string;
+  product: { name: string; slug: string };
+};
+
+export function fetchFeaturedReviews(
+  limit = 12,
+  opts?: FetchOpts
+): Promise<{ reviews: FeaturedReview[] }> {
+  return apiGet<{ reviews: FeaturedReview[] }>(
+    `/api/reviews/featured?limit=${limit}`,
+    opts
+  );
+}
+
 /* ---------- Promo + newsletter (public) ---------- */
 
 export type PromoResult =
