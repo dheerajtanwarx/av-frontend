@@ -115,7 +115,7 @@ export default function ProductRail({
 
         {align === "center" && (
           <div className="lp-section-foot">
-            <a href={viewAllHref} className="lp-underlink">
+            <a href={viewAllHref} className="lp-viewall">
               View all
             </a>
           </div>

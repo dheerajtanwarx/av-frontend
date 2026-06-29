@@ -397,17 +397,26 @@
   color: var(--p-ink);
   margin-top: 7px;
 }
+/* View all — pill button (echoes the reference's solid "View All"
+   chip, recast in ink + parchment with a rani hover). Used inline in
+   the row header and centered in the foot of the centered variant. */
 .av-lp .lp-viewall {
+  display: inline-flex;
+  align-items: center;
   font-family: var(--ui);
-  font-size: 10px;
-  letter-spacing: 0.12em;
+  font-size: 11px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--p-soft);
-  border-bottom: 1px solid rgba(34, 27, 21, 0.25);
-  padding-bottom: 4px;
+  color: var(--p-bg);
+  background: var(--p-ink);
+  padding: 11px 24px;
+  border-radius: 999px;
   white-space: nowrap;
+  transition: background var(--t-quick, 200ms) var(--ease-out, ease),
+    transform var(--t-press, 140ms) var(--ease-out, ease);
 }
-.av-lp .lp-viewall:hover { color: var(--p-ink); }
+.av-lp .lp-viewall:hover { background: var(--p-rani); color: #fff; }
+.av-lp .lp-viewall:active { transform: scale(0.96); }
 
 .av-lp .lp-section-foot { text-align: center; margin-top: 28px; }
 
@@ -691,40 +700,43 @@
 .av-lp .lp-rail-track::-webkit-scrollbar { display: none; }
 .av-lp .lp-rail-track > .lp-prod {
   flex: 0 0 auto;
-  /* 1.6 cards in view → the next one peeks as a swipe hint */
-  width: 62%;
+  /* ~2.4 cards in view → the next ones peek as a swipe hint */
+  width: 42%;
   scroll-snap-align: start;
 }
 
-/* arrows — desktop only, fade in on rail hover */
+/* arrows — desktop only. Always visible (overlapping the card edge so
+   they're never clipped by the section), centered on the image band.
+   The unusable end dims rather than vanishing, so the control never
+   looks broken. */
 .av-lp .lp-rail-arrow {
   display: none;
   position: absolute;
-  top: 38%;
-  z-index: 2;
-  width: 44px;
-  height: 44px;
+  /* image is the top ~70% of each card; centre the 40px button on it */
+  top: 33%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 40px;
+  height: 40px;
   align-items: center;
   justify-content: center;
-  background: var(--p-surface);
+  background: rgba(255, 253, 248, 0.92);
   color: var(--p-ink);
   border: 1px solid var(--p-line-2);
   border-radius: 50%;
+  box-shadow: 0 2px 10px rgba(34, 27, 21, 0.1);
   cursor: pointer;
-  opacity: 0;
-  transition: opacity var(--t-quick, 200ms) var(--ease-out, ease),
-    background var(--t-quick, 200ms) var(--ease-out, ease),
+  opacity: 1;
+  transition: background var(--t-quick, 200ms) var(--ease-out, ease),
+    opacity var(--t-quick, 200ms) var(--ease-out, ease),
     transform var(--t-press, 140ms) var(--ease-out, ease);
 }
-.av-lp .lp-rail-arrow.prev { left: -22px; }
-.av-lp .lp-rail-arrow.next { right: -22px; }
-.av-lp .lp-rail:hover .lp-rail-arrow { opacity: 1; }
-.av-lp .lp-rail-arrow:hover { background: var(--p-bg); }
-.av-lp .lp-rail-arrow:active { transform: scale(0.92); }
-/* keep the disabled-at-end arrow hidden even while the rail is hovered —
-   needs to outrank `.lp-rail:hover .lp-rail-arrow` on specificity */
-.av-lp .lp-rail .lp-rail-arrow:disabled,
-.av-lp .lp-rail:hover .lp-rail-arrow:disabled { opacity: 0; pointer-events: none; }
+.av-lp .lp-rail-arrow.prev { left: 6px; }
+.av-lp .lp-rail-arrow.next { right: 6px; }
+.av-lp .lp-rail-arrow:hover { background: #fff; }
+.av-lp .lp-rail-arrow.prev:active { transform: translateY(-50%) scale(0.9); }
+.av-lp .lp-rail-arrow.next:active { transform: translateY(-50%) scale(0.9); }
+.av-lp .lp-rail-arrow:disabled { opacity: 0.32; pointer-events: none; }
 
 /* ============================================================
    REELS  ·  horizontally-scrolling social strip (#DrapedInAV)
@@ -1048,10 +1060,13 @@
   .av-lp .lp-products { grid-template-columns: repeat(4, 1fr); gap: 24px; }
   .av-lp .lp-prod-name { font-size: 17px; }
 
-  /* rail: 4 cards in view, no edge-bleed, arrows enabled */
-  .av-lp .lp-rail-track { margin: 0; padding: 4px 0 10px; gap: 24px; }
-  .av-lp .lp-rail-track > .lp-prod { width: calc((100% - 72px) / 4); }
+  /* rail: 6 cards in view (matches the reference density), no edge-bleed,
+     arrows enabled */
+  .av-lp .lp-rail-track { margin: 0; padding: 4px 0 10px; gap: 16px; }
+  .av-lp .lp-rail-track > .lp-prod { width: calc((100% - 80px) / 6); }
   .av-lp .lp-rail-arrow { display: flex; }
+  /* tighter type so names/prices stay legible in the narrower card */
+  .av-lp .lp-rail .lp-prod-name { font-size: 14px; }
 
   /* signature splits image | copy */
   .av-lp .lp-signature {
