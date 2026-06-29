@@ -12,7 +12,7 @@ import {
 import { Play } from "lucide-react";
 import { fetchProducts, fetchCategories, fetchHeroSettings } from "./lib/api";
 import RedesignHeader from "./components/landing/redesign/RedesignHeader";
-import RedesignProductCard from "./components/landing/redesign/RedesignProductCard";
+import ProductRail from "./components/landing/redesign/ProductRail";
 import LandingHero from "./components/landing/redesign/LandingHero";
 
 /* ============================================================
@@ -70,8 +70,10 @@ export default async function Home() {
     fetchHeroSettings({ revalidate: 60 }).catch(() => ({ images: [] as (string | null)[] })),
   ]);
 
-  const edit = (odhniEdit.length ? odhniEdit : staticOdhniEdit).slice(0, 4);
-  const best = (bestsellers.length ? bestsellers : staticBestsellers).slice(0, 4);
+  // Rails surface a wider edit than the old 4-up grid; the carousel keeps the
+  // page height in check while giving the shopper more to discover.
+  const edit = (odhniEdit.length ? odhniEdit : staticOdhniEdit).slice(0, 10);
+  const best = (bestsellers.length ? bestsellers : staticBestsellers).slice(0, 10);
   const cats = (categories.length ? categories : staticCategories).slice(0, 5);
 
   const heroImages = heroSettings.images
@@ -144,25 +146,15 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* THE ODHNI EDIT */}
-      <section className="lp-section tight" id="odhni-edit">
-        <div className="lp-wrap">
-          <div className="lp-head-row">
-            <div>
-              <div className="lp-eyebrow">Fresh off the loom</div>
-              <div className="lp-title">The Odhni Edit</div>
-            </div>
-            <a href="/category/jaipuri-odhni" className="lp-viewall">
-              View all
-            </a>
-          </div>
-          <div className="lp-products">
-            {edit.map((p) => (
-              <RedesignProductCard key={p.slug} product={p} />
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* THE ODHNI EDIT — rail */}
+      <ProductRail
+        id="odhni-edit"
+        eyebrow="Fresh off the loom"
+        title="The Odhni Edit"
+        products={edit}
+        viewAllHref="/category/jaipuri-odhni"
+        align="row"
+      />
 
       {/* REELS — horizontally-scrolling social strip */}
       <section className="lp-reels" id="reels" aria-label="As seen on reels">
@@ -213,20 +205,15 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* BESTSELLERS */}
-      <section className="lp-section" id="bestsellers">
-        <div className="lp-wrap">
-          <div className="lp-head-center">
-            <div className="lp-eyebrow">Most loved</div>
-            <div className="lp-title">This season&apos;s bestsellers</div>
-          </div>
-          <div className="lp-products">
-            {best.map((p) => (
-              <RedesignProductCard key={p.slug} product={p} />
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* BESTSELLERS — rail */}
+      <ProductRail
+        id="bestsellers"
+        eyebrow="Most loved"
+        title="This season's bestsellers"
+        products={best}
+        viewAllHref="/search"
+        align="center"
+      />
 
       {/* OFFLINE STORES — come say namaste */}
       <section className="lp-section" id="stores">
