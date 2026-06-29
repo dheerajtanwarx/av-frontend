@@ -19,6 +19,7 @@ import {
 import RedesignHeader from "./components/landing/redesign/RedesignHeader";
 import ProductRail from "./components/landing/redesign/ProductRail";
 import Testimonials from "./components/landing/redesign/Testimonials";
+import { devSampleReviews } from "./lib/dev-sample-reviews";
 import LandingHero from "./components/landing/redesign/LandingHero";
 
 /* ============================================================
@@ -245,8 +246,18 @@ export default async function Home() {
         align="row"
       />
 
-      {/* TESTIMONIALS — real approved reviews only; renders nothing if empty */}
-      <Testimonials reviews={featuredReviews.reviews} />
+      {/* TESTIMONIALS — real approved reviews only. In production this renders
+          nothing until genuine reviews exist; in dev we fall back to clearly
+          labelled sample data so the section can be previewed. */}
+      <Testimonials
+        reviews={
+          featuredReviews.reviews.length
+            ? featuredReviews.reviews
+            : process.env.NODE_ENV !== "production"
+            ? devSampleReviews
+            : []
+        }
+      />
 
       {/* OFFLINE STORES — come say namaste */}
       <section className="lp-section" id="stores">
