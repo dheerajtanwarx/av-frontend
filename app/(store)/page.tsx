@@ -61,9 +61,12 @@ function catHref(c: { slug?: string; href?: string }): string {
 }
 
 export default async function Home() {
-  const [odhniEdit, bestsellers, categories, heroSettings] = await Promise.all([
+  const [odhniEdit, bestsellers, allProducts, categories, heroSettings] = await Promise.all([
     fetchProducts({ category: "jaipuri-odhni" }).catch(() => staticOdhniEdit),
     fetchProducts({ bestseller: true }).catch(() => staticBestsellers),
+    // Whole catalog — the Trending rail draws from here, minus whatever the
+    // Odhni/Bestseller rails already show, so the page never repeats a piece.
+    fetchProducts({}).catch(() => [...staticOdhniEdit, ...staticBestsellers]),
     fetchCategories().catch(() => staticCategories),
     // Cached server-side: the URLs land in the HTML so the browser starts the
     // image download immediately, with no client round-trip to the API.
@@ -75,6 +78,13 @@ export default async function Home() {
   const edit = (odhniEdit.length ? odhniEdit : staticOdhniEdit).slice(0, 10);
   const best = (bestsellers.length ? bestsellers : staticBestsellers).slice(0, 10);
   const cats = (categories.length ? categories : staticCategories).slice(0, 5);
+
+  // Trending = the rest of the catalog, de-duplicated against the two rails
+  // above. Falls back to bestsellers if the catalog fetch came back empty.
+  const shownSlugs = new Set([...edit, ...best].map((p) => p.slug));
+  const trendingPool = allProducts.length ? allProducts : [...staticOdhniEdit, ...staticBestsellers];
+  const trendingFiltered = trendingPool.filter((p) => !shownSlugs.has(p.slug)).slice(0, 10);
+  const trending = trendingFiltered.length ? trendingFiltered : best;
 
   const heroImages = heroSettings.images
     .filter((u): u is string => !!u)
@@ -213,6 +223,16 @@ export default async function Home() {
         products={best}
         viewAllHref="/search"
         align="center"
+      />
+
+      {/* TRENDING — rail */}
+      <ProductRail
+        id="trending"
+        eyebrow="Most wanted"
+        title="Trending now"
+        products={trending}
+        viewAllHref="/search"
+        align="row"
       />
 
       {/* OFFLINE STORES — come say namaste */}
