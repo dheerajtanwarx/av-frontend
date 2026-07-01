@@ -19,6 +19,7 @@
   /* grounds */
   --p-bg: #f9f7f3;        /* parchment page ground            */
   --p-surface: #fffdf8;   /* raised surface                   */
+  --p-band: #f9e9ec;      /* soft rose band (section rhythm)   */
   --p-img: #e7ddcd;       /* image placeholder fill           */
   --p-announce: #ece3d4;  /* announce bar                     */
   --p-footer: #1c1610;    /* footer ground                    */
@@ -371,8 +372,30 @@
 /* ============================================================
    SECTION SCAFFOLD
    ============================================================ */
-.av-lp .lp-section { padding: 50px 22px 14px; background: var(--p-bg); }
+.av-lp .lp-section { padding: 54px 22px 40px; background: var(--p-bg); }
 .av-lp .lp-section.tight { padding-top: 46px; }
+
+/* ============================================================
+   SECTION RHYTHM  ·  alternating bands + hairline dividers so
+   each section reads as its own block (not one long page).
+   ============================================================ */
+.av-lp #trending,
+.av-lp #odhni-edit,
+.av-lp #bestsellers,
+.av-lp #testimonials { background: var(--p-surface); }
+.av-lp #wardrobe,
+.av-lp #social-reel,
+.av-lp #social-post,
+.av-lp #stores { background: var(--p-band); }
+/* A crisp hairline between consecutive bands. */
+.av-lp #trending,
+.av-lp #wardrobe,
+.av-lp #social-reel,
+.av-lp #odhni-edit,
+.av-lp #bestsellers,
+.av-lp #social-post,
+.av-lp #testimonials,
+.av-lp #stores { border-top: 1px solid var(--p-line-2); }
 
 .av-lp .lp-head-center { text-align: center; margin-bottom: 30px; }
 .av-lp .lp-head-center .lp-title {
@@ -423,21 +446,40 @@
 /* ============================================================
    CATEGORY GRID
    ============================================================ */
+/* Circular category avatars — a single centred row on desktop that scrolls
+   horizontally on smaller screens. Each photo sits inside a white ring with a
+   soft drop shadow, the name in serif below. */
 .av-lp .lp-cats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px 14px;
+  display: flex;
+  gap: clamp(16px, 3vw, 44px);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 22px 10px;
+  scrollbar-width: none;
 }
-/* phone shows a tidy 2×2 — extra categories surface on desktop's 5-up row */
-@media (max-width: 860px) {
-  .av-lp .lp-cats .lp-cat:nth-child(n + 5) { display: none; }
+.av-lp .lp-cats::-webkit-scrollbar { display: none; }
+@media (min-width: 900px) {
+  .av-lp .lp-cats { justify-content: center; flex-wrap: wrap; }
 }
-.av-lp .lp-cat { display: block; }
+.av-lp .lp-cat {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  scroll-snap-align: center;
+}
 .av-lp .lp-cat-img {
   position: relative;
-  aspect-ratio: 3 / 4;
-  background: var(--p-img);
+  width: clamp(88px, 10vw, 140px);
+  aspect-ratio: 1;
+  border-radius: 50%;
   overflow: hidden;
+  background: var(--p-img);
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 1px var(--p-line), 0 10px 22px rgba(34, 27, 21, 0.16);
+  transition: transform 0.35s var(--ease-out, ease), box-shadow 0.35s ease;
 }
 .av-lp .lp-cat-img img {
   width: 100%;
@@ -445,20 +487,79 @@
   object-fit: cover;
   transition: transform 0.8s var(--ease-out, ease);
 }
-.av-lp .lp-cat:hover .lp-cat-img img { transform: scale(1.04); }
-.av-lp .lp-cat-label { text-align: center; padding-top: 12px; }
+.av-lp .lp-cat:hover .lp-cat-img {
+  transform: translateY(-4px);
+  box-shadow: 0 0 0 1px var(--p-line), 0 20px 40px rgba(34, 27, 21, 0.22);
+}
+.av-lp .lp-cat:hover .lp-cat-img img { transform: scale(1.06); }
+.av-lp .lp-cat-label { text-align: center; }
 .av-lp .lp-cat-name {
   font-family: var(--serif);
-  font-size: 17px;
+  font-size: clamp(15px, 1.3vw, 18px);
   color: var(--p-ink);
 }
-.av-lp .lp-cat-count {
+.av-lp .lp-cat-count { display: none; }
+
+/* ============================================================
+   PROMO POSTER  ·  admin-uploaded full-width banner
+   ============================================================ */
+.av-lp .lp-promo {
+  display: block;
+  position: relative;
+  width: 100%;
+  background: var(--p-img);
+  overflow: hidden;
+}
+.av-lp .lp-promo img {
+  width: 100%;
+  display: block;
+  transition: transform 0.9s var(--ease-out, ease);
+}
+.av-lp .lp-promo:hover img { transform: scale(1.02); }
+/* The default lifestyle stand-in gets a banner crop + overlaid copy; an uploaded
+   poster (text baked in) renders bare at its natural aspect. */
+.av-lp .lp-promo--default img { aspect-ratio: 24 / 9; object-fit: cover; }
+.av-lp .lp-promo--default::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(20, 14, 9, 0.55) 0%,
+    rgba(20, 14, 9, 0.18) 42%,
+    rgba(20, 14, 9, 0) 68%
+  );
+}
+.av-lp .lp-promo-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 clamp(24px, 7vw, 100px);
+  color: #fff;
+}
+.av-lp .lp-promo-eyebrow {
   font-family: var(--ui);
-  font-size: 9.5px;
-  letter-spacing: 0.16em;
+  font-size: 11px;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--p-muted);
-  margin-top: 5px;
+}
+.av-lp .lp-promo-title {
+  font-family: var(--serif);
+  font-size: clamp(30px, 4.6vw, 58px);
+  line-height: 1.05;
+}
+.av-lp .lp-promo-cta {
+  font-family: var(--ui);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+@media (max-width: 720px) {
+  .av-lp .lp-promo--default img { aspect-ratio: 4 / 3; }
 }
 
 /* ============================================================
@@ -825,43 +926,52 @@
 }
 
 /* ============================================================
-   REELS  ·  horizontally-scrolling social strip (#DrapedInAV)
+   SOCIAL  ·  #DrapedInAV — reels + posts rails (open in-site)
    ============================================================ */
-.av-lp .lp-reels { padding: 50px 0 14px; background: var(--p-bg); }
-.av-lp .lp-reels .lp-head-center { padding: 0 22px; }
-.av-lp .lp-reels-track {
+.av-lp .lp-social { padding: 44px 0 20px; background: var(--p-bg); }
+.av-lp .lp-social--reel { padding-top: 26px; } /* sits closer to the hero */
+.av-lp .lp-social .lp-head-center { padding: 0 22px; }
+.av-lp .lp-social-track {
   display: flex;
   gap: 14px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  padding: 4px 22px 6px;
+  padding: 18px 22px 8px;
   scrollbar-width: none;
 }
-.av-lp .lp-reels-track::-webkit-scrollbar { display: none; }
-.av-lp .lp-reel {
+.av-lp .lp-social-track::-webkit-scrollbar { display: none; }
+.av-lp .lp-social-card {
   position: relative;
   flex: 0 0 auto;
-  width: 168px;
+  width: clamp(230px, 22vw, 300px);
   aspect-ratio: 9 / 16;
   background: var(--p-img);
   overflow: hidden;
+  border-radius: 6px;
   scroll-snap-align: start;
   display: block;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  appearance: none;
 }
-.av-lp .lp-reel img {
+.av-lp .lp-social-card--post { aspect-ratio: 4 / 5; width: clamp(240px, 24vw, 320px); }
+.av-lp .lp-social-media {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.8s var(--ease-out, ease);
 }
-.av-lp .lp-reel:hover img { transform: scale(1.05); }
-.av-lp .lp-reel-scrim {
+.av-lp .lp-social-card:hover .lp-social-media,
+.av-lp .lp-social-card:focus-visible .lp-social-media { transform: scale(1.05); }
+.av-lp .lp-social-card:focus-visible { outline: 2px solid var(--p-rani); outline-offset: 2px; }
+.av-lp .lp-social-scrim {
   position: absolute;
   inset: 0;
   background: linear-gradient(to top, rgba(20, 14, 9, 0.55) 0%, rgba(20, 14, 9, 0) 46%);
 }
-.av-lp .lp-reel-play {
+.av-lp .lp-social-badge {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -876,7 +986,7 @@
   justify-content: center;
   color: #fff;
 }
-.av-lp .lp-reel-views {
+.av-lp .lp-social-views {
   position: absolute;
   left: 12px;
   bottom: 12px;
@@ -888,14 +998,417 @@
   align-items: center;
   gap: 5px;
 }
-.av-lp .lp-reels-handle {
+.av-lp .lp-social-handle {
+  display: block;
   text-align: center;
-  margin-top: 18px;
+  margin-top: 22px;
   font-family: var(--ui);
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--p-rani);
+}
+
+/* ============================================================
+   SOCIAL LIGHTBOX  ·  portaled to <body>, OUTSIDE `.av-lp` —
+   so these rules are intentionally un-scoped. Fonts/tokens are
+   redeclared locally since the `.av-lp` cascade does not reach.
+   ============================================================ */
+.sl-overlay {
+  --sl-serif: var(--font-garamond), "EB Garamond", Georgia, serif;
+  --sl-ui: var(--font-hanken), "Hanken Grotesk", system-ui, sans-serif;
+  --sl-rani: #b23a66;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(14, 10, 7, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  font-family: var(--sl-ui);
+  outline: none;
+  animation: slFade 0.22s ease both;
+}
+@keyframes slFade { from { opacity: 0; } to { opacity: 1; } }
+.sl-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: zoom-out;
+}
+.sl-stage {
+  position: relative;
+  z-index: 1;
+  width: min(94vw, 1100px);
+  height: min(86vh, 920px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+/* The three slides — active centred, neighbours tucked close behind it so the
+   stack reads as overlapping cards rather than three far-apart panels. */
+.sl-slide {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: auto;
+  transition: transform 0.42s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    opacity 0.42s ease, filter 0.42s ease;
+}
+.sl-slide--active {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  z-index: 3;
+  filter: none;
+}
+.sl-slide--prev,
+.sl-slide--next {
+  opacity: 0.62;
+  z-index: 2;
+  cursor: pointer;
+  filter: brightness(0.5);
+}
+/* Small offset + slight scale so the neighbours peek from just behind the
+   active card. clamp keeps the overlap sensible from phone to desktop. */
+.sl-slide--prev { transform: translate(calc(-50% - clamp(120px, 14vw, 230px)), -50%) scale(0.86); }
+.sl-slide--next { transform: translate(calc(-50% + clamp(120px, 14vw, 230px)), -50%) scale(0.86); }
+.sl-slide--prev:hover,
+.sl-slide--next:hover { opacity: 0.8; filter: brightness(0.68); }
+
+/* Directional slide-in for the freshly-active card + a fade for the peeks. */
+@keyframes slInNext {
+  from { transform: translate(calc(-50% + 130px), -50%) scale(0.9); opacity: 0; }
+  to   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+@keyframes slInPrev {
+  from { transform: translate(calc(-50% - 130px), -50%) scale(0.9); opacity: 0; }
+  to   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+@keyframes slInOpen {
+  from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+  to   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+@keyframes slPeekIn { from { opacity: 0; } }
+.sl-slide--active.sl-in-next { animation: slInNext 0.46s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)) both; }
+.sl-slide--active.sl-in-prev { animation: slInPrev 0.46s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)) both; }
+.sl-slide--active.sl-in-open { animation: slInOpen 0.42s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)) both; }
+.sl-slide--prev,
+.sl-slide--next { animation: slPeekIn 0.46s ease both; }
+
+/* Reel + post media frames share the centred-card sizing. */
+.sl-reel,
+.sl-post { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.sl-reel-frame {
+  position: relative;
+  height: min(80vh, 860px);
+  aspect-ratio: 9 / 16;
+  max-width: 92vw;
+  background: #14100b;
+  overflow: hidden;
+  border-radius: 10px;
+}
+.sl-post-frame {
+  position: relative;
+  height: min(80vh, 860px);
+  aspect-ratio: 4 / 5;
+  max-width: 92vw;
+  background: #14100b;
+  overflow: hidden;
+  border-radius: 10px;
+}
+/* Lift the active card off the peeks behind it. */
+.sl-slide--active .sl-reel-frame,
+.sl-slide--active .sl-post-frame { box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55); }
+.sl-reel-media,
+.sl-post-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sl-preload { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.sl-reel-scrim,
+.sl-post-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(14, 10, 7, 0.72) 0%, rgba(14, 10, 7, 0) 38%);
+}
+.sl-reel-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.sl-reel-mute {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(20, 16, 11, 0.5);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+/* Thin play-progress bar pinned to the top of the active reel. */
+.sl-reel-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.28);
+  z-index: 3;
+}
+.sl-reel-progress > span {
+  display: block;
+  height: 100%;
+  background: #fff;
+  transition: width 0.15s linear;
+}
+/* Like + Share rail down the right edge of the active card. */
+.sl-reel-rail {
+  position: absolute;
+  right: 12px;
+  bottom: 92px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.sl-reel-action {
+  border: 0;
+  background: transparent;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-family: var(--sl-ui);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease;
+}
+.sl-reel-action:hover { transform: scale(1.08); }
+.sl-reel-action.on { color: var(--sl-rani); }
+.sl-reel-meta {
+  position: absolute;
+  left: 16px;
+  right: 66px;
+  bottom: 16px;
+  color: #fff;
+}
+.sl-reel-caption,
+.sl-post-caption {
+  margin: 0;
+  font-family: var(--sl-serif);
+  font-size: 17px;
+  line-height: 1.4;
+  color: #fff;
+}
+.sl-post-caption {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+}
+.sl-reel-views {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+}
+
+/* Post gallery — edge taps + dots within a single post. */
+.sl-post-edge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 30%;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.sl-post-frame:hover .sl-post-edge { opacity: 0.85; }
+.sl-post-edge--prev { left: 0; justify-content: flex-start; padding-left: 10px; }
+.sl-post-edge--next { right: 0; justify-content: flex-end; padding-right: 10px; }
+.sl-post-dots {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+.sl-post-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+}
+.sl-post-dot--on { background: #fff; }
+
+/* Chrome — close, prev/next, counter. */
+.sl-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 5;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.sl-close:hover { background: rgba(255, 255, 255, 0.2); }
+/* Circular white nav arrows with a dark glyph, matching the reference. */
+.sl-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 0;
+  background: #fff;
+  color: #221b15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+  transition: transform 0.18s ease, background 0.2s ease;
+}
+.sl-nav:hover { transform: translateY(-50%) scale(1.06); }
+.sl-nav--prev { left: clamp(12px, 5vw, 60px); }
+.sl-nav--next { right: clamp(12px, 5vw, 60px); }
+.sl-counter {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Shoppable "add to cart" card — floats over the base of the active reel,
+   like the reference. */
+.sl-cta {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 4;
+  width: min(86%, 360px);
+  padding: 10px;
+  background: rgba(255, 253, 248, 0.97);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  color: #221b15;
+}
+.sl-post-frame .sl-cta { bottom: 14px; }
+.sl-cta-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+}
+.sl-cta-thumb {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 60px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #e7ddcd;
+}
+.sl-cta-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.sl-cta-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.sl-cta-name {
+  font-family: var(--sl-serif);
+  font-size: 16px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sl-cta-price { font-size: 14px; color: #221b15; font-weight: 600; }
+.sl-cta-was { margin-left: 6px; color: #a2937f; font-weight: 400; }
+.sl-cta-add {
+  margin-top: 10px;
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #221b15;
+  color: #fff;
+  font-family: var(--sl-ui);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s ease;
+}
+.sl-cta-add:hover:not(:disabled) { background: var(--sl-rani); }
+.sl-cta-add:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* The CTA sits over the media, so lift the caption + rail clear of it. */
+.sl-reel:has(.sl-cta) .sl-reel-meta,
+.sl-post:has(.sl-cta) .sl-post-caption { bottom: 182px; }
+.sl-reel:has(.sl-cta) .sl-reel-rail { bottom: 196px; }
+
+@media (max-width: 720px) {
+  .sl-slide--prev { transform: translate(calc(-50% - 24vw), -50%) scale(0.8); }
+  .sl-slide--next { transform: translate(calc(-50% + 24vw), -50%) scale(0.8); }
+  .sl-nav { display: none; } /* mobile navigates by swipe + peek taps */
+  .sl-reel-frame,
+  .sl-post-frame { height: min(72vh, 720px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sl-overlay,
+  .sl-slide { animation: none; transition: none; }
 }
 
 /* ============================================================
@@ -1138,9 +1651,8 @@
   .av-lp .lp-head-row .lp-title { font-size: 32px; }
   .av-lp .lp-head-row { margin-bottom: 34px; }
 
-  /* categories 5-up */
-  .av-lp .lp-cats { grid-template-columns: repeat(5, 1fr); gap: 18px; }
-  .av-lp .lp-cat-name { font-size: 17px; }
+  /* categories — a wider gap for the roomy desktop row of avatars */
+  .av-lp .lp-cats { gap: clamp(24px, 3vw, 48px); }
 
   /* products 4-up */
   .av-lp .lp-products { grid-template-columns: repeat(4, 1fr); gap: 24px; }

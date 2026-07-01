@@ -322,12 +322,124 @@ export const lookbook = {
   total: "₹32,400",
 };
 
-export const reels = [
-  { image: "premium_photo-1682096067532-3e89ab323ebf", views: "1.2M" },
-  { image: "premium_photo-1682096055581-7cb5a5fd3d80", views: "880K" },
-  { image: "photo-1574847872646-abff244bbd87", views: "2.4M" },
-  { image: "photo-1693336429270-094637e16d38", views: "640K" },
-  { image: "premium_photo-1682096037844-e43413e887a8", views: "1.7M" },
+/* ============================================================
+   SOCIAL  ·  #DrapedInAV — reels + posts opened IN-SITE in a
+   fullscreen lightbox (never a new tab / never an IG embed).
+   ============================================================ */
+
+/** Our public handle — surfaced in the section footer and lightbox. */
+export const socialHandle = "jaipuri_odhni";
+
+export type SocialReel = {
+  id: string;
+  /** Poster frame (9:16). Shown while the video buffers, and as a full
+      standalone still when no `video` is supplied yet. */
+  poster: string;
+  /** Optional vertical video source. When present the lightbox autoplays it
+      (muted, looped) only while it is the active slide. When absent the poster
+      stands in with a play affordance — so the feed works today and real reels
+      simply drop into this field later. */
+  video?: string;
+  caption?: string;
+  views?: string;
+  /** Optional product surfaced as a "Shop this look" CTA inside the lightbox. */
+  productSlug?: string;
+};
+
+export type SocialPost = {
+  id: string;
+  /** One or more images — the viewer paginates through them like a carousel. */
+  images: string[];
+  caption?: string;
+  productSlug?: string;
+};
+
+/* Demo influencer reels. Videos are self-hosted on our Cloudinary (sourced from
+   Mixkit's free, no-attribution library as stand-ins) so the strip autoplays out
+   of the box; the admin Social manager can replace any of them with real AV
+   reels. Posters are stills that show while the video buffers. */
+export const socialReels: SocialReel[] = [
+  {
+    id: "reel-bandhej-tie",
+    poster: "premium_photo-1682096067532-3e89ab323ebf",
+    video: "https://res.cloudinary.com/dxy5z6k78/video/upload/v1782874547/av-creation/social/nmzle1h2keeydmfakzyk.mp4",
+    caption: "Tying the bandhej, dot by dot",
+    views: "1.2M",
+    productSlug: "gulabi-bandhej-odhni",
+  },
+  {
+    id: "reel-leheriya-dye",
+    poster: "premium_photo-1682096055581-7cb5a5fd3d80",
+    video: "https://res.cloudinary.com/dxy5z6k78/video/upload/v1782874542/av-creation/social/pfl0hivj9hxbv2qglbr3.mp4",
+    caption: "Leheriya waves, fresh from the dye",
+    views: "880K",
+    productSlug: "leheriya-wave-odhni",
+  },
+  {
+    id: "reel-drape-styling",
+    poster: "photo-1574847872646-abff244bbd87",
+    video: "https://res.cloudinary.com/dxy5z6k78/video/upload/v1782874537/av-creation/social/b5j1ilss7xdyheddjwr9.mp4",
+    caption: "Three ways to drape the Odhni",
+    views: "2.4M",
+    productSlug: "gota-patti-rani-odhni",
+  },
+  {
+    id: "reel-block-print",
+    poster: "photo-1693336429270-094637e16d38",
+    video: "https://res.cloudinary.com/dxy5z6k78/video/upload/v1782874545/av-creation/social/nrdgop71vzdgp31civ64.mp4",
+    caption: "Sanganeri blocks, hand-pressed",
+    views: "640K",
+    productSlug: "sanganeri-block-odhni",
+  },
+  {
+    id: "reel-bridal-bts",
+    poster: "premium_photo-1682096037844-e43413e887a8",
+    video: "https://res.cloudinary.com/dxy5z6k78/video/upload/v1782874539/av-creation/social/soqyz6oekxxomlhovef2.mp4",
+    caption: "Behind the bridal atelier",
+    views: "1.7M",
+    productSlug: "rani-bagh-bridal-lehenga",
+  },
+];
+
+export const socialPosts: SocialPost[] = [
+  {
+    id: "post-rani-edit",
+    images: [
+      "photo-1610030469983-98e550d6193c",
+      "premium_photo-1682096037844-e43413e887a8",
+      "photo-1595777457583-95e059d581b8",
+    ],
+    caption: "The Rani edit — gota patti on hand-dyed silk",
+    productSlug: "gota-patti-rani-odhni",
+  },
+  {
+    id: "post-leheriya",
+    images: [
+      "premium_photo-1682096060450-6ac06a3a0478",
+      "photo-1693336429270-094637e16d38",
+    ],
+    caption: "Leheriya, the Pink City's monsoon wave",
+    productSlug: "leheriya-wave-odhni",
+  },
+  {
+    id: "post-bridal",
+    images: [
+      "photo-1583846783214-7229a91b20ed",
+      "photo-1617137968427-85924c800a22",
+      "photo-1645862755924-9f4e7f200b83",
+    ],
+    caption: "Heirlooms in the making — months of zardozi",
+    productSlug: "rani-bagh-bridal-lehenga",
+  },
+  {
+    id: "post-chanderi",
+    images: [
+      "photo-1769500804057-ca1391bf4617",
+      "photo-1594633312681-425c7b97ccd1",
+    ],
+    caption: "Chanderi gold tissue, woven to catch the light",
+    productSlug: "chanderi-gold-tissue-saree",
+  },
 ];
 
 export type Store = {

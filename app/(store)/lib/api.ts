@@ -6,7 +6,7 @@
    routes work once a NextAuth/Google session cookie is present.
    ============================================================ */
 
-import type { Category, Product } from "./landing-data";
+import type { Category, Product, SocialReel, SocialPost } from "./landing-data";
 import type { PdpProduct, PdpReview } from "./pdp-data";
 import type { OrderAddress } from "./cart-data";
 
@@ -1292,6 +1292,19 @@ export async function uploadImage(file: File): Promise<{ url: string; publicId: 
   return res.json() as Promise<{ url: string; publicId: string }>;
 }
 
+/** Upload a video file (a social reel) to the server. Returns its hosted URL. */
+export async function uploadVideo(file: File): Promise<{ url: string; publicId: string }> {
+  const form = new FormData();
+  form.append("video", file);
+  const res = await fetch(`${API_URL}/api/admin/upload-video`, {
+    method: "POST",
+    credentials: "include",
+    body: form,
+  });
+  if (!res.ok) throw await toApiError(res);
+  return res.json() as Promise<{ url: string; publicId: string }>;
+}
+
 /* ---------- Hero images (public read, admin write) ---------- */
 
 export type HeroSettings = { images: (string | null)[] };
@@ -1302,6 +1315,31 @@ export function fetchHeroSettings(opts?: FetchOpts): Promise<HeroSettings> {
 
 export function updateHeroSettings(images: (string | null)[]): Promise<HeroSettings> {
   return apiSend<HeroSettings>("PUT", `/api/admin/hero`, { images });
+}
+
+/* ---------- Social feeds — #DrapedInAV (public read, admin write) ---------- */
+
+export type SocialSettings = { reels: SocialReel[]; posts: SocialPost[] };
+
+export function fetchSocialSettings(opts?: FetchOpts): Promise<SocialSettings> {
+  return apiGet<SocialSettings>(`/api/settings/social`, opts);
+}
+
+export function updateSocialSettings(data: SocialSettings): Promise<SocialSettings> {
+  return apiSend<SocialSettings>("PUT", `/api/admin/social`, data);
+}
+
+/* ---------- Promo banner (public read, admin write) ---------- */
+
+export type PromoBanner = { image: string | null; href: string | null; alt: string | null };
+export type PromoSlot = "signature" | "bridal";
+
+export function fetchPromoBanner(slot: PromoSlot, opts?: FetchOpts): Promise<PromoBanner> {
+  return apiGet<PromoBanner>(`/api/settings/promo/${slot}`, opts);
+}
+
+export function updatePromoBanner(slot: PromoSlot, data: PromoBanner): Promise<PromoBanner> {
+  return apiSend<PromoBanner>("PUT", `/api/admin/promo/${slot}`, data);
 }
 
 /* ---------- File downloads (cookie-auth) ---------- */

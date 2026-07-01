@@ -3,22 +3,26 @@ import {
   categories as staticCategories,
   odhniEdit as staticOdhniEdit,
   bestsellers as staticBestsellers,
-  reels,
+  socialReels,
+  socialPosts,
   stores,
   mapDirectionsUrl,
   img,
   heroImageUrl,
 } from "./lib/landing-data";
-import { Play } from "lucide-react";
 import {
   fetchProducts,
   fetchCategories,
   fetchHeroSettings,
   fetchFeaturedReviews,
+  fetchSocialSettings,
+  fetchPromoBanner,
 } from "./lib/api";
 import RedesignHeader from "./components/landing/redesign/RedesignHeader";
 import ProductRail from "./components/landing/redesign/ProductRail";
 import Testimonials from "./components/landing/redesign/Testimonials";
+import SocialSection from "./components/landing/redesign/social/SocialSection";
+import PromoBanner from "./components/landing/redesign/PromoBanner";
 import { devSampleReviews } from "./lib/dev-sample-reviews";
 import LandingHero from "./components/landing/redesign/LandingHero";
 
@@ -68,27 +72,51 @@ function catHref(c: { slug?: string; href?: string }): string {
 }
 
 export default async function Home() {
-  const [odhniEdit, bestsellers, allProducts, categories, heroSettings, featuredReviews] =
-    await Promise.all([
-      fetchProducts({ category: "jaipuri-odhni" }).catch(() => staticOdhniEdit),
-      fetchProducts({ bestseller: true }).catch(() => staticBestsellers),
-      // Whole catalog — the Trending rail draws from here, minus whatever the
-      // Odhni/Bestseller rails already show, so the page never repeats a piece.
-      fetchProducts({}).catch(() => [...staticOdhniEdit, ...staticBestsellers]),
-      fetchCategories().catch(() => staticCategories),
-      // Cached server-side: the URLs land in the HTML so the browser starts the
-      // image download immediately, with no client round-trip to the API.
-      fetchHeroSettings({ revalidate: 60 }).catch(() => ({ images: [] as (string | null)[] })),
-      // Real approved reviews for the testimonials carousel. NEVER faked — if
-      // the feed is empty (or the API is down) the section renders nothing.
-      fetchFeaturedReviews(12, { revalidate: 120 }).catch(() => ({ reviews: [] })),
-    ]);
+  const [
+    odhniEdit,
+    bestsellers,
+    allProducts,
+    categories,
+    heroSettings,
+    featuredReviews,
+    socialSettings,
+    signaturePromo,
+    bridalPromo,
+  ] = await Promise.all([
+    fetchProducts({ category: "jaipuri-odhni" }).catch(() => staticOdhniEdit),
+    fetchProducts({ bestseller: true }).catch(() => staticBestsellers),
+    // Whole catalog — the Trending rail draws from here, minus whatever the
+    // Odhni/Bestseller rails already show, so the page never repeats a piece.
+    fetchProducts({}).catch(() => [...staticOdhniEdit, ...staticBestsellers]),
+    fetchCategories().catch(() => staticCategories),
+    // Cached server-side: the URLs land in the HTML so the browser starts the
+    // image download immediately, with no client round-trip to the API.
+    fetchHeroSettings({ revalidate: 60 }).catch(() => ({ images: [] as (string | null)[] })),
+    // Real approved reviews for the testimonials carousel. NEVER faked — if
+    // the feed is empty (or the API is down) the section renders nothing.
+    fetchFeaturedReviews(12, { revalidate: 120 }).catch(() => ({ reviews: [] })),
+    // Admin-managed #DrapedInAV feeds. Empty → fall back to the static seed.
+    fetchSocialSettings({ revalidate: 60 }).catch(() => ({ reels: [], posts: [] })),
+    // Admin-managed promo posters (two slots). Empty image → the component's
+    // per-slot default stands in.
+    fetchPromoBanner("signature", { revalidate: 60 }).catch(
+      () => ({ image: null, href: null, alt: null })
+    ),
+    fetchPromoBanner("bridal", { revalidate: 60 }).catch(
+      () => ({ image: null, href: null, alt: null })
+    ),
+  ]);
 
   // Rails surface a wider edit than the old 4-up grid; the carousel keeps the
   // page height in check while giving the shopper more to discover.
   const edit = (odhniEdit.length ? odhniEdit : staticOdhniEdit).slice(0, 10);
   const best = (bestsellers.length ? bestsellers : staticBestsellers).slice(0, 10);
-  const cats = (categories.length ? categories : staticCategories).slice(0, 5);
+  // Accessories is deliberately kept out of the storefront (clothes only), but
+  // the hosted DB still carries the row — filter it before the category row.
+  // (The static fallback has no slug/accessories, so it passes through.)
+  const cats = (categories.length ? categories : staticCategories)
+    .filter((c) => (c as { slug?: string }).slug !== "accessories")
+    .slice(0, 6);
 
   // Trending = the rest of the catalog, de-duplicated against the two rails
   // above. Falls back to bestsellers if the catalog fetch came back empty.
@@ -96,6 +124,10 @@ export default async function Home() {
   const trendingPool = allProducts.length ? allProducts : [...staticOdhniEdit, ...staticBestsellers];
   const trendingFiltered = trendingPool.filter((p) => !shownSlugs.has(p.slug)).slice(0, 10);
   const trending = trendingFiltered.length ? trendingFiltered : best;
+
+  // Admin overrides win when present; otherwise the built-in seed feeds render.
+  const reels = socialSettings.reels.length ? socialSettings.reels : socialReels;
+  const posts = socialSettings.posts.length ? socialSettings.posts : socialPosts;
 
   const heroImages = heroSettings.images
     .filter((u): u is string => !!u)
@@ -148,24 +180,37 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* THE HOUSE SIGNATURE — Jaipuri Odhni */}
-      <section className="lp-bleed lp-signature">
-        <div className="lp-bleed-img">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={img("photo-1597983073493-88cd35cf93b0", 1100)} alt="The Jaipuri Odhni" loading="lazy" />
-        </div>
-        <div className="lp-signature-copy">
-          <div className="lp-eyebrow">The House Signature</div>
-          <div className="lp-title">The Jaipuri Odhni</div>
-          <p>
-            Tied, dyed and block-printed by hand in the lanes of the Pink City. No two drapes are
-            ever quite alike.
-          </p>
-          <a href="/category/jaipuri-odhni" className="lp-underlink">
-            Explore the Odhni edit
-          </a>
-        </div>
-      </section>
+      {/* TRENDING — rail (sits just under the category row). */}
+      <ProductRail
+        id="trending"
+        eyebrow="Most wanted"
+        title="Trending now"
+        products={trending}
+        viewAllHref="/search"
+        align="row"
+      />
+
+      {/* SOCIAL — REELS. Cards autoplay muted inline; clicking opens the
+          in-site lightbox. */}
+      <SocialSection
+        kind="reel"
+        items={reels}
+        products={allProducts}
+        eyebrow="As seen on social"
+        title="#DrapedInAV"
+      />
+
+      {/* PROMO POSTER — signature slot (admin-uploaded, replaces the former
+          House Signature editorial). Falls back to the Odhni default. */}
+      <PromoBanner
+        image={signaturePromo.image}
+        href={signaturePromo.href}
+        alt={signaturePromo.alt}
+        defaultImage="photo-1597983073493-88cd35cf93b0"
+        defaultEyebrow="The House Signature"
+        defaultTitle="The Jaipuri Odhni"
+        defaultHref="/category/jaipuri-odhni"
+      />
 
       {/* THE ODHNI EDIT — rail */}
       <ProductRail
@@ -177,54 +222,17 @@ export default async function Home() {
         align="row"
       />
 
-      {/* REELS — horizontally-scrolling social strip */}
-      <section className="lp-reels" id="reels" aria-label="As seen on reels">
-        <div className="lp-head-center">
-          <div className="lp-eyebrow">As seen on reels</div>
-          <div className="lp-title">#DrapedInAV</div>
-        </div>
-        <div className="lp-reels-track">
-          {reels.map((r, i) => (
-            <a
-              key={i}
-              href="https://www.instagram.com/jaipuri_odhni/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="lp-reel"
-              aria-label={`Reel — ${r.views} views`}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img(r.image, 500)} alt="" loading="lazy" />
-              <div className="lp-reel-scrim" />
-              <span className="lp-reel-play" aria-hidden="true">
-                <Play size={13} fill="currentColor" stroke="none" />
-              </span>
-              <span className="lp-reel-views" aria-hidden="true">
-                <Play size={11} fill="currentColor" stroke="none" />
-                {r.views}
-              </span>
-            </a>
-          ))}
-        </div>
-        <div className="lp-reels-handle">Follow @jaipuri_odhni</div>
-      </section>
-
-      {/* THE BRIDAL ATELIER — overlay editorial */}
-      <section className="lp-editorial" aria-label="The Bridal Atelier">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={img("photo-1583846783214-7229a91b20ed", 1600)} alt="" loading="lazy" />
-        <div className="lp-editorial-scrim" />
-        <div className="lp-editorial-copy">
-          <div className="lp-eyebrow">The Bridal Atelier</div>
-          <div className="lp-editorial-title">
-            Heirlooms in <em>the making</em>
-          </div>
-          <p>Months of zardozi and kundan — for the day you&apos;ll remember forever.</p>
-          <a href="/search?q=bridal" className="lp-underlink lp-hero-cta">
-            Discover bridal
-          </a>
-        </div>
-      </section>
+      {/* PROMO POSTER — bridal slot (admin-uploaded, replaces the former Bridal
+          Atelier editorial). Falls back to a default until one is set. */}
+      <PromoBanner
+        image={bridalPromo.image}
+        href={bridalPromo.href}
+        alt={bridalPromo.alt}
+        defaultImage="photo-1583846783214-7229a91b20ed"
+        defaultEyebrow="The Bridal Atelier"
+        defaultTitle="Heirlooms in the making"
+        defaultHref="/search?q=bridal"
+      />
 
       {/* BESTSELLERS — rail */}
       <ProductRail
@@ -236,14 +244,14 @@ export default async function Home() {
         align="center"
       />
 
-      {/* TRENDING — rail */}
-      <ProductRail
-        id="trending"
-        eyebrow="Most wanted"
-        title="Trending now"
-        products={trending}
-        viewAllHref="/search"
-        align="row"
+      {/* SOCIAL — POSTS. The image grid, kept separate from the reels and
+          placed lower down the page. */}
+      <SocialSection
+        kind="post"
+        items={posts}
+        products={allProducts}
+        eyebrow="From the feed"
+        title="Moments from the grid"
       />
 
       {/* TESTIMONIALS — real approved reviews only. In production this renders

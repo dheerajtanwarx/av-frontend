@@ -62,17 +62,22 @@ function applyFit(url: string, mode: FitMode, ratio: string): string {
 export default function ImageUploader({
   value,
   onChange,
+  onBusyChange,
   label = "Upload image",
   aspect = "4 / 5",
 }: {
   value: string | null;
   onChange: (url: string | null) => void;
+  /** Notifies the parent while an upload is in flight, so it can disable Save /
+      Add buttons until the upload settles. */
+  onBusyChange?: (busy: boolean) => void;
   label?: string;
   aspect?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [ok, setOk] = useState(false);
 
   async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -80,13 +85,18 @@ export default function ImageUploader({
     if (!file) return;
     setBusy(true);
     setError("");
+    setOk(false);
+    onBusyChange?.(true);
     try {
       const { url } = await uploadImage(file);
       onChange(url);
+      setOk(true);
+      setTimeout(() => setOk(false), 2500);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Upload failed.");
     } finally {
       setBusy(false);
+      onBusyChange?.(false);
     }
   }
 
@@ -156,6 +166,8 @@ export default function ImageUploader({
         )}
       </div>
 
+      {busy && <p className="admin-uploader-status">Uploading…</p>}
+      {ok && <p className="admin-uploader-ok">✓ Uploaded</p>}
       {error && <p className="admin-uploader-error">{error}</p>}
 
       <input

@@ -16,7 +16,7 @@ import type { NextRequest } from "next/server";
  * true to re-funnel the whole site to /social-links (e.g. for another holding
  * period). Nothing else needs to change.
  */
-const STOREFRONT_GATED = true;
+const STOREFRONT_GATED = false;
 const TARGET = "/social-links";
 
 export function proxy(request: NextRequest) {

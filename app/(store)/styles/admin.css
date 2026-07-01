@@ -1666,6 +1666,18 @@ textarea.admin-input {
   font-family: var(--font-jost), sans-serif;
   margin: 0;
 }
+.admin-uploader-ok {
+  color: var(--green-2);
+  font-size: 0.75rem;
+  font-family: var(--font-jost), sans-serif;
+  margin: 0;
+}
+.admin-uploader-status {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-family: var(--font-jost), sans-serif;
+  margin: 0;
+}
 
 /* ---- Fit-to-frame editor ---- */
 .admin-uploader-fit {
@@ -1807,6 +1819,118 @@ textarea.admin-input {
   color: var(--green-2);
   font-family: var(--font-jost), sans-serif;
   font-size: 0.85rem;
+}
+
+/* ---- Social feeds manager (#DrapedInAV) ---- */
+.admin-social-section {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-2);
+}
+.admin-social-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.admin-social-section-head h4 {
+  margin: 0;
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+.admin-social-empty {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+.admin-social-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.admin-social-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 18px;
+  padding: 16px;
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  background: var(--surface, #fffdf8);
+}
+.admin-social-media {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.admin-social-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  align-content: start;
+}
+.admin-social-gallery-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.admin-social-add-img {
+  align-self: start;
+}
+.admin-social-img-remove {
+  font-size: 0.72rem;
+  padding: 4px 8px;
+}
+.admin-social-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.admin-social-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.admin-social-field-label {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--rani-deep);
+}
+.admin-social-input {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.9rem;
+  padding: 9px 11px;
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  width: 100%;
+}
+.admin-social-input:focus-visible {
+  outline: 2px solid var(--rani-deep);
+  outline-offset: 1px;
+}
+.admin-social-remove {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+.admin-uploader-hint {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--font-jost), sans-serif;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+@media (max-width: 760px) {
+  .admin-social-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---- Responsive ---- */

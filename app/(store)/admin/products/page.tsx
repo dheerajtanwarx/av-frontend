@@ -12,6 +12,8 @@ import {
   type AdminProductListItem,
 } from "../../lib/api";
 import HeroImageManager from "../../components/admin/HeroImageManager";
+import SocialManager from "../../components/admin/SocialManager";
+import PromoBannerManager from "../../components/admin/PromoBannerManager";
 import CategoryFilterBar, { type CategoryChip } from "../../components/admin/CategoryFilterBar";
 import CategorySummaryCards from "../../components/admin/CategorySummaryCards";
 import ProductList from "../../components/admin/ProductList";
@@ -176,6 +178,11 @@ function AdminProductsView() {
       </header>
 
       <HeroImageManager />
+
+      <SocialManager />
+
+      <PromoBannerManager slot="signature" title="Homepage banner — signature (upper)" />
+      <PromoBannerManager slot="bridal" title="Homepage banner — promo (lower)" />
 
       <CategorySummaryCards categories={chips} active={category} onSelect={selectCategory} />
 
