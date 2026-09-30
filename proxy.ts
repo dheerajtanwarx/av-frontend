@@ -17,7 +17,8 @@ import type { NextRequest } from "next/server";
  * period). Nothing else needs to change.
  */
 const STOREFRONT_GATED = false;
-const TARGET = "/social-links";
+// const TARGET = "/social-links";
+const TARGET = "/";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
